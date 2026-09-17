@@ -35,9 +35,9 @@ final CatalogItem textItem = CatalogItem(
       'h5' => 'h5',
       _ => 'p',
     };
-    return DomComponent(
+    return Component.element(
       tag: tag,
-      attributes: {'class': 'a2ui-text a2ui-text-$variant'},
+      classes: 'a2ui-text a2ui-text-$variant',
       children: renderInlineMarkdown(value),
     );
   },

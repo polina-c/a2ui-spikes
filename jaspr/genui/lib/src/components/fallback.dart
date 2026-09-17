@@ -14,9 +14,10 @@ class FallbackView extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return DomComponent(
+    return Component.element(
       tag: 'div',
-      attributes: const {'class': 'a2ui-error', 'role': 'alert'},
+      classes: 'a2ui-error',
+      attributes: const {'role': 'alert'},
       children: [Component.text('Could not render this: $error')],
     );
   }

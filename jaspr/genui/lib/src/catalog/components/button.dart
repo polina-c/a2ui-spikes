@@ -29,18 +29,18 @@ final CatalogItem buttonItem = CatalogItem(
     final String variant = context.string('variant') ?? 'primary';
     // A button whose checks fail is the one thing standing between an
     // incomplete form and a round trip to the model, so it stays disabled
-    // and says why rather than sending what it has.
-    final bool enabled = context.isValid && action != null;
+    // and says why rather than submitting what it has.
     final List<String> errors = context.validationErrors;
+    final bool enabled = context.isValid && action != null;
 
-    return DomComponent(
+    return Component.element(
       tag: 'div',
-      attributes: const {'class': 'a2ui-button-wrap'},
+      classes: 'a2ui-button-wrap',
       children: [
-        DomComponent(
+        Component.element(
           tag: 'button',
+          classes: 'a2ui-button a2ui-button-$variant',
           attributes: {
-            'class': 'a2ui-button a2ui-button-$variant',
             'type': 'button',
             if (!enabled) 'disabled': '',
             if (errors.isNotEmpty) 'title': errors.join('\n'),
@@ -49,9 +49,9 @@ final CatalogItem buttonItem = CatalogItem(
           children: [context.buildChild(context['child'])],
         ),
         if (errors.isNotEmpty)
-          DomComponent(
+          Component.element(
             tag: 'div',
-            attributes: const {'class': 'a2ui-validation'},
+            classes: 'a2ui-validation',
             children: [Component.text(errors.join(' '))],
           ),
       ],

@@ -33,15 +33,17 @@ final CatalogItem listItem = CatalogItem(
   ),
   builder: (context) {
     final String direction = context.string('direction') ?? 'vertical';
-    return DomComponent(
+    return Component.element(
       tag: 'div',
-      attributes: {
-        'class': 'a2ui-list a2ui-list-$direction',
-        'style':
-            'display:flex;overflow:auto;'
-            'flex-direction:${direction == 'horizontal' ? 'row' : 'column'};'
-            'align-items:${_align(context.string('align'))}',
-      },
+      classes: 'a2ui-list a2ui-list-$direction',
+      styles: Styles(
+        raw: {
+          'display': 'flex',
+          'overflow': 'auto',
+          'flex-direction': direction == 'horizontal' ? 'row' : 'column',
+          'align-items': alignToCss(context.string('align')),
+        },
+      ),
       children: [
         for (final core.ChildNode child in context.children('children'))
           context.buildChild(child),
@@ -58,9 +60,9 @@ final CatalogItem cardItem = CatalogItem(
     properties: {'child': A2uiSchemas.componentId()},
     required: ['child'],
   ),
-  builder: (context) => DomComponent(
+  builder: (context) => Component.element(
     tag: 'div',
-    attributes: const {'class': 'a2ui-card'},
+    classes: 'a2ui-card',
     children: [context.buildChild(context['child'])],
   ),
 );
@@ -76,9 +78,9 @@ final CatalogItem dividerItem = CatalogItem(
   ),
   builder: (context) {
     final String axis = context.string('axis') ?? 'horizontal';
-    return DomComponent(
+    return Component.element(
       tag: axis == 'vertical' ? 'div' : 'hr',
-      attributes: {'class': 'a2ui-divider a2ui-divider-$axis'},
+      classes: 'a2ui-divider a2ui-divider-$axis',
       children: const [],
     );
   },
@@ -114,15 +116,17 @@ CatalogItem _flexItem({
       },
       required: ['children'],
     ),
-    builder: (context) => DomComponent(
+    builder: (context) => Component.element(
       tag: 'div',
-      attributes: {
-        'class': 'a2ui-$direction',
-        'style':
-            'display:flex;flex-direction:$direction;'
-            'justify-content:${_justify(context.string('justify'))};'
-            'align-items:${_align(context.string('align'))}',
-      },
+      classes: 'a2ui-$direction',
+      styles: Styles(
+        raw: {
+          'display': 'flex',
+          'flex-direction': direction,
+          'justify-content': _justifyToCss(context.string('justify')),
+          'align-items': alignToCss(context.string('align')),
+        },
+      ),
       children: [
         for (final core.ChildNode child in context.children('children'))
           context.buildChild(child),
@@ -131,7 +135,7 @@ CatalogItem _flexItem({
   );
 }
 
-String _justify(String? value) => switch (value) {
+String _justifyToCss(String? value) => switch (value) {
   'center' => 'center',
   'end' => 'flex-end',
   'spaceBetween' => 'space-between',
@@ -140,7 +144,8 @@ String _justify(String? value) => switch (value) {
   _ => 'flex-start',
 };
 
-String _align(String? value) => switch (value) {
+/// Maps an A2UI cross-axis alignment onto its CSS equivalent.
+String alignToCss(String? value) => switch (value) {
   'center' => 'center',
   'end' => 'flex-end',
   'start' => 'flex-start',
