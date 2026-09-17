@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+  Local preview. Serve the repo over http:// and open this page:
+
+      cd wix/minimal && python3 -m http.server 8000
+      open http://localhost:8000/local/
+
+  A file:// URL will not work — ES module imports and the browser cache that
+  WebLLM uses for model weights both need a real origin.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ai-chat — local preview</title>
+<style>
+  body {
+    margin: 0;
+    padding: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #fafafa;
+    color: #1a1c1f;
+  }
+  @media (prefers-color-scheme: dark) { body { background: #0f1115; color: #e8eaed; } }
+  main { max-width: 560px; margin: 0 auto; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  p.sub { margin: 0 0 16px; font-size: 13px; opacity: .65; }
+  ai-chat { height: 520px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>ai-chat — local preview</h1>
+  <p class="sub">Same widget the Wix site loads. Nothing here talks to a server.</p>
+  <ai-chat
+    model="SmolLM2-360M-Instruct-q4f16_1-MLC"
+    heading="Ask me anything"
+    greeting="Hi! I run entirely inside your browser. Ask me something."
+  ></ai-chat>
+</main>
+<script src="../public/custom-elements/ai-chat.js"></script>
+</body>
+</html>
