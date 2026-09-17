@@ -20,11 +20,12 @@
 </style>
 </head>
 <body>
+<!-- Add system-prompt="..." to tell the model about your business.
+     Left off here, so the widget's own default applies. -->
 <ai-chat
   model="Llama-3.2-1B-Instruct-q4f16_1-MLC"
   heading="Ask me anything"
   greeting="Hi! I run entirely inside your browser. Ask me something."
-  system-prompt="You are a helpful, friendly assistant embedded on a website. Keep answers short, two or three sentences unless asked for more."
 ></ai-chat>
 <script>
 /**
@@ -39,9 +40,10 @@
  *   - inlined into embed/chat.html by build.sh, for the Embed HTML element
  *
  * Attributes (all optional):
- *   model          WebLLM model id, e.g. "SmolLM2-360M-Instruct-q4f16_1-MLC"
+ *   model          WebLLM model id, e.g. "Qwen2.5-0.5B-Instruct-q4f16_1-MLC"
  *   system-prompt  instructions that shape the assistant's replies
- *   greeting       first assistant message, shown without calling the model
+ *   greeting       opening line shown to the visitor; display only, and never
+ *                  sent to the model (see _showGreeting)
  *   heading        label in the widget header
  */
 (function () {
@@ -52,8 +54,27 @@
   var WEBLLM_ESM = "https://esm.run/@mlc-ai/web-llm@0.2.85";
   var DEFAULT_MODEL = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
   var DEFAULT_SYSTEM =
-    "You are a helpful, friendly assistant embedded on a website. " +
-    "Keep answers short, two or three sentences unless asked for more.";
+    "You are a helpful assistant on a website. Answer the user's question " +
+    "directly and concretely. Do not repeat yourself, do not use filler " +
+    "pleasantries, and do not ask what is on the user's mind. If you do not " +
+    "know something, say so in one sentence. Keep answers under three " +
+    "sentences unless asked for more.";
+
+  // Small models fall into a loop and answer every prompt with the same
+  // sentence unless new tokens are rewarded. Measured on SmolLM2-360M,
+  // Qwen2.5-0.5B and Llama-3.2-1B: without these, asking the same question
+  // twice returns character-for-character identical text.
+  var GENERATION = {
+    temperature: 0.7,
+    frequency_penalty: 0.6,
+    presence_penalty: 0.6,
+    repetition_penalty: 1.1,
+  };
+
+  // Turns of history sent to the model, not counting the system prompt. The
+  // supported models have a 4096 token context window, which a long chat
+  // would otherwise overrun.
+  var MAX_HISTORY = 12;
 
   // One-time download per visitor, in MB, measured from the mlc-ai model repos
   // on Hugging Face. Used only to set expectations before the download starts.
@@ -177,11 +198,10 @@
       this._el.title.textContent = this.getAttribute("heading") || "Ask me anything";
       this._history = [{ role: "system", content: this.systemPrompt }];
 
-      var greeting = this.getAttribute("greeting");
-      if (greeting) {
-        this._bubble("bot").textContent = greeting;
-        this._history.push({ role: "assistant", content: greeting });
-      }
+      // The greeting is shown but deliberately kept out of _history. An
+      // assistant turn before the user has said anything makes small models
+      // answer every later prompt with a variation of that greeting.
+      this._showGreeting();
 
       this._el.start.addEventListener("click", this._load.bind(this));
       this._el.composer.addEventListener("submit", this._submit.bind(this));
@@ -273,12 +293,13 @@
 
       var answer = "";
       try {
-        var stream = await this._engine.chat.completions.create({
-          messages: this._history,
+        var request = {
+          messages: this._trimmedHistory(),
           stream: true,
           stream_options: { include_usage: true },
-          temperature: 0.7,
-        });
+        };
+        for (var key in GENERATION) request[key] = GENERATION[key];
+        var stream = await this._engine.chat.completions.create(request);
         for await (var chunk of stream) {
           var delta = chunk.choices[0] && chunk.choices[0].delta.content;
           if (delta) {
@@ -312,8 +333,21 @@
       if (this._busy) return;
       this._el.log.innerHTML = "";
       this._history = [{ role: "system", content: this.systemPrompt }];
+      this._showGreeting();
       if (this._engine) await this._engine.resetChat();
       this._el.input.focus();
+    }
+
+    _showGreeting() {
+      var greeting = this.getAttribute("greeting");
+      if (greeting) this._bubble("bot").textContent = greeting;
+    }
+
+    // Keeps the system prompt and the most recent turns, so a long
+    // conversation cannot overrun the model's context window.
+    _trimmedHistory() {
+      if (this._history.length <= MAX_HISTORY + 1) return this._history;
+      return [this._history[0]].concat(this._history.slice(-MAX_HISTORY));
     }
 
     _bubble(who) {

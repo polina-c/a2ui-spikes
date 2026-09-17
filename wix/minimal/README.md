@@ -29,8 +29,30 @@ Then open http://localhost:8000/local/ and click "Start the chat". A `file://`
 URL will not work, because the ES module import and the model cache both need a
 real origin.
 
-The local page uses `SmolLM2-360M-Instruct-q4f16_1-MLC`, a 210 MB download, so
-the first run finishes in well under a minute on a normal connection.
+The local page uses `Qwen2.5-0.5B-Instruct-q4f16_1-MLC`, a 290 MB download, so
+the first run finishes in about a minute on a normal connection.
+
+## Getting a Wix site open in the editor
+
+Both options below start inside the Wix Editor, so you need an account and a
+site first. If you already have one, open its dashboard and click Edit Site, or
+Design Site if this is the first time you are opening that site. With more than
+one site in the account, pick the one you want from the Site dropdown at the top
+left of the dashboard before clicking through.
+
+For a throwaway site to test this widget on, the shortest route is a blank
+template:
+
+1. Create a free account at https://www.wix.com.
+2. Go to https://www.wix.com/website/templates and open Blank Templates.
+3. Hover over a template and click Edit. That creates the site and opens it in
+   the Wix Editor, skipping the guided AI setup flow.
+
+Wix has two editors with different menus. The template route above gives you the
+Wix Editor; Wix Studio is the separate editor aimed at agencies, and where its
+menus differ the steps below give both. Nothing you do in either editor is
+visible on the web until you click Publish, so you can paste the widget in and
+try it in preview without touching a live page.
 
 ## Option A: paste it into an Embed HTML element
 
@@ -102,24 +124,61 @@ The element takes four optional attributes:
     ></ai-chat>
 
 `greeting` is shown without calling the model, so the page has something to say
-before the weights finish loading.
+before the weights finish loading. It is display copy only and is deliberately
+kept out of the conversation the model sees, for the reason in the next section.
 
 The model choice is the one decision that matters, because the visitor pays for
 it in download size and in the GPU memory the model needs while running:
 
-| Model id | Download | VRAM needed |
-| --- | --- | --- |
-| `SmolLM2-360M-Instruct-q4f16_1-MLC` | 210 MB | 376 MB |
-| `Qwen2.5-0.5B-Instruct-q4f16_1-MLC` | 290 MB | 945 MB |
-| `Llama-3.2-1B-Instruct-q4f16_1-MLC` | 700 MB | 879 MB |
-| `Qwen2.5-1.5B-Instruct-q4f16_1-MLC` | 1.1 GB | 1630 MB |
+| Model id | Download | VRAM needed | Notes |
+| --- | --- | --- | --- |
+| `SmolLM2-360M-Instruct-q4f16_1-MLC` | 210 MB | 376 MB | too weak for open-ended chat |
+| `Qwen2.5-0.5B-Instruct-q4f16_1-MLC` | 290 MB | 945 MB | smallest one worth shipping |
+| `Llama-3.2-1B-Instruct-q4f16_1-MLC` | 700 MB | 879 MB | default in `embed/chat.html` |
+| `Qwen2.5-1.5B-Instruct-q4f16_1-MLC` | 1.1 GB | 1630 MB | best answers, longest wait |
 
 Download sizes are the sum of the files in the matching `mlc-ai` repository on
-Hugging Face; VRAM figures are WebLLM's own `vram_required_MB`. `Llama-3.2-1B`
-is the default in `embed/chat.html` and is a reasonable balance. Any id from
+Hugging Face; VRAM figures are WebLLM's own `vram_required_MB`. Any id from
 WebLLM's `prebuiltAppConfig.model_list` works; if you pick one that is not in
 the table above, add it to `DOWNLOAD_MB` in the widget so the start panel can
 still tell visitors what they are about to download.
+
+Avoid `SmolLM2-360M` for a chat that takes arbitrary questions. In testing it
+answered "give me compliment" and "give me link to wix home page" with the same
+sentence, and no sampling setting rescued it. It is fine for a narrow, scripted
+use, not for an open prompt box.
+
+## Why the model is not allowed to repeat itself
+
+Two things in the widget exist specifically to stop the loop where every answer
+comes back as a variation of the same sentence.
+
+The greeting is never added to the message list sent to the model. An assistant
+turn that arrives before the user has said anything reads to a small model as
+the pattern it should follow, and it will then answer every question with a
+rewording of the greeting. With the greeting left in, Qwen2.5-0.5B answered the
+same prompt twice with byte-identical text; with it removed, it did not.
+
+Every request sends `frequency_penalty`, `presence_penalty` and
+`repetition_penalty`, set in `GENERATION` near the top of the widget. Without
+them, all three models tested returned character-for-character identical text
+when the same question was asked twice in a row. These are the sampling
+parameters WebLLM accepts on `chat.completions.create`.
+
+The committed values (0.6, 0.6, 1.1 at temperature 0.7) are the mildest setting
+that works. Two stronger settings were tried and both made answers worse:
+Qwen2.5-0.5B moved from correctly answering `wix.com` to consistently answering
+`wiz.com`, and Llama-3.2-1B started inventing URLs. Turning the penalties up is
+not the lever it looks like.
+
+One case survives all of this. Ask the exact same question twice and a small
+model may give the exact same sentence back, because that is the answer it has.
+That is different from the failure this section is about, which was every
+question getting the same answer.
+
+The widget also sends only the last twelve turns plus the system prompt
+(`MAX_HISTORY`), because the supported models have a 4096 token context window
+and a long conversation would otherwise overrun it.
 
 ## Limits worth knowing before you ship this
 
@@ -138,14 +197,21 @@ serverless setup, not an oversight in it.
 
 ## Verified
 
-The widget was driven end to end in headless Chrome from
-`local/index.html`: `SmolLM2-360M` loaded in 23 seconds over SwiftShader (CPU,
-no real GPU), answered a question correctly, and reported 32 tokens/sec. On a
-machine with a real GPU it is considerably faster. The Wix editor steps above
-come from the Wix documentation linked below and have not been run against a
-live Wix account.
+The widget was driven end to end in headless Chrome from `local/index.html`,
+over SwiftShader (CPU, no real GPU, so the speed below is a floor rather than
+what a visitor sees). From an empty browser profile, `Qwen2.5-0.5B` downloaded
+and loaded in 25 seconds and generated at 120 tokens/sec, and four questions
+came back answered on topic with no two consecutive answers alike.
+
+Model behaviour was compared across SmolLM2-360M, Qwen2.5-0.5B and Llama-3.2-1B
+with and without the greeting in the history, and with and without the sampling
+penalties, using the prompts that first showed the repetition.
+
+The Wix editor steps above come from the Wix documentation linked below and have
+not been run against a live Wix account.
 
 * [Add a custom element](https://dev.wix.com/docs/velo/velo-only-apis/$w/custom-element/add-a-custom-element)
 * [About custom elements](https://dev.wix.com/docs/velo/velo-only-apis/$w/custom-element/introduction), including the Premium plan requirement
 * [Wix Editor: embedding a site or a widget](https://support.wix.com/en/article/wix-editor-embedding-a-site-or-a-widget)
+* [Accessing your editor](https://support.wix.com/en/article/accessing-your-editor) and [building a site with a template](https://support.wix.com/en/article/wix-editor-building-a-site-with-a-template)
 * [WebLLM](https://github.com/mlc-ai/web-llm)

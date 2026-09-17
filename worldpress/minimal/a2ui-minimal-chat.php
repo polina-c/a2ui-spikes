@@ -48,6 +48,27 @@ function a2ui_minimal_is_configured() {
 }
 
 /**
+ * One model entry, shaped the way AI Engine's own "Refresh Models" shapes them.
+ *
+ * Pricing is zeroed because a self-hosted server has none, and the token limits
+ * are AI Engine's fallbacks for a server that did not say.
+ */
+function a2ui_minimal_custom_model_entry( $model ) {
+	return [
+		'model'                => $model,
+		'name'                 => $model,
+		'family'               => 'custom',
+		'features'             => [ 'completion' ],
+		'price'                => [ 'in' => 0, 'out' => 0 ],
+		'type'                 => 'token',
+		'unit'                 => 1 / 1000000,
+		'maxCompletionTokens'  => 4096,
+		'maxContextualTokens'  => 8192,
+		'tags'                 => [ 'core', 'chat' ],
+	];
+}
+
+/**
  * Inject the provider into AI Engine's stored settings as they are read.
  *
  * Filtering the option rather than saving it keeps the key out of the database
@@ -81,29 +102,73 @@ function a2ui_minimal_filter_options( $options ) {
 		$options['ai_default_model'] = $provider['model'];
 	}
 
+	// A custom endpoint starts with an empty model catalogue -- AI Engine fills it
+	// by asking the server for /v1/models when someone clicks Refresh Models on
+	// the settings screen -- and it refuses to run a model it cannot find. Listing
+	// the one model from .env is what lets a local server answer the first message
+	// without a trip through wp-admin.
+	if ( $provider['type'] === 'custom' && $provider['model'] !== '' ) {
+		$known = wp_list_pluck( (array) ( $options['ai_envs'][0]['models'] ?? [] ), 'model' );
+		if ( ! in_array( $provider['model'], $known, true ) ) {
+			$options['ai_envs'][0]['models'][] = a2ui_minimal_custom_model_entry( $provider['model'] );
+		}
+	}
+
 	return $options;
 }
 add_filter( 'option_mwai_options', 'a2ui_minimal_filter_options' );
 
 /**
- * Keep the chatbot on the requested model.
+ * The environment every chatbot should fall back to.
  *
- * AI Engine stores chatbots separately from settings and defaults them to an
- * OpenAI model, which is the wrong guess as soon as the key belongs to someone
- * else. On a fresh site this filter sees an empty list and does nothing; AI
- * Engine then creates its default chatbot and every later read comes through
- * here patched.
+ * AI Engine generates these ids on first boot and nominates the first
+ * environment as the default, so this is read rather than chosen.
+ */
+function a2ui_minimal_default_env_id() {
+	$options = get_option( 'mwai_options', [] );
+	if ( ! is_array( $options ) ) {
+		return '';
+	}
+	$env_id = $options['ai_default_env'] ?? '';
+	if ( ! $env_id ) {
+		$env_id = $options['ai_envs'][0]['id'] ?? '';
+	}
+	return is_string( $env_id ) ? $env_id : '';
+}
+
+/**
+ * Point the default chatbot at an environment and, if asked, at a model.
+ *
+ * A chatbot AI Engine created for itself has no envId, because that field is
+ * normally filled in by hand on the settings screen. Left empty, every message
+ * comes back as "The environment is required." rather than an answer, so this
+ * is what makes the chat work without anyone opening wp-admin first. The model
+ * is separate: AI Engine defaults to an OpenAI one, which is the wrong guess as
+ * soon as the key belongs to another provider.
+ *
+ * On a fresh site this filter sees an empty list and does nothing. AI Engine
+ * then creates its default chatbot, and every later read comes through here.
  */
 function a2ui_minimal_filter_chatbots( $chatbots ) {
-	$provider = a2ui_minimal_provider();
-	if ( $provider['model'] === '' || ! is_array( $chatbots ) ) {
+	if ( ! is_array( $chatbots ) ) {
 		return $chatbots;
 	}
+
+	$model  = a2ui_minimal_provider()['model'];
+	$env_id = a2ui_minimal_default_env_id();
+
 	foreach ( $chatbots as &$chatbot ) {
-		if ( is_array( $chatbot ) && ( $chatbot['botId'] ?? '' ) === 'default' ) {
-			$chatbot['model'] = $provider['model'];
+		if ( ! is_array( $chatbot ) || ( $chatbot['botId'] ?? '' ) !== 'default' ) {
+			continue;
+		}
+		if ( $env_id !== '' && empty( $chatbot['envId'] ) ) {
+			$chatbot['envId'] = $env_id;
+		}
+		if ( $model !== '' ) {
+			$chatbot['model'] = $model;
 		}
 	}
+
 	return $chatbots;
 }
 add_filter( 'option_mwai_chatbots', 'a2ui_minimal_filter_chatbots' );
