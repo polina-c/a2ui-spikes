@@ -24,11 +24,50 @@
   var WEBLLM_ESM = "https://esm.run/@mlc-ai/web-llm@0.2.85";
   var DEFAULT_MODEL = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
   var DEFAULT_SYSTEM =
-    "You are a helpful assistant on a website. Answer the user's question " +
-    "directly and concretely. Do not repeat yourself, do not use filler " +
-    "pleasantries, and do not ask what is on the user's mind. If you do not " +
-    "know something, say so in one sentence. Keep answers under three " +
-    "sentences unless asked for more.";
+    "You are an assistant on a business's website. Answer the user's " +
+    "question directly and concretely. Do not repeat yourself, do not use " +
+    "filler pleasantries, and do not ask what is on the user's mind. Keep " +
+    "answers under three sentences unless asked for more.";
+
+  // Wrapped around the site content before it is handed to the model. The
+  // models this widget runs are small enough that they invent business
+  // details when asked, so they are told to answer from the text or not at all.
+  var GROUNDING =
+    "Answer using only the information about this business given below. If " +
+    "the answer is not in it, say you do not have that information and " +
+    "suggest getting in touch through the site. Never invent prices, hours, " +
+    "addresses, links or policies.";
+
+  // Characters of site content sent with a question. The models have a 4096
+  // token window, and this leaves room for the conversation and the answer.
+  // Content under this size is sent whole; above it, the entries closest to
+  // the question are picked.
+  var KNOWLEDGE_BUDGET = 6000;
+
+  // Shown instead of an answer that invented a way to contact the business.
+  var WITHHELD =
+    "I don't have that detail. Please use the contact details on this site.";
+
+  // Contact details are the one class of invention that can be checked rather
+  // than discouraged. The model has no legitimate source for a phone number,
+  // email or link that is not in the site content, so anything of that shape
+  // which does not appear there was made up. Measured: Qwen2.5-0.5B invented a
+  // phone number under every system prompt tried, and Llama-3.2-1B invented a
+  // named employee. Wording alone does not stop it.
+  var CONTACT_PATTERNS = [
+    { kind: "email", re: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi },
+    { kind: "link", re: /\b(?:https?:\/\/|www\.)[^\s<>"')\]]+/gi },
+    { kind: "phone", re: /\+?\d[\d\s().-]{6,}\d/g },
+  ];
+
+  var STOPWORDS = {
+    a: 1, an: 1, and: 1, are: 1, as: 1, at: 1, be: 1, but: 1, by: 1, can: 1,
+    did: 1, do: 1, does: 1, for: 1, from: 1, get: 1, give: 1, has: 1, have: 1,
+    how: 1, i: 1, in: 1, is: 1, it: 1, me: 1, much: 1, my: 1, of: 1, on: 1,
+    or: 1, that: 1, the: 1, there: 1, they: 1, this: 1, to: 1, was: 1, we: 1,
+    what: 1, when: 1, where: 1, which: 1, who: 1, why: 1, will: 1, with: 1,
+    you: 1, your: 1,
+  };
 
   // Small models fall into a loop and answer every prompt with the same
   // sentence unless new tokens are rewarded. Measured on SmolLM2-360M,
@@ -56,6 +95,69 @@
     "Llama-3.2-1B-Instruct-q4f32_1-MLC": 950,
     "Qwen2.5-1.5B-Instruct-q4f16_1-MLC": 1100,
   };
+
+  // Set by content/knowledge.js, which build.sh places ahead of this file.
+  function knowledgeChunks() {
+    var raw = (typeof window !== "undefined" && window.AI_CHAT_KNOWLEDGE) || [];
+    if (!Array.isArray(raw)) return [];
+    return raw.filter(function (c) { return c && c.text; });
+  }
+
+  function keywords(text) {
+    var words = String(text).toLowerCase().match(/[a-z0-9']+/g) || [];
+    var out = {};
+    for (var i = 0; i < words.length; i++) {
+      if (words[i].length > 2 && !STOPWORDS[words[i]]) out[words[i]] = true;
+    }
+    return Object.keys(out);
+  }
+
+  // How well one entry answers the question: how many of the question's words
+  // it contains, with a word in the title counting double.
+  function relevance(chunk, question) {
+    var asked = keywords(question);
+    if (!asked.length) return 0;
+    var title = " " + String(chunk.title || "").toLowerCase() + " ";
+    var body = " " + String(chunk.text).toLowerCase() + " ";
+    var score = 0;
+    for (var i = 0; i < asked.length; i++) {
+      if (title.indexOf(asked[i]) !== -1) score += 2;
+      else if (body.indexOf(asked[i]) !== -1) score += 1;
+    }
+    return score;
+  }
+
+  function digitsOf(text) {
+    return String(text).replace(/\D+/g, "");
+  }
+
+  // Returns the first contact detail in the answer that is absent from the
+  // site content, or null when every one of them checks out.
+  function inventedContactDetail(answer, source) {
+    var haystack = String(source).toLowerCase();
+    var sourceDigits = digitsOf(source);
+    for (var i = 0; i < CONTACT_PATTERNS.length; i++) {
+      var pattern = CONTACT_PATTERNS[i];
+      pattern.re.lastIndex = 0;
+      var match;
+      while ((match = pattern.re.exec(answer)) !== null) {
+        var token = match[0];
+        if (pattern.kind === "phone") {
+          var digits = digitsOf(token);
+          if (digits.length >= 7 && sourceDigits.indexOf(digits) === -1) return token;
+        } else if (haystack.indexOf(token.toLowerCase()) === -1) {
+          return token;
+        }
+      }
+    }
+    return null;
+  }
+
+  function renderChunks(chunks) {
+    return chunks.map(function (c) {
+      return (c.title ? c.title + "\n" : "") + c.text;
+    }).join("\n\n");
+  }
 
   var CSS = [
     ':host{display:block;height:100%;min-height:320px;',
@@ -86,6 +188,7 @@
     '.msg.bot{align-self:flex-start;background:var(--bubble);border-bottom-left-radius:4px}',
     '.msg.bot.pending::after{content:"▍";opacity:.5}',
     '.msg.err{color:#dc2626}',
+    '.msg.withheld{font-style:italic;color:var(--muted)}',
     '.gate{padding:20px 16px;text-align:center;display:flex;flex-direction:column;',
     'align-items:center;gap:10px;margin:auto}',
     '.gate p{margin:0;font-size:13px;color:var(--muted);line-height:1.5;max-width:44ch}',
@@ -166,7 +269,6 @@
       };
 
       this._el.title.textContent = this.getAttribute("heading") || "Ask me anything";
-      this._history = [{ role: "system", content: this.systemPrompt }];
 
       // The greeting is shown but deliberately kept out of _history. An
       // assistant turn before the user has said anything makes small models
@@ -241,7 +343,7 @@
       el.gate.hidden = true;
       el.composer.hidden = false;
       el.clear.hidden = false;
-      el.foot.textContent = this.model + " · running locally in your browser";
+      el.foot.textContent = this.model + " · running locally · answers can be wrong";
       el.input.focus();
     }
 
@@ -264,7 +366,7 @@
       var answer = "";
       try {
         var request = {
-          messages: this._trimmedHistory(),
+          messages: this._messagesFor(text),
           stream: true,
           stream_options: { include_usage: true },
         };
@@ -280,7 +382,8 @@
           if (chunk.usage && chunk.usage.extra) {
             this._el.foot.textContent =
               this.model + " · " +
-              Math.round(chunk.usage.extra.decode_tokens_per_s) + " tokens/sec locally";
+              Math.round(chunk.usage.extra.decode_tokens_per_s) +
+              " tokens/sec locally · answers can be wrong";
           }
         }
       } catch (err) {
@@ -290,6 +393,14 @@
       }
 
       bubble.classList.remove("pending");
+
+      var invented = this._inventedDetail(answer);
+      if (invented) {
+        answer = WITHHELD;
+        bubble.textContent = answer;
+        bubble.classList.add("withheld");
+      }
+
       this._history.push({ role: "assistant", content: answer });
       this._setBusy(false);
       this._el.input.focus();
@@ -302,10 +413,19 @@
     async _clear() {
       if (this._busy) return;
       this._el.log.innerHTML = "";
-      this._history = [{ role: "system", content: this.systemPrompt }];
+      this._history = [];
       this._showGreeting();
       if (this._engine) await this._engine.resetChat();
       this._el.input.focus();
+    }
+
+    // Only meaningful when the widget has site content: without it there is
+    // nothing to check a phone number or link against, and a general chat is
+    // entitled to mention addresses it knows.
+    _inventedDetail(answer) {
+      var chunks = knowledgeChunks();
+      if (!chunks.length) return null;
+      return inventedContactDetail(answer, renderChunks(chunks));
     }
 
     _showGreeting() {
@@ -313,11 +433,47 @@
       if (greeting) this._bubble("bot").textContent = greeting;
     }
 
-    // Keeps the system prompt and the most recent turns, so a long
-    // conversation cannot overrun the model's context window.
-    _trimmedHistory() {
-      if (this._history.length <= MAX_HISTORY + 1) return this._history;
-      return [this._history[0]].concat(this._history.slice(-MAX_HISTORY));
+    // The system message is rebuilt for every question, because which site
+    // content it carries depends on what was asked.
+    _messagesFor(question) {
+      var turns = this._history.length > MAX_HISTORY
+        ? this._history.slice(-MAX_HISTORY)
+        : this._history;
+      return [{ role: "system", content: this._systemMessage(question) }].concat(turns);
+    }
+
+    _systemMessage(question) {
+      var content = this._contextFor(question);
+      if (!content) return this.systemPrompt;
+      return this.systemPrompt + "\n\n" + GROUNDING + "\n\n" + content;
+    }
+
+    // Small sites fit whole, and sending everything beats picking wrongly.
+    // Larger ones fall back to the entries that match the question, taken
+    // best first until the budget is used up.
+    _contextFor(question) {
+      var chunks = knowledgeChunks();
+      if (!chunks.length) return "";
+
+      var whole = renderChunks(chunks);
+      if (whole.length <= KNOWLEDGE_BUDGET) return whole;
+
+      var ranked = chunks.slice().map(function (c, i) {
+        return { chunk: c, score: relevance(c, question), order: i };
+      }).sort(function (a, b) {
+        return b.score - a.score || a.order - b.order;
+      });
+
+      var picked = [];
+      var used = 0;
+      for (var i = 0; i < ranked.length; i++) {
+        var size = ranked[i].chunk.text.length + 40;
+        if (used + size > KNOWLEDGE_BUDGET) continue;
+        picked.push(ranked[i]);
+        used += size;
+      }
+      picked.sort(function (a, b) { return a.order - b.order; });
+      return renderChunks(picked.map(function (r) { return r.chunk; }));
     }
 
     _bubble(who) {
