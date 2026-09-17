@@ -27,14 +27,17 @@
 			}
 		},
 		{
-			"step": "installPlugin",
-			"pluginData": {
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/plugins/a2ui-minimal-chat.php",
+			"data": {
 				"resource": "bundled",
 				"path": "a2ui-minimal-chat.php"
-			},
-			"options": {
-				"activate": true
 			}
+		},
+		{
+			"step": "activatePlugin",
+			"pluginPath": "a2ui-minimal-chat.php",
+			"pluginName": "A2UI Minimal Chat"
 		}
 	]
 }
