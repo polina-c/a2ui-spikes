@@ -1,0 +1,262 @@
+/* The chat's own styles.
+ *
+ * Everything is under .ai-chat, because on a Wix page this markup lands
+ * inside a page that has styles of its own and is entitled to keep them.
+ * The colours are variables so a site can override the four that matter
+ * without touching the rest.
+ *
+ * The page fills its frame: on Wix the visitor sizes the element, and the
+ * widget takes whatever box it is given. */
+
+:root {
+  --bg: #ffffff;
+  --fg: #1a1c1f;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --accent: #2b6cb0;
+  --accent-fg: #ffffff;
+  --bubble: #f3f4f6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16181c;
+    --fg: #e8eaed;
+    --muted: #9aa0a6;
+    --line: #2a2e35;
+    --bubble: #22262d;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  color: var(--fg);
+}
+
+.ai-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 320px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex: none;
+}
+
+.dot[data-state='loading'] {
+  background: #d97706;
+  animation: pulse 1.2s infinite;
+}
+
+.dot[data-state='ready'] {
+  background: #16a34a;
+}
+
+.dot[data-state='error'] {
+  background: #dc2626;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.spacer {
+  flex: 1;
+}
+
+.ghost {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.ghost:hover:not(:disabled) {
+  color: var(--fg);
+  background: var(--bubble);
+}
+
+.log {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.msg {
+  max-width: 85%;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.msg.user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-bottom-right-radius: 4px;
+}
+
+.msg.bot {
+  align-self: flex-start;
+  background: var(--bubble);
+  border-bottom-left-radius: 4px;
+}
+
+/* An answer being written, so an empty bubble reads as one about to fill
+ * rather than one that is broken. */
+.msg.bot.pending::after {
+  content: '▍';
+  opacity: 0.5;
+}
+
+.msg.err {
+  color: #dc2626;
+}
+
+.msg.withheld {
+  font-style: italic;
+  color: var(--muted);
+}
+
+.gate {
+  padding: 20px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.gate p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  max-width: 44ch;
+}
+
+.gate p.err {
+  color: #dc2626;
+}
+
+.progress {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.track {
+  width: 100%;
+  max-width: 280px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--bubble);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.25s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+}
+
+button.primary {
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+button.primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: default;
+  filter: none;
+}
+
+.composer {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--line);
+  align-items: center;
+}
+
+.composer input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.composer input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.foot {
+  margin: 0;
+  padding: 0 14px 8px;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}

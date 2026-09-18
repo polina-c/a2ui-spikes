@@ -32,6 +32,10 @@ extension type JSWebLlm._(JSObject _) implements JSObject {
   /// The model IDs WebLLM has prebuilt configurations for.
   external JSArray<JSString> models();
 
+  /// The context window [modelId] is configured for, in tokens, or null
+  /// when WebLLM's prebuilt configuration does not say.
+  external JSNumber? defaultContextWindowSize(String modelId);
+
   /// Whether this browser exposes the WebGPU API at all.
   external bool hasWebGpu();
 
@@ -40,18 +44,25 @@ extension type JSWebLlm._(JSObject _) implements JSObject {
 
   /// Loads [modelId], reporting progress as it downloads and compiles.
   ///
-  /// Resolves once the model is ready to answer.
+  /// [optionsJson], when it is not null, is a JSON object of WebLLM
+  /// `ChatOptions`: the settings that are fixed when the engine is built,
+  /// which is where the context window is chosen. Resolves once the model
+  /// is ready to answer.
   external JSPromise<JSAny?> init(
     String modelId,
     JSFunction onProgress,
+    JSString? optionsJson,
   );
 
   /// Streams an answer to [messagesJson], a JSON array of `{role, content}`.
   ///
-  /// Calls [onDelta] with each chunk of text. Resolves when the answer ends.
+  /// [samplingJson], when it is not null, is a JSON object of sampling
+  /// parameters to pass to the model. Calls [onDelta] with each chunk of
+  /// text. Resolves when the answer ends.
   external JSPromise<JSAny?> stream(
     String messagesJson,
     JSFunction onDelta,
+    JSString? samplingJson,
   );
 
   /// Abandons the answer in flight, if there is one.

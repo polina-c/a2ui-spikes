@@ -42,6 +42,34 @@ class SurfaceTurn extends Turn {
   final String surfaceId;
 }
 
+// Images need URLs this app has none of, so offering the model an Image
+// component would only produce broken ones.
+final WebCatalog _catalog = basicCatalogWithoutAssets();
+
+/// The prompt that teaches the model the catalog and the A2UI protocol.
+///
+/// It is the same for every session and it is sent on every turn, so it is
+/// the floor under how large a context window has to be: whatever is left
+/// after it is what the conversation has to fit in.
+final String systemPrompt = PromptBuilder.chat(
+  catalog: _catalog,
+  systemPromptFragments: [
+    'You are a helpful assistant. Keep your prose short: a sentence or '
+        'two alongside the UI, not a summary of it.',
+    PromptFragments.acknowledgeUser(),
+    PromptFragments.requireAtLeastOneSubmitElement(
+      prefix: PromptBuilder.defaultImportancePrefix,
+    ),
+  ],
+).systemPromptJoined();
+
+/// Roughly how many tokens [systemPrompt] takes.
+///
+/// Four characters to the token is the usual rule of thumb for English, and
+/// this is only used to tell the user how much of the window is spoken for
+/// before they have asked anything, so being off by a tenth does not matter.
+final int systemPromptTokens = (systemPrompt.length / 4).round();
+
 /// Where the session is in getting a model ready to answer.
 enum SessionStatus {
   /// No model loaded and none loading.
@@ -64,23 +92,19 @@ enum SessionStatus {
 /// talks to the model, and the transcript that puts them in order.
 class ChatSession {
   /// Creates a [ChatSession] that will run [modelId] in this tab.
-  ChatSession({String modelId = WebLlmClient.defaultModelId})
-    : _client = WebLlmClient(modelId: modelId) {
+  ///
+  /// [contextWindow] is how much of the conversation the model keeps in
+  /// view. It is fixed when the model is loaded, so a session is made once
+  /// the user has chosen it rather than before.
+  ChatSession({
+    String modelId = WebLlmClient.defaultModelId,
+    ContextWindow contextWindow = const ContextWindow.modelDefault(),
+  }) : _client = WebLlmClient(modelId: modelId, contextWindow: contextWindow) {
     _controller = SurfaceController(catalogs: [_catalog]);
     _conversation = Conversation(
       generator: _client,
       controller: _controller,
-      systemPrompt: PromptBuilder.chat(
-        catalog: _catalog,
-        systemPromptFragments: [
-          'You are a helpful assistant. Keep your prose short: a sentence or '
-              'two alongside the UI, not a summary of it.',
-          PromptFragments.acknowledgeUser(),
-          PromptFragments.requireAtLeastOneSubmitElement(
-            prefix: PromptBuilder.defaultImportancePrefix,
-          ),
-        ],
-      ).systemPromptJoined(),
+      systemPrompt: systemPrompt,
     );
 
     _subscriptions = [
@@ -91,10 +115,6 @@ class ChatSession {
       _conversation.isGenerating.listen((_) => _changed()),
     ];
   }
-
-  // Images need URLs this app has none of, so offering the model an Image
-  // component would only produce broken ones.
-  final WebCatalog _catalog = basicCatalogWithoutAssets();
 
   final WebLlmClient _client;
   late final SurfaceController _controller;
@@ -124,6 +144,9 @@ class ChatSession {
 
   /// The model being run.
   String get modelId => _client.modelId;
+
+  /// How much of the conversation the model keeps in view.
+  ContextWindow get contextWindow => _client.contextWindow;
 
   /// Whether a response is being generated right now.
   bool get isGenerating => _conversation.busy;

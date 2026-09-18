@@ -15,5 +15,6 @@
 /// A copy of that module is in this package under `lib/assets/web_llm.js`.
 library;
 
+export 'src/facade/conversation.dart' show ChatMessage, ChatMessageRole;
 export 'src/inference/web_llm_client.dart';
 export 'src/inference/web_llm_interop.dart' show isWebLlmLoaded;

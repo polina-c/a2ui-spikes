@@ -161,6 +161,42 @@ load it:
 `Conversation` needs. Anything that streams text can take its place: a hosted
 API, a proxy, or a fake in a test.
 
+It takes an optional `Sampling`, which is passed to WebLLM on every request:
+
+```dart
+WebLlmClient(
+  modelId: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+  sampling: const Sampling(temperature: 0.7, repetitionPenalty: 1.1),
+);
+```
+
+Left out, the temperature is low and the penalties are WebLLM's own, which is
+the setting for generating A2UI: a surface has to parse far more often than it
+has to be interesting. A client answering in prose wants the opposite, and the
+penalties are what stop a small model answering every question with a rewording
+of its last answer. [`wix/jaspr`](../../wix/jaspr) sets all four and says what
+was measured.
+
+It also takes a `ContextWindow`, which is fixed when the model is loaded rather
+than sent per request:
+
+```dart
+WebLlmClient(contextWindow: const ContextWindow.fixed(8192));
+WebLlmClient(
+  contextWindow: const ContextWindow.sliding(8192, attentionSinkTokens: 2048),
+);
+```
+
+Left out, the model keeps the window its own configuration asks for, which on
+most prebuilt models is 4096 tokens;
+`WebLlmClient.defaultContextWindowSize` reports it. A system prompt built from a
+catalog takes a good part of that, and once what is cached plus the next message
+no longer fits, WebLLM throws `ContextWindowSizeExceededError` on a message of
+any length. A fixed window is larger, and costs GPU memory in proportion,
+because the key-value cache is sized from it. A sliding window drops its oldest
+tokens rather than failing, and `attentionSinkTokens` is how much of the start
+it keeps anyway, which is what stops the system prompt falling out of it.
+
 ## What was ported, and what was not
 
 Reused from `package:a2ui_core` rather than ported: the A2UI message types, the

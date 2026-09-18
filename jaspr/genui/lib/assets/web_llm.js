@@ -11,11 +11,27 @@ import * as webllm from 'https://esm.run/@mlc-ai/web-llm@0.2.85';
 
 let engine = null;
 let loadedModelId = null;
+let loadedOptions = null;
 
 globalThis.a2uiWebLlm = {
   /** The model IDs WebLLM has prebuilt configurations for. */
   models() {
     return webllm.prebuiltAppConfig.model_list.map((m) => m.model_id);
+  },
+
+  /**
+   * The context window, in tokens, that WebLLM gives `modelId` unless it is
+   * told otherwise, or null if its configuration does not say.
+   *
+   * Most prebuilt models are set to 4096, which a long system prompt eats a
+   * good part of, so it is worth showing before offering to load one.
+   */
+  defaultContextWindowSize(modelId) {
+    const record = webllm.prebuiltAppConfig.model_list.find(
+      (m) => m.model_id === modelId,
+    );
+    const size = record?.overrides?.context_window_size;
+    return typeof size === 'number' && size > 0 ? size : null;
   },
 
   /**
@@ -46,11 +62,19 @@ globalThis.a2uiWebLlm = {
   /**
    * Downloads and compiles a model. Resolves once it can answer.
    *
-   * Reloading the same model is a no-op, so a caller that is unsure whether
-   * the model is up can call this again cheaply.
+   * Reloading the same model with the same options is a no-op, so a caller
+   * that is unsure whether the model is up can call this again cheaply.
+   *
+   * `optionsJson`, when given, is a JSON object of WebLLM `ChatOptions` —
+   * the context window settings, which are fixed when the engine is built
+   * rather than per request. Different options mean a different engine, so
+   * they are what decides whether the loaded one can be reused.
    */
-  async init(modelId, onProgress) {
-    if (engine && loadedModelId === modelId) return;
+  async init(modelId, onProgress, optionsJson) {
+    const options = optionsJson ?? null;
+    if (engine && loadedModelId === modelId && loadedOptions === options) {
+      return;
+    }
     // Checked here rather than left to WebLLM: with no GPU behind
     // navigator.gpu it can sit waiting instead of failing, which on the
     // page looks like a download that never starts.
@@ -60,26 +84,37 @@ globalThis.a2uiWebLlm = {
         + 'use. The model needs it to run.',
       );
     }
-    engine = await webllm.CreateMLCEngine(modelId, {
-      initProgressCallback: (report) => {
-        onProgress({ progress: report.progress ?? 0, text: report.text ?? '' });
+    engine = await webllm.CreateMLCEngine(
+      modelId,
+      {
+        initProgressCallback: (report) => {
+          onProgress({
+            progress: report.progress ?? 0,
+            text: report.text ?? '',
+          });
+        },
       },
-    });
+      options ? JSON.parse(options) : undefined,
+    );
     loadedModelId = modelId;
+    loadedOptions = options;
   },
 
   /**
    * Streams an answer, calling onDelta with each chunk of text.
    *
-   * Temperature is low because the output has to be valid A2UI JSON far
-   * more often than it has to be interesting.
+   * `samplingJson`, when given, is a JSON object of sampling parameters
+   * WebLLM accepts on `chat.completions.create` — temperature and the
+   * penalties. Left out, the temperature is low, because generated UI has
+   * to be valid A2UI JSON far more often than it has to be interesting.
    */
-  async stream(messagesJson, onDelta) {
+  async stream(messagesJson, onDelta, samplingJson) {
     if (!engine) throw new Error('WebLLM: init() has not been called.');
+    const sampling = samplingJson ? JSON.parse(samplingJson) : { temperature: 0.2 };
     const chunks = await engine.chat.completions.create({
+      ...sampling,
       messages: JSON.parse(messagesJson),
       stream: true,
-      temperature: 0.2,
     });
     for await (const chunk of chunks) {
       const delta = chunk.choices?.[0]?.delta?.content;

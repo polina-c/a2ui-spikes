@@ -37,6 +37,24 @@ jaspr serve
 
 Open http://localhost:8080 and press "Load the model".
 
+If that stops with `Address already in use`, or asks you to stop other Jaspr
+processes running in this directory, a previous run is still on the port. Look
+at what is holding it before killing anything: 8080 is a common default, so it
+may well belong to something else you have running.
+
+```sh
+lsof -i :8080                  # what is on the port
+lsof -ti :8080 | xargs kill    # stop it, once you know it is yours
+```
+
+Killing the server also clears the build daemon it left behind, which is what
+the message about other Jaspr processes refers to. To leave the port alone,
+use a different one instead:
+
+```sh
+jaspr serve --port 8081
+```
+
 The first load downloads the model, which takes a few minutes on a fast
 connection and is reported on the page as it goes. The browser caches the
 weights, so later runs start in seconds. Nothing is downloaded until you press
@@ -72,6 +90,38 @@ final ChatSession _session = ChatSession(
 
 `WebLlmClient.models()` returns every ID WebLLM has a prebuilt configuration
 for.
+
+## Choosing a context window
+
+The first screen also asks how much of the conversation the model should keep in
+view. It is asked there because WebLLM fixes the window when it builds the
+engine, so changing it means loading the model again.
+
+Most prebuilt models are configured for 4096 tokens, and the system prompt that
+teaches the model the catalog takes a good part of that before you have asked
+anything. Once the window is full the next message is refused, however short it
+is:
+
+```
+ContextWindowSizeExceededError: Prompt tokens exceed context window size:
+number of prompt tokens: 24; context window size: 4096
+```
+
+The 24 tokens are the new message. The rest of the window is the system prompt
+and the turns before it. The three settings are:
+
+* The model's own, which is whatever WebLLM configures it for. The screen shows
+  the number.
+* A fixed window of a chosen size, which holds the whole conversation until it
+  is full and then fails as above. The key-value cache is sized from the window,
+  so twice the window is twice the GPU memory. The default is 8192 tokens.
+* A sliding window, which drops its oldest tokens to make room and so never
+  fails. What it drops, the model has forgotten. The second field is how many
+  tokens at the start are kept whatever happens; it defaults to the length of
+  the system prompt, so the catalog survives however long the conversation runs.
+
+A window the GPU cannot allocate fails while loading, and the screen comes back
+with the settings still on it, so the next try can ask for less.
 
 ## What to ask it
 
