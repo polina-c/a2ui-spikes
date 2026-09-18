@@ -31,21 +31,21 @@ List<Component> renderInlineMarkdown(String source) {
     flush();
     if (match.namedGroup('bold') != null) {
       components.add(
-        DomComponent(
+        Component.element(
           tag: 'strong',
           children: renderInlineMarkdown(match.namedGroup('bold')!),
         ),
       );
     } else if (match.namedGroup('italic') != null) {
       components.add(
-        DomComponent(
+        Component.element(
           tag: 'em',
           children: renderInlineMarkdown(match.namedGroup('italic')!),
         ),
       );
     } else if (match.namedGroup('code') != null) {
       components.add(
-        DomComponent(
+        Component.element(
           tag: 'code',
           children: [Component.text(match.namedGroup('code')!)],
         ),
@@ -56,7 +56,7 @@ List<Component> renderInlineMarkdown(String source) {
       components.add(
         href == null
             ? Component.text(label)
-            : DomComponent(
+            : Component.element(
                 tag: 'a',
                 attributes: {
                   'href': href,

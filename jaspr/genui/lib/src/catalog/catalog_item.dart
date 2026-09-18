@@ -170,11 +170,11 @@ class WebCatalog extends core.Catalog<CatalogItem> {
   /// Creates a [WebCatalog].
   WebCatalog({
     required super.id,
-    required List<CatalogItem> components,
+    required super.components,
     super.functions,
     super.themeSchema,
     this.systemPromptFragments = const [],
-  }) : super(components: components);
+  });
 
   /// Prose added to the system prompt for this catalog.
   final List<String> systemPromptFragments;

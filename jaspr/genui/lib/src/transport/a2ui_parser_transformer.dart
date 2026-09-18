@@ -1,5 +1,8 @@
 // Ported from https://github.com/flutter/genui (packages/genui), which is
 // Copyright 2025 The Flutter Authors and licensed BSD-3-Clause.
+//
+// Changed from upstream: a chunk boundary inside an opening ``` fence no
+// longer leaks the fence into the text stream. See _trailingFenceLength.
 
 import 'dart:async';
 import 'dart:convert';
@@ -140,8 +143,16 @@ class _A2uiParserStream {
             // Hold in buffer until more data arrives or stream ends.
             break;
           }
-          _emitText(_buffer);
-          _buffer = '';
+          // A fence split across chunks is only one or two backticks so far,
+          // so `indexOf` has not found it. Emitting the buffer whole would
+          // put those backticks in the text stream and leave the rest of the
+          // fence to be read as prose, which is what a model streaming
+          // "```" and "json" as separate tokens produces every time.
+          final int held = _trailingFenceLength(_buffer);
+          if (held < _buffer.length) {
+            _emitText(_buffer.substring(0, _buffer.length - held));
+          }
+          _buffer = _buffer.substring(_buffer.length - held);
         }
         break;
       } else {
@@ -161,6 +172,16 @@ class _A2uiParserStream {
         break;
       }
     }
+  }
+
+  /// How many characters at the end of [text] could be the start of a
+  /// fence, and so must wait for the next chunk before being called prose.
+  ///
+  /// Only one or two: three would have been found already.
+  static int _trailingFenceLength(String text) {
+    if (text.endsWith('``')) return 2;
+    if (text.endsWith('`')) return 1;
+    return 0;
   }
 
   void _emitBefore(int index) {

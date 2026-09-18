@@ -1,4 +1,5 @@
 import 'package:a2ui_core/a2ui_core.dart' as core;
+import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
 

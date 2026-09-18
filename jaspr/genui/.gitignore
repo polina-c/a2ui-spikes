@@ -1,0 +1,6 @@
+# genui is a library, so its lockfile is not committed: the app that depends
+# on it is what pins versions.
+.dart_tool/
+.packages
+build/
+pubspec.lock

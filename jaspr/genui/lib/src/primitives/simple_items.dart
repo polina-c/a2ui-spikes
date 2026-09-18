@@ -11,3 +11,7 @@ const String surfaceIdKey = 'surfaceId';
 /// drives this renderer without changes.
 const String basicCatalogId =
     'https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json';
+
+/// The schema URI for the A2UI common types.
+const String commonTypesSchemaId =
+    'https://a2ui.org/specification/v0_9/common_types.json';

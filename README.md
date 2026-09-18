@@ -10,8 +10,19 @@ POC for integrating a2ui with WorldPress and Wix.
     - Plugin: https://wordpress.org/plugins/ai-engine/ 
     - Example: https://meowapps.com/ai-engine/ 
 3. Wix: https://www.wix.com/
+4. Jaspr: https://jaspr.site
+5. Flutter GenUI: https://github.com/flutter/genui
 
 ## Core artifacts
+
+### Jaspr
+
+[`jaspr/genui`](jaspr/genui) is [Flutter GenUI](https://github.com/flutter/genui)
+ported to Dart/Jaspr: a model sends A2UI messages and the package renders them
+as a live page. [`jaspr/simple_chat`](jaspr/simple_chat) is the Simple Chat
+sample built on it, with the model running in the browser through WebLLM, so
+there is no key and no server. See
+[jaspr/simple_chat/README.md](jaspr/simple_chat/README.md) to run it.
 
 ### Wix minimal
 
