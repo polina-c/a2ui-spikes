@@ -1,7 +1,7 @@
 # Simple chat experiment
 
 [a2ui]: https://github.com/a2ui-project/a2ui
-[simple_chat]: /blueprints/simple_chat.md
+[simple_chat]: simple_chat.md
 
 ## Goal
 
