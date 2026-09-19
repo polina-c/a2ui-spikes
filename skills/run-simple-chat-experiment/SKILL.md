@@ -51,15 +51,41 @@ outside this repo (a scratch directory) and record the commit; do not vendor it.
 React is the only one of the three frameworks with a renderer in the a2ui repo.
 It is `renderers/react`, published as `@a2ui/react`, and it is used together
 with `@a2ui/web_core`. Import from the versioned path (`@a2ui/react/v0_9`), not
-the package root.
+the package root. At 0.11.1 the package advertises `./styles/structural.css` in
+its export map without shipping it and does not export the `v0_9/index.css` it
+does ship, so use `injectStyles()` from `@a2ui/react/styles`; its dependency
+`@a2ui/web_core` stops at 0.11.0. Styling is the host's job: the structural CSS
+expects the page to define the `--a2ui-*` palette. `Text` renders markdown only
+when a renderer is passed through `MarkdownContext`.
 
 Flutter has no package in the a2ui repo. `dart/a2ui_flutter` is a README saying
 a package is coming and pointing at `https://github.com/flutter/genui`, which
-ships `genui` and `genui_a2a` on pub.dev.
+ships `genui` and `genui_a2a` on pub.dev. `genui_a2a` connects to an A2A agent
+over a server; an app that calls the model straight from the client wants
+`genui` alone, with an `A2uiTransportAdapter` whose `onSend` calls the model.
+genui carries the most of the three: `PromptBuilder.chat` writes the protocol
+half of the system prompt from the catalog, `Conversation` runs the interaction
+loop, and the catalog has `openUrl`. Its own integration skill is out of date
+with its API, so read the source: the builder takes `systemPromptFragments` and
+exposes `systemPrompt()` and `systemPromptJoined()`.
 
 Jaspr has no renderer anywhere. `dart/a2ui_core` is framework-agnostic Dart and
-is the thing to build on, so the Jaspr arm means writing a renderer. Expect this
-arm to be the expensive one, and expect that to be a finding.
+is the thing to build on, so the Jaspr arm means writing a renderer. In the
+2026-09-19-1347 run that renderer was 180 lines, because `a2ui_core` already
+parses the messages, keeps the tree and the data model, resolves paths and
+dispatches actions. Budget for the decisions around it rather than for the code:
+which catalog, how a surface redraws, what an unknown component looks like.
+
+Three gaps hit every run and are worth checking before building rather than
+after. Nothing generates the system prompt outside a2ui's Python agent SDK and
+genui's Dart one, so the React and Jaspr arms have to write those instructions
+by hand; `getClientCapabilities({includeInlineCatalogs: true})` in `web_core`
+does give the catalog as JSON Schema at runtime, which saves copying schemas.
+The web catalog cannot express a link and `Text` does not render markdown links,
+so clicking through to a landing page, the last step of the CUJ, needs a Button
+with an agreed action name that the app turns into a navigation; genui has a
+built-in `openUrl` and needs none of this. And `@a2ui/web_core`'s root export
+points at v0.8, so both web packages must be imported from `/v0_9`.
 
 Useful reading in the a2ui checkout: `docs/public/quickstart.md`,
 `docs/public/guides/a2ui-with-any-agent-framework.md` (the relevant one, since
@@ -114,9 +140,28 @@ the choice, and click through to a landing page. Record it.
 Record with Playwright's built-in video capture rather than an OS screen
 recorder. It writes webm per browser context, needs no screen-recording
 permission, and works the same for all three arms once Flutter is built for web.
-Set `recordVideo` on the context, drive the CUJ, close the context, and move the
-file to `videos/<framework>.webm` in the experiment folder. `ffmpeg` is not
-installed here, so do not plan on a conversion step.
+`ffmpeg` is not installed here, so do not plan on a conversion step.
+
+Point `recordVideo` at a directory of its own per run, then move the file to
+`videos/<framework>.webm`. Playwright names the file itself, so a run that picks
+its recording out of the shared `videos/` folder can pick up, or delete, another
+arm's video. That happened in the 2026-09-19-1347 run and cost two re-records.
+
+One driver can serve all three arms if it takes the arm's kind. React and Jaspr
+render real elements and are driven normally. Flutter web paints a canvas, so
+the app has to call `SemanticsBinding.instance.ensureSemantics()` and the driver
+works through `flt-semantics[role="button"]`; a real pointer click is swallowed
+by whichever overlapping node is on top, so dispatch the click on the node
+itself with `el.click()`, the path a screen reader takes.
+
+Pick Jane's answers by matching rules against the question on screen, not by
+counting turns. Matching only against the options cross-talks: "On the countertop
+(no plumbing)" contains "no", which reads like an answer to the question about
+noise. The chat is a transcript and earlier turns stay on screen, so treat only
+labels that have not been seen before as the current question's options.
+
+Gemini returns 503 under load often enough to end a recorded run. Give the
+model client a retry with a backoff before recording anything.
 
 Never write a link to a video that does not exist. If an arm cannot be driven to
 completion, say exactly how far it got and why, and link whatever partial

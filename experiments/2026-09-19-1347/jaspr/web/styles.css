@@ -1,0 +1,209 @@
+:root {
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --ink: #16191d;
+  --muted: #5d6570;
+  --line: #dfe3e8;
+  --accent: #1a6acb;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--ink);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em;
+     color: var(--muted); margin: 1.5rem 0 0.5rem; }
+
+.lead { color: var(--muted); margin: 0 0 1rem; line-height: 1.5; }
+
+.panel {
+  max-width: 44rem;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.row { display: flex; gap: 0.75rem; }
+.col { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.choice {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+}
+.choice span { color: var(--muted); font-size: 0.85rem; }
+.choice.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.choice.wide { width: 100%; }
+
+.param {
+  display: grid;
+  grid-template-columns: 10rem 1fr 3rem;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.param-name { font-size: 0.9rem; }
+.param-value { font-variant-numeric: tabular-nums; text-align: right; }
+.param-range { grid-column: 2 / 4; color: var(--muted); font-size: 0.78rem; }
+
+.key, .composer input {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.go {
+  margin-top: 1.75rem;
+  width: 100%;
+  padding: 0.85rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.go:disabled { background: #9fb4cd; cursor: not-allowed; }
+
+.chat {
+  max-width: 48rem;
+  margin: 0 auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+
+.chat-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.chat-head .sub { display: block; color: var(--muted); font-size: 0.8rem; }
+.restart {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  font: inherit;
+  cursor: pointer;
+}
+
+.log { flex: 1; overflow-y: auto; padding: 1.25rem; }
+
+.entry { margin-bottom: 1.25rem; }
+.entry.user { display: flex; justify-content: flex-end; }
+.bubble {
+  display: inline-block;
+  max-width: 85%;
+  padding: 0.7rem 0.95rem;
+  border-radius: 12px;
+  line-height: 1.5;
+  background: #eef1f5;
+}
+.entry.user .bubble { background: var(--accent); color: white; }
+.bubble.failed { background: #fdecec; color: #8c1d1d; }
+
+.surface {
+  margin-top: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+.composer {
+  display: flex;
+  gap: 0.6rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.composer button {
+  padding: 0.7rem 1.4rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+.composer button:disabled { background: #9fb4cd; cursor: not-allowed; }
+
+/*
+ * The generated surface. a2ui has no Jaspr renderer, so these classes come from
+ * this app's own renderer in lib/a2ui/renderer.dart rather than from a package.
+ */
+.a2ui-column { display: flex; flex-direction: column; gap: 0.6rem; }
+.a2ui-row { display: flex; flex-direction: row; gap: 0.6rem; }
+.a2ui-justify-center { justify-content: center; }
+.a2ui-justify-spaceBetween { justify-content: space-between; }
+.a2ui-align-center { align-items: center; }
+.a2ui-align-stretch { align-items: stretch; }
+
+.a2ui-card {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.a2ui-text { margin: 0; line-height: 1.5; }
+.a2ui-caption { color: var(--muted); font-size: 0.85rem; }
+
+.a2ui-button {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.a2ui-button:hover { border-color: var(--accent); }
+.a2ui-button-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.a2ui-button-borderless { border-color: transparent; background: transparent; }
+
+.a2ui-field { display: flex; flex-direction: column; gap: 0.3rem; }
+.a2ui-field input {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}
+
+/* A component the renderer does not know is shown, not skipped. */
+.a2ui-missing {
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed #c98a00;
+  border-radius: 8px;
+  background: #fff8e6;
+  color: #7a5200;
+  font-size: 0.85rem;
+}

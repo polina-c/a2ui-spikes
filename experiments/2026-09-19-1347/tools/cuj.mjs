@@ -19,8 +19,15 @@ if (!['dom', 'flutter'].includes(kind)) throw new Error(`unknown kind: ${kind}`)
 const size = {width: 1280, height: 900};
 const beat = (ms = 1200) => new Promise(r => setTimeout(r, ms));
 
+// Record into a directory of its own. Playwright names the file itself, and
+// picking it out of a shared folder afterwards risks grabbing, or deleting,
+// another arm's recording.
+const recordDir = path.join(videoDir, `.recording-${name}`);
+fs.rmSync(recordDir, {recursive: true, force: true});
+fs.mkdirSync(recordDir, {recursive: true});
+
 const browser = await chromium.launch();
-const context = await browser.newContext({viewport: size, recordVideo: {dir: videoDir, size}});
+const context = await browser.newContext({viewport: size, recordVideo: {dir: recordDir, size}});
 const page = await context.newPage();
 
 const log = [];
@@ -103,13 +110,23 @@ async function pressUntil(label, expected, tries = 5) {
   throw new Error(`pressing "${label}" never produced "${expected}"`);
 }
 
-/** Waits until the assistant is offering a set of options we have not answered. */
-async function waitForNewOptions(previous, timeout = 180000) {
+/**
+ * Waits for options the assistant has not offered before.
+ *
+ * The chat is a transcript, so earlier turns stay on screen and their buttons
+ * stay in the tree. Only labels that have not been seen belong to the question
+ * being asked now.
+ */
+async function waitForNewOptions(seen, timeout = 180000) {
   const deadline = Date.now() + timeout;
-  const before = JSON.stringify(previous);
   while (Date.now() < deadline) {
-    const now = await options();
-    if (now.length > 0 && JSON.stringify(now) !== before) return now;
+    const fresh = (await options()).filter(l => !seen.has(l));
+    if (fresh.length > 0) {
+      // Let the rest of the turn arrive before reading it.
+      await beat(1200);
+      const settled = (await options()).filter(l => !seen.has(l));
+      return settled.length > 0 ? settled : fresh;
+    }
     await beat(1000);
   }
   throw new Error('timed out waiting for the assistant to draw something new');
@@ -135,16 +152,16 @@ await clickByName('Send');
 note('sent the default prompt');
 
 let landed = false;
-let previous = [];
+const seen = new Set();
 for (let step = 0; step < 8 && !landed; step++) {
   let labels;
   try {
-    labels = await waitForNewOptions(previous);
+    labels = await waitForNewOptions(seen);
   } catch {
     note(`step ${step}: the assistant drew nothing new, stopping`);
     break;
   }
-  previous = labels;
+  for (const l of labels) seen.add(l);
   note(`step ${step}: options ${JSON.stringify(labels)}`);
 
   const landingIndex = labels.findIndex(l => LANDING.test(l) || PRODUCT.test(l));
@@ -179,13 +196,15 @@ await beat(2500);
 await context.close();
 await browser.close();
 
-// Give the recording its final name.
-const files = fs.readdirSync(videoDir).filter(f => f.endsWith('.webm'));
-files.sort((a, b) => fs.statSync(path.join(videoDir, b)).size - fs.statSync(path.join(videoDir, a)).size);
-if (files[0]) {
-  fs.renameSync(path.join(videoDir, files[0]), path.join(videoDir, `${name}.webm`));
-  for (const f of files.slice(1)) fs.unlinkSync(path.join(videoDir, f));
+// Move this run's recording out and drop the directory it was written to.
+const recorded = fs.readdirSync(recordDir).filter(f => f.endsWith('.webm'));
+recorded.sort((a, b) => fs.statSync(path.join(recordDir, b)).size - fs.statSync(path.join(recordDir, a)).size);
+if (recorded[0]) {
+  fs.renameSync(path.join(recordDir, recorded[0]), path.join(videoDir, `${name}.webm`));
   note(`video saved as ${name}.webm`);
+} else {
+  note('no video was recorded');
 }
+fs.rmSync(recordDir, {recursive: true, force: true});
 fs.writeFileSync(path.join(videoDir, `${name}-cuj.log`), log.join('\n') + '\n');
 console.log(landed ? 'CUJ COMPLETE' : 'CUJ INCOMPLETE');

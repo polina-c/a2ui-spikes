@@ -2,16 +2,16 @@ opened the app on the model picker
 accepted the default model and started the chat
 default prompt in the box: "Hi, I am looking for a dishwasher. I am overwhelmed with choices and don't know where to start."
 sent the default prompt
-step 0: options ["On the countertop or rented kitchen (no plumbing changes)","Fitted under cabinets with water and drain connections"]
-step 0: Jane presses "Fitted under cabinets with water and drain connections" (rule: where it goes)
-step 1: options ["45 cm (narrow / slim)","60 cm (standard full-size)"]
-step 1: Jane presses "60 cm (standard full-size)" (rule: gap width)
-step 2: options ["5 or more people, or we run cycles twice a day","1 to 4 people, running about once a day"]
-step 2: Jane presses "1 to 4 people, running about once a day" (rule: household size)
-step 3: options ["Yes, it needs to be exceptionally quiet","No, normal kitchen noise is fine"]
-step 3: Jane presses "No, normal kitchen noise is fine" (rule: noise and night cycles)
-step 4: options ["The price on the day (best upfront value)","Lower water and electricity consumption afterwards"]
-step 4: Jane presses "Lower water and electricity consumption afterwards" (rule: price against running cost)
+step 0: options ["Under-counter (plumbed to a cold water line and drain)","On the countertop / Rented home (no plumbing modifications)"]
+step 0: Jane presses "Under-counter (plumbed to a cold water line and drain)" (rule: where it goes)
+step 1: options ["45 cm (Slim / Narrow space)","60 cm (Standard full-size space)"]
+step 1: Jane presses "60 cm (Standard full-size space)" (rule: gap width)
+step 2: options ["5+ people, or dishes pile up enough to run twice a day","3–4 people or fewer, running about once a day"]
+step 2: Jane presses "3–4 people or fewer, running about once a day" (rule: household size)
+step 3: options ["Yes, it is open-plan or runs overnight (needs to be very quiet)","No, separate kitchen or normal daytime running is fine"]
+step 3: Jane presses "No, separate kitchen or normal daytime running is fine" (rule: noise and night cycles)
+step 4: options ["The price on the day (keeping upfront cost low)","Lowest water and power usage afterwards"]
+step 4: Jane presses "Lowest water and power usage afterwards" (rule: price against running cost)
 step 5: options ["View Just Shining Eco Landing Page"]
 step 5: pressing the landing page button "View Just Shining Eco Landing Page"
 landing page opened: https://github.com/polina-c/a2ui-spikes/blob/main/domain/landing_pages/eco.md
