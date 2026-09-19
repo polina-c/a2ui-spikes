@@ -10,6 +10,8 @@ This blueprint is very simple, because it assumes all needed technical knowledge
 
 
 
+## Technical requirements
+
 
 
 
@@ -26,7 +28,7 @@ The entered API key is hidden behind dots in UI.
 
 [a2ui]: https://github.com/a2ui-project/a2ui
 
-## Technical requirements
+
 
 
 ## CUJ
