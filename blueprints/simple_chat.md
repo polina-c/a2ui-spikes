@@ -1,7 +1,7 @@
 # Simple chat blueprint
 
 [a2ui]: https://github.com/a2ui-project/a2ui
-[domain]: https://github.com/polina-c/a2ui-spikes/blob/main/domain/knowledge.md
+[domain]: ../domain/knowledge.md
 [web-llm]: https://github.com/mlc-ai/web-llm
 
 ## Overview
