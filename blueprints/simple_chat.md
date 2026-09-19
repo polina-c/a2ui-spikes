@@ -2,7 +2,17 @@
 
 A chat where the assistant answers with generated UI, not only with words. 
 
-It uses [a2ui protocol](https://github.com/a2ui-project/a2ui).
+It uses [a2ui protocol and SDK][a2ui] to enable generated UI.
+
+This blueprint is very simple, because it assumes all needed technical knowledge is provided by the [a2ui] documentation.
+
+## Domain knowledge
+
+
+
+
+
+
 
 ## Models used
 
@@ -14,4 +24,10 @@ In the very beginning the app invites the user to choose a model:
 The UI specifies allowed range for each configuration value.
 The entered API key is hidden behind dots in UI.
 
+[a2ui]: https://github.com/a2ui-project/a2ui
+
+## Technical requirements
+
+
+## CUJ
 
