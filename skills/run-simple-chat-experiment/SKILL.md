@@ -10,12 +10,31 @@ this skill is only the procedure for carrying it out. Read
 `blueprints/simple_chat.md` too, because it defines what gets built and the CUJ
 that gets recorded.
 
-An arm is one of the three framework builds the experiment compares: the React
-arm, the Flutter arm, the Jaspr arm. Each arm is the same app built against the
-same a2ui commit for a different UI framework, kept in its own subdirectory,
-run through the same CUJ, and recorded as its own video. The word is used
-throughout this skill for that unit of work, because the three are built and
-judged separately and one of them failing says nothing about the others.
+## What an arm is
+
+An arm is one framework build run against one model: "the React arm on Gemini
+Flash". Both halves are part of it, because a result only means something when
+you can name the framework and the model that produced it.
+
+In practice the model is held fixed across the experiment. The blueprint asks
+for one model name in the experiment README, and all three frameworks are built
+against the same a2ui commit and run with that same model. So the usual
+experiment has three arms, one per framework, and the framework is the only
+thing that varies between them. That is what makes them comparable.
+
+The apps themselves still offer a choice of model at runtime, because the
+blueprint asks for that. The experiment's model is the one the CUJ is actually
+run with, which is the default the picker opens on.
+
+If an experiment deliberately runs a second model as well, that is a second arm
+for each framework, not a footnote on the first: name it
+`<framework>-<model>`, give it its own video, and say in the README why the
+comparison was worth the extra runs.
+
+Each arm gets its own pass through the CUJ and its own video. Each framework
+gets its own subdirectory and its own README with the commands to run it. The
+arms are built and judged separately, so one failing says nothing about the
+others.
 
 The experiment measures whether a2ui is ready to build a real app. Things that
 do not work are the result, not a failure of the run. Write them down and keep

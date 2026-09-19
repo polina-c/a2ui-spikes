@@ -1,0 +1,10 @@
+# Dependencies and build output from the experiment apps.
+node_modules/
+dist/
+build/
+.dart_tool/
+.packages
+*.tsbuildinfo
+
+# Playwright leaves these behind when a run is interrupted.
+test-results/
