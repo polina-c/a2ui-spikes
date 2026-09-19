@@ -26,7 +26,7 @@ Put the generated code into a `<ui-framework>` subdirectory.
 
 ### 3. Evaluate
 
-Execute primary CUJ for each example, record a video, and place it into the 'videos' subdirectory. 
+Execute primary CUJ for each UI framework and model combination, record a video, and place it into the 'videos' subdirectory. 
 
 Put your observations and link to the corresponding video into the experiment README.md.
 
