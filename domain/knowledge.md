@@ -11,5 +11,5 @@ for their quality and efficiency.
 
 ## Products
 
-[Model X](https://github.com/polina-c/a2ui-spikes/blob/main/landing_pages/model_x.md)
+[Model X](https://github.com/polina-c/a2ui-spikes/blob/main/domain/landing_pages/model_x.md)
 
