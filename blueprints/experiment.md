@@ -22,7 +22,8 @@ Create an experiment folder '<date>-<time>' with a README.md that describes the 
 
 Generate a simple chat application following the [simple chat blueprint][simple_chat_blueprint] for three UI frameworks: React, Flutter and Jaspr.
 
-Put the generated code into a `<ui-framework>` subdirectory.
+Put the generated code into a `<ui-framework>` subdirectory. The subdirectory
+should contain README.md with steps to start the app.
 
 ### 3. Evaluate
 

@@ -10,6 +10,13 @@ this skill is only the procedure for carrying it out. Read
 `blueprints/simple_chat.md` too, because it defines what gets built and the CUJ
 that gets recorded.
 
+An arm is one of the three framework builds the experiment compares: the React
+arm, the Flutter arm, the Jaspr arm. Each arm is the same app built against the
+same a2ui commit for a different UI framework, kept in its own subdirectory,
+run through the same CUJ, and recorded as its own video. The word is used
+throughout this skill for that unit of work, because the three are built and
+judged separately and one of them failing says nothing about the others.
+
 The experiment measures whether a2ui is ready to build a real app. Things that
 do not work are the result, not a failure of the run. Write them down and keep
 going.

@@ -1,0 +1,5 @@
+opened the app on the model picker
+accepted the default model and started the chat
+default prompt in the box: "Hi, I am looking for a dishwasher. I am overwhelmed with choices and don't know where to start."
+step 0: the assistant drew nothing new. It said: That did not work: Gemini returned 503: { "error": { "code": 503, "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.", "status": "UNAVAILABLE" } }
+video saved as react.webm
