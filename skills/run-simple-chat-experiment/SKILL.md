@@ -17,8 +17,7 @@ going.
 ## What already exists
 
 Facts worth knowing before starting, all checked against a2ui at commit
-`2d2a714`. Re-check them each run, since the point of the experiment is to see
-what changed.
+`2d2a714`. Re-check them each run and update this skill, since the point of the experiment is to see what changed.
 
 The a2ui repo is `https://github.com/a2ui-project/a2ui`. Clone it somewhere
 outside this repo (a scratch directory) and record the commit; do not vendor it.

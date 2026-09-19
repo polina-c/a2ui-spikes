@@ -1,0 +1,18 @@
+import {chromium} from 'playwright';
+const b = await chromium.launch();
+const p = await b.newPage();
+const errs = [];
+p.on('console', m => { if (m.type()==='error'||m.type()==='warning') errs.push(m.text().slice(0,300)); });
+p.on('pageerror', e => errs.push('PAGEERROR ' + e.message.slice(0,300)));
+await p.goto('http://localhost:4173/', {waitUntil:'networkidle'});
+await p.locator('input[type=password]').fill(process.env.GEMINI_API_KEY);
+await p.getByRole('button', {name:'Start the chat'}).click();
+await p.getByRole('button', {name:'Send'}).click();
+await p.waitForSelector('.entry.assistant .bubble', {timeout:90000});
+await new Promise(r=>setTimeout(r,4000));
+console.log('BUBBLE:', (await p.locator('.entry.assistant .bubble').last().innerText()).slice(0,500));
+console.log('SURFACES in DOM:', await p.locator('.surface').count());
+console.log('BUTTONS in surface:', await p.locator('.surface button').count());
+console.log('SURFACE HTML:', (await p.locator('.surface').last().innerHTML().catch(()=>'(none)')).slice(0,600));
+console.log('CONSOLE:', errs.slice(0,10).join('\n  '));
+await b.close();
