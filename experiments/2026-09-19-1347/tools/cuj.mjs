@@ -51,20 +51,32 @@ async function questionText() {
       .join('\n'));
 }
 
+/**
+ * Presses a Flutter button through its semantics node.
+ *
+ * Flutter's semantics nodes overlap, so a real pointer click lands on whichever
+ * node is on top and is lost. Dispatching the click on the node itself is the
+ * path a screen reader uses, and it reaches the widget.
+ */
+async function flutterPress(label) {
+  await page
+    .locator('flt-semantics[role="button"]')
+    .filter({hasText: label})
+    .first()
+    .evaluate(el => el.click());
+}
+
 async function clickLabel(label) {
   if (kind === 'dom') {
     await page.locator('.surface').last().locator('button', {hasText: label}).first().click();
   } else {
-    // Flutter's semantics nodes sit on top of each other, so a parent is
-    // usually "intercepting pointer events" by Playwright's reckoning. The
-    // click still reaches Flutter, so the check is skipped.
-    await page.locator('flt-semantics[role="button"]').filter({hasText: label.split('\n')[0]}).first().click({force: true});
+    await flutterPress(label.split('\n')[0]);
   }
 }
 
 async function clickByName(label) {
   if (kind === 'dom') await page.getByRole('button', {name: label}).click();
-  else await page.locator('flt-semantics[role="button"]').filter({hasText: label}).first().click({force: true});
+  else await flutterPress(label);
 }
 
 async function hasButton(label) {
