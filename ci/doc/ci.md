@@ -6,6 +6,7 @@
 [inventory]: ../experiments/inventory.md
 [a2ui-spikes]: https://github.com/polina-c/a2ui-spikes
 [binaries]: https://github.com/polina-c/a2ui-spikes-binaries
+[recordings]: https://polina-c.github.io/a2ui-spikes-binaries/
 [routines]: https://claude.ai/code/routines
 [routines-doc]: https://code.claude.com/docs/en/routines
 [environments-doc]: https://code.claude.com/docs/en/cloud-environments
@@ -37,10 +38,17 @@ terminal session to hand your `gh` token to your account. The run clones
 [a2ui-spikes-binaries][binaries], so both have to be reachable.
 
 The videos go in the binaries repository, not this one. `.gitignore` keeps
-`*.webm` and `*.png` out of `ci/experiments/*/videos/`, and the links in the
-[inventory][inventory] already point at the binaries repository. A weekly run
-that committed its recordings here would add most of a gigabyte a year to a
+`*.webm` and `*.png` out of `ci/experiments/*/videos/`. A weekly run that
+committed its recordings here would add most of a gigabyte a year to a
 repository whose text is a few hundred kilobytes.
+
+That repository is published with GitHub Pages as the [recordings site][recordings],
+because a video committed to a repository cannot be played on github.com: the
+blob page only offers a download, and a raw link serves `.webm` as `audio/webm`,
+which plays the sound of a screen recording and shows no picture. The links in
+the [inventory][inventory] point at the Pages origin for that reason. Each run
+also adds a gallery page for its experiment, so the three arms can be watched
+side by side. Pages is already enabled, on `main` at the repository root.
 
 ## Step 1: the cloud environment
 
@@ -94,13 +102,24 @@ not, and neither is Chromium. A setup script installs them:
 git clone --depth 1 -b stable https://github.com/flutter/flutter /opt/flutter
 ln -sf /opt/flutter/bin/flutter /opt/flutter/bin/dart /usr/local/bin/
 
-flutter config --enable-web || true
-flutter precache --web || true
+# Cloned as root. Without this, every flutter call dies on git's ownership
+# check if Claude runs as anyone else.
+git config --global --add safe.directory /opt/flutter
 
-dart pub global activate jaspr_cli || true
+flutter config --enable-web || echo "SETUP WARNING: flutter config failed"
+flutter precache --web || echo "SETUP WARNING: flutter precache failed"
+
+dart pub global activate jaspr_cli || echo "SETUP WARNING: jaspr_cli failed"
 ln -sf /root/.pub-cache/bin/jaspr /usr/local/bin/ || true
 
-npx --yes playwright@1.49 install --with-deps chromium || true
+# Split, because the two halves fail for different reasons: the deps step is
+# apt and needs the distro mirrors, the download step needs cdn.playwright.dev.
+npx --yes playwright@1.49 install-deps chromium || echo "SETUP WARNING: chromium system deps failed; the browser may not launch"
+npx --yes playwright@1.49 install chromium || echo "SETUP WARNING: chromium download failed"
+
+echo "SETUP: done"
+flutter --version || echo "SETUP WARNING: flutter missing"
+dart --version || echo "SETUP WARNING: dart missing"
 
 exit 0
 ```
@@ -110,11 +129,23 @@ where you find out what it gets wrong; the experiment was developed on macOS
 and these are Linux containers.
 
 Three things constrain it. It must exit zero, or the session fails to start,
-which is why the optional steps end in `|| true`. It should finish in about
-five minutes. And it symlinks the binaries into `/usr/local/bin` instead of
-adding them to `PATH`, because the script runs as root before Claude Code
-launches and its `PATH` does not carry into the shell that Claude runs commands
-in.
+which is why nothing optional is allowed to fail the script. It should finish
+in about five minutes. And it symlinks the binaries into `/usr/local/bin`
+instead of adding them to `PATH`, because the script runs as root before Claude
+Code launches and its `PATH` does not carry into the shell that Claude runs
+commands in.
+
+Exiting zero is what makes the script dangerous to read a green tick from, so
+each step that is allowed to fail says so on its way past rather than going
+quiet. Search the setup log for `SETUP WARNING` before trusting a run. The
+version checks at the end are there to turn "Flutter is missing" into one line
+near the bottom of the log instead of a puzzling failure twenty minutes later.
+
+`playwright install --with-deps` is split in two on purpose. The deps half
+shells out to `apt-get`, which needs the Debian mirrors rather than
+`cdn.playwright.dev`, so if those hosts are not on your allowlist that half
+fails while the download half succeeds, and Chromium lands without the shared
+libraries it needs to start.
 
 The five minutes matter more here than they would elsewhere. After the script
 succeeds the filesystem is snapshotted and later sessions skip it, but the
@@ -168,8 +199,11 @@ For this environment:
   a log, or a recording.
 * Videos and screenshots do not belong in this repository; .gitignore keeps
   them out. Commit the CUJ logs here, and push the recordings to
-  polina-c/a2ui-spikes-binaries under ci/experiments/<date>-<time>/videos/,
-  which is where the inventory links point.
+  polina-c/a2ui-spikes-binaries under ci/experiments/<date>-<time>/videos/.
+  That repository is a GitHub Pages site, so also add the experiment's gallery
+  page beside them and link everything through
+  https://polina-c.github.io/a2ui-spikes-binaries/, never a github.com or raw
+  URL. The skill has the detail.
 * Write the experiment README and the inventory entry before opening the pull
   request.
 
@@ -204,10 +238,11 @@ read the transcript: blocked network requests, a setup script that half
 succeeded, and an arm that was quietly abandoned all show up there and nowhere
 else.
 
-Worth checking on the first run: that `flutter`, `dart`, `jaspr` and Chromium
-are all present, that nothing hit a `403`, that a `claude/` branch was pushed
-to both repositories, and that the pull request exists and reads like the
-inventory entry.
+Worth checking on the first run: that the setup log has no `SETUP WARNING` in
+it, that `flutter`, `dart`, `jaspr` and Chromium are all present, that nothing
+hit a `403`, that a `claude/` branch was pushed to both repositories, that the
+new gallery page plays its three videos on the [recordings site][recordings],
+and that the pull request exists and reads like the inventory entry.
 
 If something in the environment was wrong, fix it and run again. Editing the
 setup script or the allowed hosts rebuilds the snapshot on the next run.
