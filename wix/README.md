@@ -28,6 +28,8 @@ Editor for the site: https://polina27182-my-site-1.editor.wix.com/edit/od/0f803c
 
 Can A2UI be leveraged for a local free LLM?
 
+Initial implementation fails because of context size.
+
 To answer the question, we need to figure out simple enough catalog and efficient format that can run with a free local model.
 
 Options for local models:
