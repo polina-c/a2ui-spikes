@@ -26,6 +26,13 @@ Editor for the site: https://polina27182-my-site-1.editor.wix.com/edit/od/0f803c
 
 ## Question 2
 
-Can A2UI be leveraged for WebLLM?
+Can A2UI be leveraged for a local free LLM?
 
-To answer the question, we need to run a2ui evals for WebLLM.
+To answer the question, we need to figure out simple enough catalog and efficient format that can run with a free local model.
+
+Options for local models:
+
+- https://github.com/eugeneyan/open-llms
+- https://www.instaclustr.com/education/open-source-ai/top-7-open-source-llms-for-2026/
+
+Next step: run evals for a2ui on some local free models.
