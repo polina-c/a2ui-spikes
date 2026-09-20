@@ -1,0 +1,17 @@
+opened the app on the model picker
+accepted the default model and started the chat
+sent the default prompt
+step 0: options ["Under the counter (plumbed to water and drain)","On the countertop (renting or no built-in plumbing)"]
+step 0: Jane presses "Under the counter (plumbed to water and drain)" (rule: where it goes)
+step 1: options ["60 cm (Standard full-size)","45 cm (Slim / narrow)"]
+step 1: Jane presses "60 cm (Standard full-size)" (rule: gap width)
+step 2: options ["5+ people, or dishes pile up enough to run twice a day","1 to 4 people (typically 1 load per day)"]
+step 2: Jane presses "1 to 4 people (typically 1 load per day)" (rule: household size)
+step 3: options ["Yes, it's open-plan or we often run it at night","No, it's a separate room and we run it during the day"]
+step 3: Jane presses "No, it's a separate room and we run it during the day" (rule: noise and night cycles)
+step 4: options ["The price on the day (best upfront value)","The water and power the machine uses afterwards"]
+step 4: Jane presses "The water and power the machine uses afterwards" (rule: price against running cost)
+step 5: options ["View Just Shining Eco Landing Page"]
+step 5: pressing the landing page button "View Just Shining Eco Landing Page"
+landing page opened: https://github.com/polina-c/a2ui-spikes/blob/main/ci/domain/landing_pages/eco.md (title: "a2ui-spikes/ci/domain/landing_pages/eco.md at main · polina-c/a2ui-spikes · GitHub")
+video saved as flutter.webm

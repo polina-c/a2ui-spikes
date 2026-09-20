@@ -1,0 +1,244 @@
+/*
+ * The app's own chrome, plus the handful of --a2ui-* tokens it overrides.
+ *
+ * The basic catalog injects its own defaults at :where(:root), so generated UI
+ * is styled without the host doing anything; overriding a token here is enough
+ * to pull it into the app's palette. The names come from the theming guide and
+ * from web_core's basic_catalog/styles/default.ts, which is where the full list
+ * lives.
+ */
+:root {
+  --ink: #16202b;
+  --muted: #5d6b7a;
+  --line: #dde3ea;
+  --accent: #14676b;
+  --bg: #f4f6f8;
+
+  --a2ui-color-primary: var(--accent);
+  --a2ui-color-on-primary: #ffffff;
+  --a2ui-color-background: #ffffff;
+  --a2ui-color-on-background: var(--ink);
+  --a2ui-color-surface: #ffffff;
+  --a2ui-color-on-surface: var(--ink);
+  --a2ui-color-border: var(--line);
+  --a2ui-border-radius: 8px;
+  --a2ui-grid-base: 0.5rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+#root {
+  max-width: 760px;
+  margin: 0 auto;
+  height: 100vh;
+}
+
+/* Picker */
+.picker {
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.picker h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.lead {
+  margin: 0;
+  color: var(--muted);
+}
+
+.families {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.family {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.family.chosen {
+  border-color: var(--accent);
+}
+
+.family span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+select,
+input {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  color: var(--ink);
+}
+
+.hint {
+  font-size: 12px;
+}
+
+.start {
+  margin-top: 8px;
+  padding: 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.start:disabled {
+  background: #9fb3b4;
+  cursor: not-allowed;
+}
+
+/* Chat */
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+}
+
+.chat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.chat-head .sub {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.restart {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.log {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 90%;
+}
+
+.entry.user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.bubble {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--bg);
+  white-space: pre-wrap;
+}
+
+.entry.user .bubble {
+  background: var(--accent);
+  color: #fff;
+}
+
+.bubble.pending {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.bubble.failed {
+  background: #fdecec;
+  color: #8c1d1d;
+}
+
+.surface {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.surface button {
+  cursor: pointer;
+}
+
+.composer {
+  display: flex;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.composer input {
+  flex: 1;
+}
+
+.composer button {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.composer button:disabled {
+  background: #9fb3b4;
+}

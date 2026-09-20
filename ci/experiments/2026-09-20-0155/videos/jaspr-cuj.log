@@ -1,0 +1,18 @@
+opened the app on the model picker
+accepted the default model and started the chat
+default prompt in the box: "Hi, I am looking for a dishwasher. I am overwhelmed with choices and don't know where to start."
+sent the default prompt
+step 0: options ["Countertop / Rental","Plumbed under cabinets"]
+step 0: Jane presses "Plumbed under cabinets" (rule: where it goes)
+step 1: options ["45 cm (Slim gap)","60 cm (Standard gap)"]
+step 1: Jane presses "60 cm (Standard gap)" (rule: gap width)
+step 2: options ["5+ people / heavy loads","1–4 people / normal load"]
+step 2: Jane presses "1–4 people / normal load" (rule: household size)
+step 3: options ["Yes, open plan or night cycles","No, closed off / normal hours"]
+step 3: Jane presses "No, closed off / normal hours" (rule: noise and night cycles)
+step 4: options ["Upfront purchase price","Lowest water & energy use"]
+step 4: Jane presses "Lowest water & energy use" (rule: price against running cost)
+step 5: options ["View Just Shining Eco"]
+step 5: pressing the landing page button "View Just Shining Eco"
+landing page opened: https://github.com/polina-c/a2ui-spikes/blob/main/ci/domain/landing_pages/eco.md (title: "a2ui-spikes/ci/domain/landing_pages/eco.md at main · polina-c/a2ui-spikes · GitHub")
+video saved as jaspr.webm

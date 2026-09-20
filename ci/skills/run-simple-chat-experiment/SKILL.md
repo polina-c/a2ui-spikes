@@ -43,7 +43,12 @@ going.
 ## What already exists
 
 Facts worth knowing before starting, all checked against a2ui at commit
-`2d2a714`. Re-check them each run and update this skill, since the point of the experiment is to see what changed.
+`2d2a714`, twice: the 2026-09-19-1347 run and the 2026-09-20-0155 run a day
+later found `main` on the same commit and all four packages
+(`@a2ui/react` 0.11.1, `@a2ui/web_core` 0.11.0, `a2ui_core` 0.1.1,
+`genui` 0.10.3) unchanged. Re-check them each run and update this skill, since
+the point of the experiment is to see what changed - including when the answer
+is that nothing did, which is itself the finding.
 
 The a2ui repo is `https://github.com/a2ui-project/a2ui`. Clone it somewhere
 outside this repo (a scratch directory) and record the commit; do not vendor it.
@@ -54,9 +59,17 @@ with `@a2ui/web_core`. Import from the versioned path (`@a2ui/react/v0_9`), not
 the package root. At 0.11.1 the package advertises `./styles/structural.css` in
 its export map without shipping it and does not export the `v0_9/index.css` it
 does ship, so use `injectStyles()` from `@a2ui/react/styles`; its dependency
-`@a2ui/web_core` stops at 0.11.0. Styling is the host's job: the structural CSS
-expects the page to define the `--a2ui-*` palette. `Text` renders markdown only
-when a renderer is passed through `MarkdownContext`.
+`@a2ui/web_core` stops at 0.11.0, and `@a2ui/markdown-it`, which it depends on,
+is at 0.1.2 rather than 0.11.x, so a version guessed from its neighbours does
+not exist. Styling is *not* the host's job, contrary to what this skill said
+after the first run: the basic catalog injects defaults at `:where(:root)`, so
+generated UI is styled before the host does anything, and the host overrides
+the tokens it wants. The names are in `docs/public/guides/theming.md` and in
+web_core's `basic_catalog/styles/default.ts` (`--a2ui-color-primary`,
+`--a2ui-color-surface`, `--a2ui-border-radius`, `--a2ui-grid-base` and the
+`--a2ui-spacing-*` derived from it). An invented name is ignored silently, which
+reads like the renderer ignoring the host. `Text` renders markdown only when a
+renderer is passed through `MarkdownContext`.
 
 Flutter has no package in the a2ui repo. `dart/a2ui_flutter` is a README saying
 a package is coming and pointing at `https://github.com/flutter/genui`, which
@@ -71,10 +84,19 @@ exposes `systemPrompt()` and `systemPromptJoined()`.
 
 Jaspr has no renderer anywhere. `dart/a2ui_core` is framework-agnostic Dart and
 is the thing to build on, so the Jaspr arm means writing a renderer. In the
-2026-09-19-1347 run that renderer was 180 lines, because `a2ui_core` already
-parses the messages, keeps the tree and the data model, resolves paths and
-dispatches actions. Budget for the decisions around it rather than for the code:
-which catalog, how a surface redraws, what an unknown component looks like.
+2026-09-19-1347 run that renderer was 180 lines and in 2026-09-20-0155 it was
+184, because `a2ui_core` already parses the messages, keeps the tree and the
+data model, resolves paths and dispatches actions. Budget for the decisions
+around it rather than for the code: which catalog, how a surface redraws, what
+an unknown component looks like, and the stylesheet for class names that are
+the renderer's own invention (320 lines in the second run, against React's 244).
+
+`a2ui_core` is stricter than `web_core`: `A2uiMessage.fromJson` throws on a
+shape it does not recognise, so passing a whole reply's messages at once means
+one malformed message loses the turn. `gemini-flash-latest` produces one every
+so often - it cost the second run a recorded take with `type 'List<dynamic>' is
+not a subtype of type 'Map<String, dynamic>'`. Apply messages one at a time and
+step over a bad one.
 
 Three gaps hit every run and are worth checking before building rather than
 after. Nothing generates the system prompt outside a2ui's Python agent SDK and
@@ -84,8 +106,20 @@ does give the catalog as JSON Schema at runtime, which saves copying schemas.
 The web catalog cannot express a link and `Text` does not render markdown links,
 so clicking through to a landing page, the last step of the CUJ, needs a Button
 with an agreed action name that the app turns into a navigation; genui has a
-built-in `openUrl` and needs none of this. And `@a2ui/web_core`'s root export
-points at v0.8, so both web packages must be imported from `/v0_9`.
+built-in `openUrl`, which takes the address from the model.
+
+Do not ask the model for the URL. In the 2026-09-20-0155 run
+`gemini-flash-latest` quoted the landing page address back with a path segment
+missing, and the CUJ "completed" onto a GitHub 404: a tab opened, the driver
+logged a URL, the screenshot showed a page. Put an identifier in the action
+context (`{"name":"openLandingPage","context":{"model":"eco"}}`) and let the app
+resolve it from the knowledge base it already has. That is a reason to write a
+client function on the Flutter arm too, rather than using genui's `openUrl`.
+Log the title of the page the CUJ lands on as well as its URL, so a 404 is
+visible in the log.
+
+The third gap is the smallest and the easiest to miss: `@a2ui/web_core`'s root
+export points at v0.8, so both web packages must be imported from `/v0_9`.
 
 Useful reading in the a2ui checkout: `docs/public/quickstart.md`,
 `docs/public/guides/a2ui-with-any-agent-framework.md` (the relevant one, since
@@ -164,6 +198,31 @@ recorder. It writes webm per browser context, needs no screen-recording
 permission, and works the same for all three arms once Flutter is built for web.
 `ffmpeg` is not installed here, so do not plan on a conversion step.
 
+Three things in the container have to be right before anything records, and all
+three fail in ways that look like something else. Fix them first.
+
+* **The browser must trust the egress proxy.** Otherwise every call to Gemini
+  fails with `ERR_CERT_AUTHORITY_INVALID`, which reaches the app as "Failed to
+  fetch" and looks exactly like a bad API key. Chromium reads user CAs from the
+  NSS store, which starts empty: `apt-get install -y libnss3-tools`, then split
+  `/root/.ccr/ca-bundle.crt` and `certutil -d sql:$HOME/.pki/nssdb -A -t "C,,"`
+  each certificate. One fix covers all three arms.
+* **Playwright wants a browser it cannot download.** The installed Playwright
+  expects a newer Chromium revision than the image has, and
+  `playwright install` is not allowed. Launch with
+  `executablePath: fs.realpathSync('/opt/pw-browsers/chromium')`;
+  `tools/launch.mjs` in the experiment folder does this.
+* **Flutter web loads CanvasKit from gstatic.com**, which the egress policy
+  blocks, so the app renders nothing and its semantics tree is empty. Write
+  `web/flutter_bootstrap.js` with
+  `_flutter.loader.load({config: {canvasKitBaseUrl: 'canvaskit/'}})`; the build
+  already copies CanvasKit into `build/web/canvaskit/`. The
+  `--dart-define=FLUTTER_WEB_CANVASKIT_URL=...` that older instructions suggest
+  does nothing.
+
+`jaspr build` also refuses to run when `which dart` is the Flutter wrapper:
+put `/opt/flutter/bin/cache/dart-sdk/bin` first on `PATH` for that command.
+
 Point `recordVideo` at a directory of its own per run, then move the file to
 `videos/<framework>.webm`. Playwright names the file itself, so a run that picks
 its recording out of the shared `videos/` folder can pick up, or delete, another
@@ -211,6 +270,16 @@ Clone the binaries repo into a scratch directory, copy the files in, commit and
 push to `main` directly (`git push origin HEAD:main`), never to a branch. Pages
 serves `main`, so a recording sitting on a branch is not published and every
 link to it is a 404 until someone merges. That repo takes no pull requests.
+
+Check that the push can happen before recording anything, because in the
+2026-09-20-0155 run it could not: `git push` returned 403 with "Claude doesn't
+have GitHub access to polina-c/a2ui-spikes-binaries", and the API write path
+returned "Resource not accessible by integration", while reads succeeded. That
+is the Claude GitHub App not being installed on that repo, and nothing in the
+run can work around it. If it happens, record anyway, link nothing, and say in
+the README and the inventory that the recordings were made and could not be
+published - a scheduled run that cannot publish is worth reporting loudly,
+since it otherwise repeats every week.
 
 Then check every file before linking it: fetch the Pages URL and compare its
 sha256 with the local file. A push that half-succeeded and a link to a missing
