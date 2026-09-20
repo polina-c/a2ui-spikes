@@ -1,0 +1,320 @@
+/*
+ * The app's chrome and the generated UI both.
+ *
+ * a2ui has no Jaspr renderer, so it has no stylesheet for one either: the
+ * classes the renderer emits (a2ui-card, a2ui-button, a2ui-column...) are this
+ * app's own invention and are styled here. That is the half of the missing
+ * renderer that is not code.
+ */
+:root {
+  --ink: #16202b;
+  --muted: #5d6b7a;
+  --line: #dde3ea;
+  --accent: #14676b;
+  --bg: #f4f6f8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body > * {
+  max-width: 760px;
+  margin: 0 auto;
+  height: 100vh;
+}
+
+/* Picker */
+.picker {
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.picker h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.lead {
+  margin: 0;
+  color: var(--muted);
+}
+
+.families {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.family {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.family.chosen {
+  border-color: var(--accent);
+}
+
+.family span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+select,
+input {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  color: var(--ink);
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.start {
+  margin-top: 8px;
+  padding: 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.start[disabled] {
+  background: #9fb3b4;
+  cursor: not-allowed;
+}
+
+/* Chat */
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+}
+
+.chat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.chat-head .sub {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.restart {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.log {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 90%;
+}
+
+.entry.user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.bubble {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--bg);
+  white-space: pre-wrap;
+}
+
+.entry.user .bubble {
+  background: var(--accent);
+  color: #fff;
+}
+
+.bubble.pending {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.bubble.failed {
+  background: #fdecec;
+  color: #8c1d1d;
+}
+
+.surface {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.composer {
+  display: flex;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.composer input {
+  flex: 1;
+}
+
+.composer button {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.composer button[disabled] {
+  background: #9fb3b4;
+}
+
+/* Generated UI. These class names are the renderer's, not a2ui's. */
+.a2ui-surface {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.a2ui-card {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.a2ui-column,
+.a2ui-row {
+  display: flex;
+  gap: 8px;
+}
+
+.a2ui-column {
+  flex-direction: column;
+}
+
+.a2ui-row {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.a2ui-justify-center {
+  justify-content: center;
+}
+
+.a2ui-justify-spaceBetween {
+  justify-content: space-between;
+}
+
+.a2ui-align-center {
+  align-items: center;
+}
+
+.a2ui-align-stretch {
+  align-items: stretch;
+}
+
+.a2ui-text {
+  margin: 0;
+}
+
+.a2ui-caption {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.a2ui-button {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.a2ui-button:hover {
+  border-color: var(--accent);
+}
+
+.a2ui-button-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.a2ui-field {
+  gap: 4px;
+}
+
+/* A component the renderer does not know is shown, not swallowed. */
+.a2ui-missing {
+  padding: 8px;
+  border: 1px dashed #b3261e;
+  border-radius: 8px;
+  color: #b3261e;
+  font-size: 13px;
+}
