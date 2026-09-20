@@ -85,14 +85,14 @@ plumber about an hour.
 A countertop machine for 6 place settings that connects to the kitchen faucet
 or runs from a 5 liter tank, so nothing is fitted under the cabinets. For
 rented kitchens, studios, and offices. 49 dB. $329.
-[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/domain/landing_pages/mini.md)
+[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/ci/domain/landing_pages/mini.md)
 
 ### Just Shining Slim
 
 A 45 cm machine for 10 place settings, for kitchens that have a water
 connection but a narrow gap. Fits a household of two or three running it
 daily. 44 dB, energy class C. $549.
-[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/domain/landing_pages/slim.md)
+[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/ci/domain/landing_pages/slim.md)
 
 ### Just Shining Classic
 
@@ -100,21 +100,21 @@ The standard 60 cm machine for 14 place settings, and the default
 recommendation when nothing about the kitchen or the household is unusual. Its
 quick 60 program washes and dries a normal load in an hour. 46 dB, energy
 class C. $699.
-[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/domain/landing_pages/classic.md)
+[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/ci/domain/landing_pages/classic.md)
 
 ### Just Shining Family
 
 A 60 cm machine with a taller tub and a third cutlery rack, holding 16 place
 settings. For five people or more, or anyone who would otherwise run a cycle
 twice a day. 44 dB, energy class B. $949.
-[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/domain/landing_pages/family.md)
+[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/ci/domain/landing_pages/family.md)
 
 ### Just Shining Silent
 
 A 60 cm machine for 14 place settings that runs at 39 dB, with a light on the
 floor in place of the end-of-cycle beep. For kitchens open to a living room or
 a bedroom, and for cycles that run overnight. Energy class A. $1,049.
-[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/domain/landing_pages/silent.md)
+[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/ci/domain/landing_pages/silent.md)
 
 ### Just Shining Eco
 
@@ -122,4 +122,4 @@ A 60 cm machine for 14 place settings that uses 6.8 liters and 0.62 kWh per
 eco cycle, sets water and time by the weight and dirtiness of the load, and
 dries without a heating element. For metered water and for customers who want
 lower consumption. 42 dB, energy class A. $1,199.
-[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/domain/landing_pages/eco.md)
+[Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/ci/domain/landing_pages/eco.md)

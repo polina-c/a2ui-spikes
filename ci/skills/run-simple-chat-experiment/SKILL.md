@@ -207,7 +207,9 @@ README.
 
 | Framework | Video | README | Source lines |
 | --- | --- | --- | --- |
-| React | [video](...) | [react](...) | 877 |
+| React | `[react.webm](<date>-<time>/videos/react.webm)` | `[react](<date>-<time>/react/README.md)` | 877 |
+
+The paths in that row are relative to `experiments/`, where the inventory lives.
 
 If the experiment ran more than one model, there is a row per framework and
 model combination rather than per framework, because that is what an arm is, and
