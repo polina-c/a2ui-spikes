@@ -70,8 +70,14 @@ first answer. It needs two things this repo cannot give it:
 * **Two reachable hosts.** The library itself, and the weights from
   `huggingface.co`.
 
-**This path has never been run.** The container these apps were built in has no
-GPU adapter and blocks both hosts, so it was verified only as far as it can be:
-the picker starts without a key, the chat header names the in-browser model, and
-the call reaches WebLLM and comes back with the GPU diagnostic. What happens
-after the weights load is untested.
+**This path has never been run.** The container these apps were built in
+refuses `huggingface.co`, where the weights come from, so there is nothing to
+load. Its WebGPU is a red herring worth knowing about: with default flags
+`requestAdapter()` returns null, but started with `--enable-unsafe-webgpu
+--enable-features=WebGPU,WebGPUService,Vulkan --enable-unsafe-swiftshader`
+Chromium hands back a SwiftShader software adapter that creates a device and
+runs a compute shader. It reports no `shader-f16`, which the `q4f16_1` models
+listed here need, and it runs on the CPU. So the path was verified only as far
+as it can be: the picker starts without a key, the chat header names the
+in-browser model, and the call reaches WebLLM and comes back with the GPU
+diagnostic. What happens after the weights load is untested.

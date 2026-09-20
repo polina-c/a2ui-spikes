@@ -63,12 +63,19 @@ loads WebLLM as an ES module through a small `web/webllm_bridge.js` and reaches
 it with `dart:js_interop`, handing the conversation across as JSON.
 
 **It has never been run, on any arm.** WebLLM needs WebGPU and the weights from
-`huggingface.co`, and this container has neither: `navigator.gpu` exists on a
-served page but `requestAdapter()` returns null, because there is no GPU, and
-`huggingface.co` is refused by the egress policy. So the path was verified as
-far as it can be here - the picker starts without a key, the chat header names
-the in-browser model, the call crosses into WebLLM and comes back with the GPU
-diagnostic, identically on all three arms - and no further. Whether the three
+`huggingface.co`, and the container these were built in refuses that host, so
+there is nothing to load. The GPU half is subtler than it first looks, and the
+first version of this note got it wrong: `navigator.gpu` is undefined on
+`about:blank` but present on a served page, `requestAdapter()` returns null
+under default flags, and with `--enable-unsafe-webgpu
+--enable-features=WebGPU,WebGPUService,Vulkan --enable-unsafe-swiftshader`
+Chromium hands back a SwiftShader software adapter that creates a device and
+runs a compute shader in 36 ms. That adapter reports no `shader-f16`, which the
+`q4f16_1` models the apps list need, and it is a CPU rasteriser, so even with
+the weights to hand it is not what a recorded CUJ would run on. The path was
+verified as far as it can be here - the picker starts without a key, the chat
+header names the in-browser model, the call crosses into WebLLM and comes back
+with the GPU diagnostic, identically on all three arms - and no further. Whether the three
 arms can drive the CUJ on a local model is an open question, and the honest
 place to answer it is a run on a machine with a GPU.
 

@@ -223,14 +223,24 @@ three fail in ways that look like something else. Fix them first.
 `jaspr build` also refuses to run when `which dart` is the Flutter wrapper:
 put `/opt/flutter/bin/cache/dart-sdk/bin` first on `PATH` for that command.
 
-An arm on the in-browser model cannot be recorded here at all, so do not plan
-one into a run in this container. WebLLM needs WebGPU and the weights from
-`huggingface.co`: on a served page `navigator.gpu` exists but
-`requestAdapter()` returns null, because there is no GPU, and `huggingface.co`
-is refused by the egress policy. All three apps implement the path and fail
-with a clear diagnostic rather than a hang. Recording it means a machine with
-a GPU and both hosts reachable, and a much longer wait per turn than Gemini
-needs - budget for the model download before the first answer.
+An arm on the in-browser model cannot be recorded in this container, so do not
+plan one into a run here. The blocker is the weights, not the GPU:
+`huggingface.co`, where WebLLM fetches them, is refused by the egress policy,
+and so is the CDN the two Dart arms load the library from.
+
+The GPU side is worth knowing precisely, because it is easy to test wrongly.
+`navigator.gpu` is undefined on `about:blank` whatever the machine, so test on
+a served page. There, `requestAdapter()` returns null under default flags, but
+with `--enable-unsafe-webgpu --enable-features=WebGPU,WebGPUService,Vulkan
+--enable-unsafe-swiftshader` Chromium hands back a SwiftShader software adapter
+that creates a device and runs a compute shader. It reports no `shader-f16`,
+which the `q4f16_1` models the apps list need, and it runs on the CPU, so it is
+not something to record a CUJ against even with the weights to hand.
+
+All three apps implement the path and fail with a clear diagnostic rather than
+a hang. Recording it means a machine with a real GPU and both hosts reachable,
+and a much longer wait per turn than Gemini needs - budget for the model
+download before the first answer.
 
 Point `recordVideo` at a directory of its own per run, then move the file to
 `videos/<framework>.webm`. Playwright names the file itself, so a run that picks
