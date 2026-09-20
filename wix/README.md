@@ -10,7 +10,7 @@
 
 ## Question 1
 
-Is it possible to enable a Wix site to provide a chat that uses WebLLM in the browser, and also leverages the A2UI, so that the business that created the site can offer a chat to their visitors, to answer their questions about the business's products and services?
+Is it possible to enable a Wix site to provide a chat that uses free local LLM, and also leverages the A2UI, so that the business that created the site can offer a chat to their visitors, to answer their questions about the business's products and services?
 
 ## Experiment 1
 

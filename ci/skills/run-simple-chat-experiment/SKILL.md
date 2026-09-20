@@ -12,29 +12,29 @@ that gets recorded.
 
 ## What an arm is
 
-An arm is one framework build run against one model: "the React arm on Gemini
-Flash". Both halves are part of it, because a result only means something when
+An arm is one framework build run against one model family: "the React arm on
+Gemini". Both halves are part of it, because a result only means something when
 you can name the framework and the model that produced it.
 
-In practice the model is held fixed across the experiment. The blueprint asks
-for one model name in the experiment README, and all three frameworks are built
-against the same a2ui commit and run with that same model. So the usual
-experiment has three arms, one per framework, and the framework is the only
-thing that varies between them. That is what makes them comparable.
+Every run covers both families the apps offer, because they test different
+things. Gemini is a large cloud model reached over HTTP, and it is what the
+protocol was designed around. The in-browser model runs on the machine through
+WebLLM with no key, and it is a far smaller model, so it is the honest test of
+whether a2ui's generated UI survives a weak generator. A run that records only
+Gemini has answered the easy question.
 
-The apps themselves still offer a choice of model at runtime, because the
-blueprint asks for that. The experiment's model is the one the CUJ is actually
-run with, which is the default the picker opens on.
+So the usual experiment has six arms: three frameworks times two families. Name
+each one `<framework>-<family>`, using the family ids the apps themselves use,
+`gemini` and `local`. Within a family, the model is the default the picker opens
+on, and that is the one the CUJ is run with.
 
-If an experiment deliberately runs a second model as well, that is a second arm
-for each framework, not a footnote on the first: name it
-`<framework>-<model>`, give it its own video, and say in the README why the
-comparison was worth the extra runs.
+All six are built from the same a2ui commit, so the framework and the family are
+the only things that vary. That is what makes them comparable.
 
 Each arm gets its own pass through the CUJ and its own video. Each framework
-gets its own subdirectory and its own README with the commands to run it. The
-arms are built and judged separately, so one failing says nothing about the
-others.
+gets one subdirectory and one README with the commands to run it, since both of
+its arms are the same build pointed at a different family. The arms are judged
+separately, so one failing says nothing about the others.
 
 The experiment measures whether a2ui is ready to build a real app. Things that
 do not work are the result, not a failure of the run. Write them down and keep
@@ -163,7 +163,8 @@ source for the others, because how hard each one is on its own is the thing bein
 measured. Note where the a2ui documentation answered a question and where it did
 not.
 
-Give each arm a README with the commands to run it.
+Give each framework a README with the commands to run it, and say in it how to
+start each family, since both arms are that one build.
 
 When the three are built, measure how much hand-written source each one took.
 Size is the cheapest signal of how much an SDK carries: the arm with no renderer
@@ -187,11 +188,44 @@ well as in the arm's total.
 
 ## Step 3: evaluate
 
-Run the CUJ from `blueprints/simple_chat.md` once per framework and model
-combination, as Jane: open the app, take the default model, accept the default
+Run the CUJ from `blueprints/simple_chat.md` once per arm, as Jane: open the
+app, pick this arm's family and take its default model, accept the default
 prompt, let the assistant guide the choice, and click through to a landing page.
-Record each run. With one model that is three runs and three videos; with a
-second model it is six, and the video names say which is which.
+Record each run. That is six runs and six videos, named
+`videos/<framework>-<family>.webm`, so `react-gemini.webm` and
+`react-local.webm` sit side by side.
+
+The in-browser arms need two things the Gemini arms do not, and both are cheaper
+to check before recording than to discover halfway through a run:
+
+* **A usable WebGPU adapter.** `navigator.gpu` has to exist and
+  `requestAdapter()` has to return an adapter that reports `shader-f16`, which
+  the `q4f16_1` models need. A container with no GPU returns null. Chromium
+  started with `--enable-unsafe-swiftshader` hands back a software adapter that
+  looks like it works and does not report `shader-f16`, so check the feature,
+  not just the adapter.
+* **`huggingface.co` reachable**, for the weights, along with the host the
+  WebLLM module itself is loaded from.
+
+`tools/cuj.mjs` takes `(kind, url, videoDir, name)` and accepts whatever the
+picker opens on, which is Gemini. It needs a family argument before it can drive
+the in-browser arms: select the family, then that family's default model, then
+carry on through the same CUJ. Until it has one, only three of the six arms can
+be recorded, and the skill is ahead of the tool.
+
+A gigabyte or more downloads before the first answer, so an in-browser arm is
+slow and its video is long. Give those runs a much larger timeout than the
+Gemini ones, and expect the recording to open on a long load rather than on the
+picker.
+
+The smaller model is the point of the arm, not a defect to work around. If it
+emits malformed A2UI, picks a worse dishwasher, or falls back to plain text
+where Gemini produced UI, that is the finding. Record it and write it down.
+
+If an in-browser arm cannot run at all, name which of the two requirements above
+was missing, and record it failing like any other arm. Never fall back to Gemini
+and label the result as the in-browser arm: two rows produced by the same model
+are worse than one row and an honest gap.
 
 Record with Playwright's built-in video capture rather than an OS screen
 recorder. It writes webm per browser context, needs no screen-recording
@@ -246,7 +280,8 @@ turn than Gemini needs - budget for the model download before the first
 answer.
 
 Point `recordVideo` at a directory of its own per run, then move the file to
-`videos/<framework>.webm`. Playwright names the file itself, so a run that picks
+`videos/<framework>-<family>.webm`. Playwright names the file itself, so a run
+that picks
 its recording out of the shared `videos/` folder can pick up, or delete, another
 arm's video. That happened in the 2026-09-19-1347 run and cost two re-records.
 
@@ -377,22 +412,23 @@ Add the experiment to `experiments/inventory.md`, newest first. An `H2` header
 that is exactly the folder name, then a table, then the details, then two `H3`
 sections: `Observations` and `Issues`.
 
-The table has one row per framework, and carries the link to that framework's
-video, the link to its README in the experiment folder, and its line count. Keep
-it to those columns; anything else belongs in a bullet or in the experiment
-README.
+The table has one row per arm, so six rows: each framework against each model
+family. A row carries the arm's video, the link to its framework's README in the
+experiment folder, and the framework's line count. Keep it to those columns;
+anything else belongs in a bullet or in the experiment README.
 
-| Framework | Video | README | Source lines |
-| --- | --- | --- | --- |
-| React | `[react.webm][<date>-<time>-react]` | `[react](<date>-<time>/react/README.md)` | 877 |
+| Framework | Model | Video | README | Source lines |
+| --- | --- | --- | --- | --- |
+| React | Gemini | `[react-gemini.webm][<date>-<time>-react-gemini]` | `[react](<date>-<time>/react/README.md)` | 877 |
+| React | In browser | `[react-local.webm][<date>-<time>-react-local]` | `[react](<date>-<time>/react/README.md)` | 877 |
 
 The README path in that row is relative to `experiments/`, where the inventory
 lives. The video is not, because it is in the binaries repo: it is a reference
 link whose definition sits under the inventory's `H1`, as step 4 describes.
 
-If the experiment ran more than one model, there is a row per framework and
-model combination rather than per framework, because that is what an arm is, and
-the row names both.
+The line count repeats across a framework's two rows, because both arms are the
+same build pointed at a different family. That repetition is honest: the column
+measures what it cost to write the app, and choosing a model costs nothing.
 
 Under the table come the details, as loose bullets with no heading of their
 own: the link to the experiment README, the a2ui commit, and the model and its

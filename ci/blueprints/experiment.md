@@ -29,8 +29,16 @@ should contain README.md with steps to start the app.
 
 ### 3. Evaluate
 
-Execute primary CUJ for each UI framework and model combination, record a video,
-and write it into the 'videos' subdirectory.
+Execute the primary CUJ once for each combination of UI framework and model
+family: Gemini and the in-browser model, against each of React, Flutter and
+Jaspr. That is six runs. Record a video of each and write it into the 'videos'
+subdirectory as `<framework>-<family>.webm`.
+
+Both families are recorded every run, because they answer different questions.
+Gemini shows a2ui against the kind of model it was designed around. The
+in-browser model runs on the machine with no key and is much smaller, so it
+shows whether the generated UI survives a weak generator. Recording only Gemini
+answers the easy half. Never substitute one family for the other.
 
 Record every arm, including one that does not work. An arm that fails is a
 result: the video of it failing shows how far it got and what the user was
@@ -75,7 +83,9 @@ Text stays here. The CUJ logs are small and worth reading in a diff.
 Add short description of the experiment and link to the experiment README.md into the [inventory][inventory].
 
 Use H2 header "<date>-<time>" for each experiment. 
-Create table that shows link to video, link to the README.md of framework and line count for each framework.
+Create table with one row per arm, that is per combination of framework and model
+family, showing the model family, link to the video, link to the README.md of the
+framework and its line count.
 Use bullet points for the experiment details and findings.
 
 
