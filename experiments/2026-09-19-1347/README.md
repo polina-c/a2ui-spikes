@@ -27,6 +27,31 @@ the way it carries you. For React it ships a renderer. For Flutter it ships a
 pointer to someone else's. For Jaspr it ships nothing, and the renderer was
 written here.
 
+## Size of each arm
+
+Hand-written source, counted with [tools/count-source.sh](tools/count-source.sh),
+which leaves out dependencies, build output, generated files, package manifests
+and tool configuration.
+
+* React: 877 lines of source, no tests
+* Flutter: 929 lines of source, 45 lines of tests
+* Jaspr: 1227 lines of source, 101 lines of tests
+
+The three are close enough that the missing Jaspr renderer is not the story it
+looked like it would be. Jaspr costs about 350 lines more than React, and 180 of
+those are [the renderer itself](jaspr/lib/a2ui/renderer.dart). Most of the rest
+is the styling and prompt scaffolding the React arm gets from its package: 209
+lines of CSS against React's 153, because the Jaspr arm styles the generated
+components as well as the app around them.
+
+Flutter sits in the middle, and would sit lower if Dart were as terse as JSX;
+its 929 lines buy a prompt builder, a conversation loop and a working link, none
+of which the other two get for free.
+
+The React arm having no tests is a gap in this run rather than a finding about
+a2ui. The other two arms were testable without a browser, and writing those
+tests was cheap; the React arm's equivalent was skipped under time.
+
 ## React
 
 Uses `@a2ui/react` 0.11.1 with `@a2ui/web_core` 0.11.0, the only official
@@ -134,8 +159,10 @@ promise, first time, and the model was able to drive them.
 **How ready depends entirely on the framework, and the gap is about packaging,
 not protocol.** React has a renderer with packaging bugs. Flutter has no a2ui
 package but the best SDK, owned elsewhere. Jaspr has nothing, and needed 180
-lines. `a2ui_core` is the reason the third case is cheap, and it deserves more
-prominence than a directory in a monorepo.
+lines. The sizes bear this out: 877, 929 and 1227 lines of source, a spread of
+about 40 percent between the arm that is handed a renderer and the arm that
+writes one. `a2ui_core` is the reason the third case is cheap, and it deserves
+more prominence than a directory in a monorepo.
 
 **Prompt generation is the biggest hole for client-only apps.** a2ui generates
 the system prompt in its Python agent SDK; genui generates it in Dart for

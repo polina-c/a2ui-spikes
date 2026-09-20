@@ -11,9 +11,15 @@
 * a2ui ships a React renderer, no Flutter package (it points at flutter/genui),
   and nothing for Jaspr. How far the SDK carries you depends entirely on the
   framework, and the gap is packaging rather than protocol.
-* The Jaspr renderer, which did not exist, took 180 lines on top of
-  `a2ui_core`. The expensive part was not the renderer but the decisions a
-  published one would have made: catalog, redraw, unknown components, links.
+* Hand-written source per arm: React 877 lines, Flutter 929, Jaspr 1227.
+  Tests: React 0, Flutter 45, Jaspr 101. Counted with
+  [tools/count-source.sh](2026-09-19-1347/tools/count-source.sh), excluding
+  dependencies, build output and generated files.
+* Jaspr costs about 350 lines more than React, and 180 of those are the renderer
+  that does not exist upstream. The rest is the prompt and the styling that the
+  React arm gets from its package. The expensive part was not writing the
+  renderer but the decisions a published one would have made: catalog, redraw,
+  unknown components, links.
 * genui is the most complete of the three: it generates the system prompt from
   the catalog, runs the conversation loop itself, and has a built-in `openUrl`.
 * Biggest hole for client-only apps: prompt generation exists only in a2ui's

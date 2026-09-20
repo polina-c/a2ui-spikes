@@ -131,6 +131,26 @@ not.
 
 Give each arm a README with the commands to run it.
 
+When the three are built, measure how much hand-written source each one took.
+Size is the cheapest signal of how much an SDK carries: the arm with no renderer
+should cost more, and by how much is the interesting part.
+
+`tools/count-source.sh` in the experiment folder does the counting and prints a
+table plus a per-file breakdown. Run it from the experiment folder and copy the
+numbers into the README and the inventory. A new arm adds its source and test
+paths to the arrays at the top of the script.
+
+Count the code, markup and styles the app is built from. Do not count tests in
+that number, report them separately, and leave out dependencies, build output,
+files marked generated, package manifests, tool configuration, and scaffolding
+left exactly as a generator produced it. The script already applies these rules;
+the point of writing them down is that the next run counts the same way, because
+a size comparison against a differently drawn line is worse than none.
+
+Report the lines together with what they bought. The Jaspr number carries a
+renderer that does not exist upstream, so quote that file's size on its own as
+well as in the arm's total.
+
 ## Step 3: evaluate
 
 Run the CUJ from `blueprints/simple_chat.md` against each app, as Jane: open the
@@ -179,9 +199,13 @@ Add the experiment to `experiments/inventory.md`. An `H2` header that is exactly
 the folder name, then bullets. No table.
 
 The bullets carry the details, the findings, and the links: the link to the
-experiment README, the a2ui commit, the model, and one link per video. Keep it
-short enough to scan, since the README holds the full account. Newest experiment
-first.
+experiment README, the a2ui commit, the model, the source line count for each
+arm, and one link per video. Keep it short enough to scan, since the README
+holds the full account. Newest experiment first.
+
+Give the line counts as one bullet covering all three arms, with tests counted
+separately from source, so the arms can be compared at a glance and against
+earlier experiments.
 
 ## Integrity
 
