@@ -14,8 +14,8 @@ Is it possible to enable a Wix site to provide a chat that uses WebLLM in the br
 
 ## Experiment 1
 
-Yes, it is easy to run a WebLLM chat on a Wix page, with RAG over the facts 
-about the business.
+Yes, it is easy to run a WebLLM chat on a Wix page, with RAG over the [facts 
+about the business](./minimal/content/knowledge.js).
 
 [`wix/minimal`](minimal/README.md) is a Wix page with a chat whose model runs in the
 visitor's browser, written as a plain JavaScript custom element.
