@@ -208,10 +208,14 @@ here, so `ci/experiments/<date>-<time>/videos/react.webm` in this repo becomes
 the same path in that one, and a link can be matched to a file by eye.
 
 Clone the binaries repo into a scratch directory, copy the files in, commit and
-push. Then check every file before linking it: fetch the Pages URL and compare
-its sha256 with the local file. A push that half-succeeded and a link to a
-missing file look the same in a README. Pages takes a minute to redeploy, so
-poll the URL rather than reading one 404 as failure.
+push to `main` directly (`git push origin HEAD:main`), never to a branch. Pages
+serves `main`, so a recording sitting on a branch is not published and every
+link to it is a 404 until someone merges. That repo takes no pull requests.
+
+Then check every file before linking it: fetch the Pages URL and compare its
+sha256 with the local file. A push that half-succeeded and a link to a missing
+file look the same in a README. Pages takes a minute to redeploy, so poll the
+URL rather than reading one 404 as failure.
 
 The binaries repo is published with GitHub Pages from `main` at the repository
 root, so link the served copy and nothing else:

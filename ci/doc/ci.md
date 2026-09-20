@@ -199,11 +199,15 @@ For this environment:
   a log, or a recording.
 * Videos and screenshots do not belong in this repository; .gitignore keeps
   them out. Commit the CUJ logs here, and push the recordings to
-  polina-c/a2ui-spikes-binaries under ci/experiments/<date>-<time>/videos/.
-  That repository is a GitHub Pages site, so also add the experiment's gallery
-  page beside them and link everything through
-  https://polina-c.github.io/a2ui-spikes-binaries/, never a github.com or raw
-  URL. The skill has the detail.
+  polina-c/a2ui-spikes-binaries under ci/experiments/<date>-<time>/videos/,
+  together with the experiment's gallery page.
+* That binaries repository is a GitHub Pages site served from main at the
+  repository root, so push it straight to main with `git push origin HEAD:main`
+  rather than to a claude/ branch, and do not open a pull request against it.
+  Nothing is published until it is on main, so a link written before that push
+  has landed is a link to a 404. Check one URL after pushing.
+* Link every recording through https://polina-c.github.io/a2ui-spikes-binaries/,
+  never a github.com or raw URL. The skill has the detail.
 * Write the experiment README and the inventory entry before opening the pull
   request.
 
