@@ -2,16 +2,15 @@
 
 ## 2026-09-20-0155
 
-The recordings of this run could not be published: this session had read-only
-access to the binaries repo, so the Video column names the file that was made
-rather than linking one that was never pushed. The step-by-step CUJ logs are in
-the experiment folder.
+[2026-09-20-0155-react]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react.webm
+[2026-09-20-0155-flutter]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter.webm
+[2026-09-20-0155-jaspr]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr.webm
 
-| Framework | Video                     | README                                       | Source lines |
-| --------- | ------------------------- | -------------------------------------------- | ------------ |
-| React     | `react.webm` (not pushed)   | [react](2026-09-20-0155/react/README.md)     | 886          |
-| Flutter   | `flutter.webm` (not pushed) | [flutter](2026-09-20-0155/flutter/README.md) | 764          |
-| Jaspr     | `jaspr.webm` (not pushed)   | [jaspr](2026-09-20-0155/jaspr/README.md)     | 1361         |
+| Framework | Video                                   | README                                       | Source lines |
+| --------- | --------------------------------------- | -------------------------------------------- | ------------ |
+| React     | [react.webm][2026-09-20-0155-react]     | [react](2026-09-20-0155/react/README.md)     | 886          |
+| Flutter   | [flutter.webm][2026-09-20-0155-flutter] | [flutter](2026-09-20-0155/flutter/README.md) | 764          |
+| Jaspr     | [jaspr.webm][2026-09-20-0155-jaspr]     | [jaspr](2026-09-20-0155/jaspr/README.md)     | 1361         |
 
 * [Experiment README](2026-09-20-0155/README.md): the simple chat app built
   fresh for React, Flutter and Jaspr, with the CUJ run and recorded against
@@ -68,10 +67,11 @@ the experiment folder.
 * Jaspr still needs `build_web_compilers` held at `^4.8.5` to resolve at all,
   and a project generated into a directory called `jaspr` is still named
   `jaspr` and cannot depend on the package of the same name.
-* The recordings were made and could not be published: `git push` and the API
-  write path to polina-c/a2ui-spikes-binaries are both refused with 403 for
-  this session, while reads succeed. Until the Claude GitHub App is installed
-  on that repo, a scheduled run records videos and throws them away.
+* Publishing the recordings needed a second attempt: `git push` and the API
+  write path to both repositories were refused with 403 for this session until
+  the Claude GitHub App was installed on them. The videos are published now,
+  but the run had finished by then. A scheduled run should check that it can
+  push before it records anything.
 
 ## 2026-09-19-1347
 

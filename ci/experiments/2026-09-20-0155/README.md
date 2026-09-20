@@ -1,5 +1,19 @@
 # Experiment 2026-09-20-0155
 
+[gallery]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/
+[react-video]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react.webm
+[flutter-video]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter.webm
+[jaspr-video]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr.webm
+[react-picker]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react-picker.png
+[react-ui]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react-generated-ui.png
+[react-landing]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react-landing.png
+[flutter-picker]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter-picker.png
+[flutter-ui]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter-generated-ui.png
+[flutter-landing]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter-landing.png
+[jaspr-picker]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-picker.png
+[jaspr-ui]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-generated-ui.png
+[jaspr-landing]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-landing.png
+
 One run of [the simple chat experiment](../../blueprints/experiment.md): build the
 [simple chat app](../../blueprints/simple_chat.md) for React, Flutter and Jaspr
 against a pinned a2ui commit, run the CUJ against each, and record what happened.
@@ -19,6 +33,9 @@ against a pinned a2ui commit, run the CUJ against each, and record what happened
 * The three apps were written fresh for this run rather than carried over from
   2026-09-19-1347, so the line counts below are comparable to each other but
   not to that run's.
+* The videos and screenshots are served from the [recordings site][gallery]
+  rather than kept here, to keep this repo small. That page plays all three
+  runs side by side. The CUJ logs stay here, being text.
 
 ## Result
 
@@ -35,37 +52,33 @@ than in a2ui: the landing page link, the per-message error handling in the Dart
 arm, and three environment problems that had to be solved before anything could
 be recorded at all.
 
-## The recordings could not be published
+## The recordings
 
-This is the one part of the run that did not finish. All three CUJs were
-recorded, and the webm files exist:
+All three CUJs were recorded and are published on the
+[recordings site][gallery], which plays the three arms side by side:
+[react.webm][react-video], [flutter.webm][flutter-video] and
+[jaspr.webm][jaspr-video].
 
-| Arm | File | Size |
-| --- | --- | --- |
-| React | `react.webm` | 4,227,024 bytes |
-| Flutter | `flutter.webm` | 4,365,565 bytes |
-| Jaspr | `jaspr.webm` | 4,371,314 bytes |
+Publishing them took two goes. The first attempt was refused: this session's
+GitHub credentials were read-only for both repositories, `git push` returned
+403 with "Claude doesn't have GitHub access", and the API write path returned
+"Resource not accessible by integration". Installing the Claude GitHub App on
+the two repositories fixed it, and everything below was pushed afterwards. A
+scheduled run has no way around that on its own, so it is worth checking that
+the push can happen before recording anything.
 
-They belong in
-[a2ui-spikes-binaries](https://github.com/polina-c/a2ui-spikes-binaries), and
-they are not there. This session's GitHub credentials are read-only for that
-repository: `git push` is refused with 403 and "Claude doesn't have GitHub
-access to polina-c/a2ui-spikes-binaries", and the API write path is refused
-with "Resource not accessible by integration". Reads succeed, so this is a
-permission on the app installation rather than a wrong URL or a network
-problem.
+One check the usual procedure asks for could not be done from here. The step
+after pushing is to fetch each Pages URL and compare its sha256 with the local
+file, and `polina-c.github.io` is blocked by this container's egress policy -
+every request to it fails at the proxy with a 403 CONNECT, including URLs from
+the previous run that are known to work. Instead each file was verified through
+the GitHub API against `main`, the branch Pages serves: all twelve are present
+at the paths above and every git blob SHA matches the local file byte for byte.
+The three `*-landing.png` share a SHA because all three arms landed on the same
+page.
 
-Nothing links to a video in this write-up, because a link to a recording that
-was never pushed looks exactly like a working one until someone clicks it. The
-commit is prepared in a local clone (`Add media from experiment
-2026-09-20-0155`, three videos, nine stills and the gallery page) but a local
-clone in this container is not published and does not survive it. To finish the
-job, install the Claude GitHub App on `polina-c/a2ui-spikes-binaries` and re-run
-the CUJ, or run `tools/cuj.mjs` locally and push the output to
-`ci/experiments/2026-09-20-0155/videos/` on that repo's `main`.
-
-What is here is the step-by-step log of each run, which is text and stays in
-this repo: [react](videos/react-cuj.log), [flutter](videos/flutter-cuj.log),
+The step-by-step log of each run is text, so it stays in this repo:
+[react](videos/react-cuj.log), [flutter](videos/flutter-cuj.log),
 [jaspr](videos/jaspr-cuj.log). Each one lists the options the assistant drew at
 every turn, which answer Jane pressed and why, and the URL the landing page
 button opened.
@@ -98,8 +111,10 @@ that from the package.
 
 Uses `@a2ui/react` 0.11.1 with `@a2ui/web_core` 0.11.0, the only official
 renderer of the three. Code in [react/](react), and how to run it in
-[react/README.md](react/README.md). The CUJ ran end to end; the log is in
-[videos/react-cuj.log](videos/react-cuj.log).
+[react/README.md](react/README.md). The CUJ ran end to end:
+[react.webm][react-video], with stills of the [picker][react-picker], the
+[first generated UI][react-ui] and the [landing page][react-landing], and the
+step-by-step log in [videos/react-cuj.log](videos/react-cuj.log).
 
 This was the quickest arm to get working and the one with the most packaging
 problems, all of them the same ones the previous run found:
@@ -132,7 +147,10 @@ Uses the [Flutter GenUI SDK](https://github.com/flutter/genui), `genui` 0.10.3,
 because a2ui has no Flutter package: `dart/a2ui_flutter` is still a README
 pointing at flutter/genui. Code in [flutter/](flutter), and how to run it in
 [flutter/README.md](flutter/README.md). The CUJ ran end to end on the first
-recorded attempt; the log is in [videos/flutter-cuj.log](videos/flutter-cuj.log).
+recorded attempt: [flutter.webm][flutter-video], with stills of the
+[picker][flutter-picker], the [first generated UI][flutter-ui] and the
+[landing page][flutter-landing], and the step-by-step log in
+[videos/flutter-cuj.log](videos/flutter-cuj.log).
 
 genui remains the most complete of the three. `PromptBuilder.chat` writes the
 protocol instructions from the catalog, `Conversation` runs the loop so a press
@@ -156,8 +174,10 @@ use it.
 Uses Jaspr 0.23.4 and `a2ui_core` 0.1.1, with a renderer written for this
 experiment. a2ui still has nothing for Jaspr, and nothing for the web in Dart
 at all. Code in [jaspr/](jaspr), and how to run it in
-[jaspr/README.md](jaspr/README.md). The CUJ ran end to end; the log is in
-[videos/jaspr-cuj.log](videos/jaspr-cuj.log).
+[jaspr/README.md](jaspr/README.md). The CUJ ran end to end:
+[jaspr.webm][jaspr-video], with stills of the [picker][jaspr-picker], the
+[first generated UI][jaspr-ui] and the [landing page][jaspr-landing], and the
+step-by-step log in [videos/jaspr-cuj.log](videos/jaspr-cuj.log).
 
 The second run confirms the surprise of the first: writing the renderer is not
 the expensive part. `a2ui_core` parses the messages, holds the component tree
@@ -278,11 +298,12 @@ knowledge base sets out, and the recommendation the knowledge base prescribes.
 The one thing it got wrong was a URL it was asked to copy, and that is an
 argument for never asking it to copy one.
 
-**An honest run can still fail to publish.** The recordings were made and
-cannot be linked, because this session has read-only access to the binaries
-repo. The write-up says so instead of linking them. Whoever schedules these
-runs needs the binaries repo to be writable from the same place the run happens,
-or the recordings are made and thrown away each week.
+**A scheduled run needs its write access checked before it records anything.**
+This one recorded all three CUJs and then could not push them: both
+repositories were read-only for this session until the Claude GitHub App was
+installed on them. The recordings are published now, but the run had already
+finished by the time that was fixed, and a run that cannot publish has nothing
+to show for itself. Checking the push first costs a second.
 
 ## Reproducing
 

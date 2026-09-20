@@ -271,20 +271,33 @@ push to `main` directly (`git push origin HEAD:main`), never to a branch. Pages
 serves `main`, so a recording sitting on a branch is not published and every
 link to it is a 404 until someone merges. That repo takes no pull requests.
 
-Check that the push can happen before recording anything, because in the
+Check that the push can happen before recording anything. In the
 2026-09-20-0155 run it could not: `git push` returned 403 with "Claude doesn't
 have GitHub access to polina-c/a2ui-spikes-binaries", and the API write path
 returned "Resource not accessible by integration", while reads succeeded. That
-is the Claude GitHub App not being installed on that repo, and nothing in the
-run can work around it. If it happens, record anyway, link nothing, and say in
-the README and the inventory that the recordings were made and could not be
-published - a scheduled run that cannot publish is worth reporting loudly,
-since it otherwise repeats every week.
+is the Claude GitHub App not being installed on the repo, and nothing in the
+run can work around it - it took the person running the experiment installing
+the app, after the run had otherwise finished. A `git push --dry-run` at the
+start costs a second and tells you.
+
+If it does happen mid-run, record anyway, link nothing, and say in the README
+and the inventory that the recordings were made and could not be published.
+Never write the link in the hope that someone pushes the file later.
 
 Then check every file before linking it: fetch the Pages URL and compare its
 sha256 with the local file. A push that half-succeeded and a link to a missing
 file look the same in a README. Pages takes a minute to redeploy, so poll the
 URL rather than reading one 404 as failure.
+
+When `polina-c.github.io` is blocked by the container's egress policy, as it
+was in the 2026-09-20-0155 run, that check is not available: every request
+fails at the proxy with a 403 CONNECT, including URLs from an earlier run that
+are known to work, and a 403 from the proxy says nothing about the file. Verify
+against `main` through the GitHub API instead - list
+`ci/experiments/<date>-<time>/videos` and compare each entry's blob SHA with
+`git hash-object` on the local file. That proves the bytes Pages will serve are
+the bytes that were recorded, which is the part that matters; say in the README
+which check was done.
 
 The binaries repo is published with GitHub Pages from `main` at the repository
 root, so link the served copy and nothing else:
