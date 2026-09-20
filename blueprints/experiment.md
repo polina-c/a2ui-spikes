@@ -35,4 +35,8 @@ Put your observations and link to the corresponding video into the experiment RE
 
 Add short description of the experiment and link to the experiment README.md into the [inventory][inventory].
 
-Do not use table, use H2 header "<date>-<time>" for each experiment. Use bullet points for the experiment details, findings and links to videos.
+Use H2 header "<date>-<time>" for each experiment. 
+Create table that shows link to video, link to the README.md of framework and line count for each framework.
+Use bullet points for the experiment details and findings.
+
+

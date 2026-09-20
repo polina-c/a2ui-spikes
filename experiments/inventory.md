@@ -2,19 +2,26 @@
 
 ## 2026-09-19-1347
 
+| Framework | Video | README | Source lines |
+| --- | --- | --- | --- |
+| React | [react.webm](2026-09-19-1347/videos/react.webm) | [react](2026-09-19-1347/react/README.md) | 877 |
+| Flutter | [flutter.webm](2026-09-19-1347/videos/flutter.webm) | [flutter](2026-09-19-1347/flutter/README.md) | 929 |
+| Jaspr | [jaspr.webm](2026-09-19-1347/videos/jaspr.webm) | [jaspr](2026-09-19-1347/jaspr/README.md) | 1227 |
+
 * [Experiment README](2026-09-19-1347/README.md): the simple chat app built for
   React, Flutter and Jaspr, with the CUJ run and recorded against each.
 * a2ui commit [`2d2a714`](https://github.com/a2ui-project/a2ui/commit/2d2a714dafd22590e705c32a47cd5390ab96fdc5);
-  all three arms ran on Gemini `gemini-flash-latest` at temperature 0.7.
+  all three arms ran on Gemini `gemini-flash-latest` at temperature 0.7, max
+  4096 output tokens.
 * All three arms completed the CUJ and recommended the Just Shining Eco from
   the same answers, which is what the knowledge base prescribes for Jane.
 * a2ui ships a React renderer, no Flutter package (it points at flutter/genui),
   and nothing for Jaspr. How far the SDK carries you depends entirely on the
   framework, and the gap is packaging rather than protocol.
-* Hand-written source per arm: React 877 lines, Flutter 929, Jaspr 1227.
-  Tests: React 0, Flutter 45, Jaspr 101. Counted with
-  [tools/count-source.sh](2026-09-19-1347/tools/count-source.sh), excluding
-  dependencies, build output and generated files.
+* The line counts above are source only, measured with
+  [tools/count-source.sh](2026-09-19-1347/tools/count-source.sh). Tests on top:
+  React 0, Flutter 45, Jaspr 101. The React arm having no tests is a gap in the
+  run, not a finding about a2ui.
 * Jaspr costs about 350 lines more than React, and 180 of those are the renderer
   that does not exist upstream. The rest is the prompt and the styling that the
   React arm gets from its package. The expensive part was not writing the
@@ -31,6 +38,3 @@
 * `@a2ui/react` 0.11.1 has packaging bugs: it advertises a stylesheet it does
   not ship, does not export the one it does, and depends on a core that stops at
   0.11.0.
-* Videos: [React](2026-09-19-1347/videos/react.webm),
-  [Flutter](2026-09-19-1347/videos/flutter.webm),
-  [Jaspr](2026-09-19-1347/videos/jaspr.webm).

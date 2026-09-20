@@ -153,9 +153,11 @@ well as in the arm's total.
 
 ## Step 3: evaluate
 
-Run the CUJ from `blueprints/simple_chat.md` against each app, as Jane: open the
-app, take the default model, accept the default prompt, let the assistant guide
-the choice, and click through to a landing page. Record it.
+Run the CUJ from `blueprints/simple_chat.md` once per framework and model
+combination, as Jane: open the app, take the default model, accept the default
+prompt, let the assistant guide the choice, and click through to a landing page.
+Record each run. With one model that is three runs and three videos; with a
+second model it is six, and the video names say which is which.
 
 Record with Playwright's built-in video capture rather than an OS screen
 recorder. It writes webm per browser context, needs no screen-recording
@@ -195,17 +197,31 @@ the three arms at the end.
 
 ## Step 4: add to inventory
 
-Add the experiment to `experiments/inventory.md`. An `H2` header that is exactly
-the folder name, then bullets. No table.
+Add the experiment to `experiments/inventory.md`, newest first. An `H2` header
+that is exactly the folder name, then a table, then bullets.
 
-The bullets carry the details, the findings, and the links: the link to the
-experiment README, the a2ui commit, the model, the source line count for each
-arm, and one link per video. Keep it short enough to scan, since the README
-holds the full account. Newest experiment first.
+The table has one row per framework, and carries the link to that framework's
+video, the link to its README in the experiment folder, and its line count. Keep
+it to those columns; anything else belongs in a bullet or in the experiment
+README.
 
-Give the line counts as one bullet covering all three arms, with tests counted
-separately from source, so the arms can be compared at a glance and against
-earlier experiments.
+| Framework | Video | README | Source lines |
+| --- | --- | --- | --- |
+| React | [video](...) | [react](...) | 877 |
+
+If the experiment ran more than one model, there is a row per framework and
+model combination rather than per framework, because that is what an arm is, and
+the row names both.
+
+The bullets carry the experiment details and the findings: the link to the
+experiment README, the a2ui commit, the model and its parameters, and what the
+run showed. Keep them short enough to scan, since the experiment README holds
+the full account.
+
+The line count in the table is the source count from step 2, not source plus
+tests. If an arm's test count is worth saying, say it in a bullet, because
+mixing the two in one column makes the arms look closer or further apart than
+they are.
 
 ## Integrity
 
