@@ -13,7 +13,7 @@ One experiment:
 
 See details in [experiment blueprint](./blueprints/experiment.md).
 
-The experiment is scheduled to run weekly PR with the experiment artifacts.
+The experiment is scheduled to run weekly, and create new PR with the experiment artifacts.
 
 Example of auto-created PR: https://github.com/polina-c/a2ui-spikes/pull/1
 Example of auto-taken video: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react.webm
