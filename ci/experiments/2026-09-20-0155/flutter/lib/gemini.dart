@@ -3,18 +3,22 @@ import 'dart:convert';
 import 'package:genui/genui.dart';
 import 'package:http/http.dart' as http;
 
+import 'model_client.dart';
 import 'models.dart';
 
 /// Calls the Gemini API directly from the client.
 ///
 /// There is no server in this app: genui's [A2uiTransportAdapter] hands the
 /// conversation to this, and the reply is fed back into the adapter as a chunk.
-class GeminiClient {
+class GeminiClient implements ModelClient {
   GeminiClient({required this.choice, http.Client? httpClient})
     : _http = httpClient ?? http.Client();
 
   final ModelChoice choice;
   final http.Client _http;
+
+  @override
+  String get label => choice.modelId;
 
   static const _endpoint =
       'https://generativelanguage.googleapis.com/v1beta/models';
@@ -22,6 +26,7 @@ class GeminiClient {
   /// Statuses Gemini returns when it is busy rather than when the call is bad.
   static const _transient = {429, 500, 502, 503};
 
+  @override
   Future<String> send(String system, List<ChatMessage> history) async {
     final key = choice.apiKey;
     if (key == null || key.isEmpty) {
@@ -39,7 +44,7 @@ class GeminiClient {
           {
             'role': message.role == ChatMessageRole.model ? 'model' : 'user',
             'parts': [
-              {'text': _textOf(message)},
+              {'text': textOf(message)},
             ],
           },
       ],
@@ -71,15 +76,6 @@ class GeminiClient {
         .join();
     if (text.isEmpty) throw StateError('Gemini returned no text.');
     return text;
-  }
-
-  /// A button press arrives as an interaction part rather than as words.
-  String _textOf(ChatMessage message) {
-    if (message.text.isNotEmpty) return message.text;
-    final interactions = message.parts.uiInteractionParts
-        .map((p) => p.interaction)
-        .join('\n');
-    return interactions.isNotEmpty ? interactions : ' ';
   }
 
   /// Posts, and tries again when Gemini says it is overloaded. Without this a

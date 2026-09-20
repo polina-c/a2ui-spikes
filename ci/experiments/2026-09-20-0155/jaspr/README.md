@@ -40,6 +40,11 @@ run left that unset, so no key is in the built JavaScript.
 * `lib/prompt.dart` - the hand-written system prompt, with the catalog schema
   pulled in at runtime from `getClientCapabilities`
 * `lib/gemini.dart` - the Gemini call, with a retry for the 503s
+* `lib/model_client.dart` - the interface the chat talks to, so Gemini and the
+  in-browser model are the same thing to it
+* `lib/local.dart` and `web/webllm_bridge.js` - the in-browser model: Jaspr has
+  no JavaScript bundler, so WebLLM is loaded as an ES module and reached
+  through `dart:js_interop`, with the conversation crossing as JSON
 * `lib/knowledge.dart` - the knowledge base, fetched over HTTP from `web/domain`
 * `web/styles.css` - the app's chrome *and* the generated components, whose
   class names are this renderer's own invention
@@ -59,5 +64,26 @@ project generated into a directory called `jaspr` is named `jaspr`, which
 cannot depend on the package of the same name, so the package is renamed by
 hand afterwards.
 
-The local model family is listed in the picker for completeness. This build
-only speaks to Gemini.
+The in-browser model is described below.
+
+## The in-browser model
+
+The picker's second family runs the model on this machine with
+[WebLLM](https://github.com/mlc-ai/web-llm) instead of calling Gemini: no key,
+nothing leaves the browser, and a download of a gigabyte or more before the
+first answer. It needs two things this repo cannot give it:
+
+* **A browser with a usable GPU.** WebLLM runs on WebGPU. `navigator.gpu` has
+  to exist (Chrome or Edge 113+, over https or localhost) *and*
+  `requestAdapter()` has to return an adapter, which a machine with no GPU - a
+  headless CI container, for instance - does not. Both cases are checked up
+  front and reported in the chat, because the failure from inside WebLLM
+  otherwise arrives much later and reads like a hang.
+* **Two reachable hosts.** The library itself, and the weights from
+  `huggingface.co`.
+
+**This path has never been run.** The container these apps were built in has no
+GPU adapter and blocks both hosts, so it was verified only as far as it can be:
+the picker starts without a key, the chat header names the in-browser model, and
+the call reaches WebLLM and comes back with the GPU diagnostic. What happens
+after the weights load is untested.

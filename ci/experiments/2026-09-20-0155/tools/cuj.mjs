@@ -45,6 +45,24 @@ async function options() {
   return labels.map(l => l.trim()).filter(l => l && !CHROME.test(l));
 }
 
+/**
+ * Whether the assistant's last turn came with drawn UI.
+ *
+ * Told apart at a stall, "it drew nothing" and "it drew the same thing again"
+ * are different failures: the first is the model answering in words only, the
+ * second is the driver not recognising what is on screen.
+ */
+async function lastTurnShape() {
+  if (kind !== 'dom') return '';
+  const surfaces = await page.locator('.surface').count();
+  const drewHere = await page
+    .locator('.entry.assistant')
+    .last()
+    .locator('.surface')
+    .count();
+  return ` [surfaces on screen: ${surfaces}, last reply drew one: ${drewHere > 0}]`;
+}
+
 /** The last thing the assistant said in words, error bubbles included. */
 async function lastSaid() {
   if (kind === 'dom') {
@@ -170,7 +188,10 @@ for (let step = 0; step < 8 && !landed; step++) {
     // Say what was on screen when it stopped: an error bubble here is the
     // difference between "the model refused" and "the driver missed it".
     const last = await lastSaid();
-    note(`step ${step}: the assistant drew nothing new, stopping. Last it said: ${JSON.stringify(last.slice(0, 400))}`);
+    note(
+      `step ${step}: the assistant drew nothing new, stopping. Last it said: ` +
+        `${JSON.stringify(last.slice(0, 400))}${await lastTurnShape()}`,
+    );
     break;
   }
   for (const l of labels) seen.add(l);

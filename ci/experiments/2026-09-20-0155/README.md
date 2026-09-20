@@ -52,6 +52,29 @@ than in a2ui: the landing page link, the per-message error handling in the Dart
 arm, and three environment problems that had to be solved before anything could
 be recorded at all.
 
+## The in-browser model, added after the run
+
+The picker has always offered a second model family, the one Jane reaches for
+when her API key is not to hand: a model running inside the browser through
+[WebLLM](https://github.com/mlc-ai/web-llm). During the run only the React arm
+implemented it; the Flutter and Jaspr arms listed it and spoke only to Gemini.
+All three implement it now. Neither Dart arm has a JavaScript bundler, so each
+loads WebLLM as an ES module through a small `web/webllm_bridge.js` and reaches
+it with `dart:js_interop`, handing the conversation across as JSON.
+
+**It has never been run, on any arm.** WebLLM needs WebGPU and the weights from
+`huggingface.co`, and this container has neither: `navigator.gpu` exists on a
+served page but `requestAdapter()` returns null, because there is no GPU, and
+`huggingface.co` is refused by the egress policy. So the path was verified as
+far as it can be here - the picker starts without a key, the chat header names
+the in-browser model, the call crosses into WebLLM and comes back with the GPU
+diagnostic, identically on all three arms - and no further. Whether the three
+arms can drive the CUJ on a local model is an open question, and the honest
+place to answer it is a run on a machine with a GPU.
+
+The line counts above are the run's and are left alone; this work landed after
+it. It adds 29 lines to React, 126 to Flutter and 119 to Jaspr, plus tests.
+
 ## The recordings
 
 All three CUJs were recorded and are published on the

@@ -2,23 +2,19 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'model_client.dart';
 import 'models.dart';
 
-/// One turn of the conversation as the Gemini API wants it.
-class Turn {
-  const Turn(this.role, this.text);
-
-  final String role; // 'user' or 'model'
-  final String text;
-}
-
 /// Calls Gemini straight from the browser. There is no server in this app.
-class GeminiClient {
+class GeminiClient implements ModelClient {
   GeminiClient(this.choice, {http.Client? httpClient})
     : _http = httpClient ?? http.Client();
 
   final ModelChoice choice;
   final http.Client _http;
+
+  @override
+  String get label => choice.modelId;
 
   static const _endpoint =
       'https://generativelanguage.googleapis.com/v1beta/models';
@@ -26,6 +22,7 @@ class GeminiClient {
   /// Statuses Gemini returns when it is busy rather than when the call is bad.
   static const _transient = {429, 500, 502, 503};
 
+  @override
   Future<String> send(String system, List<Turn> turns) async {
     final key = choice.apiKey;
     if (key == null || key.isEmpty) throw StateError('No Gemini API key.');

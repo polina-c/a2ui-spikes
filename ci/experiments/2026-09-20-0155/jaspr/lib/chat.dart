@@ -9,6 +9,8 @@ import 'a2ui/catalog.dart';
 import 'a2ui/renderer.dart';
 import 'gemini.dart';
 import 'knowledge.dart';
+import 'local.dart';
+import 'model_client.dart';
 import 'models.dart';
 import 'prompt.dart';
 
@@ -50,7 +52,7 @@ class Chat extends StatefulComponent {
 
 class _ChatState extends State<Chat> {
   late final MessageProcessor<ComponentApi> _processor;
-  late final GeminiClient _client;
+  late final ModelClient _client;
   late final String _system;
 
   final _entries = <_Entry>[];
@@ -58,6 +60,7 @@ class _ChatState extends State<Chat> {
   String _draft = _opening;
   bool _busy = false;
   int _surfaceCount = 0;
+  String _status = '';
 
   @override
   void initState() {
@@ -68,7 +71,10 @@ class _ChatState extends State<Chat> {
       catalogs: [catalog],
       onAction: _onAction,
     );
-    _client = GeminiClient(component.choice);
+    // The cloud model and the in-browser one are the same thing to the chat.
+    _client = component.choice.familyId == 'gemini'
+        ? GeminiClient(component.choice)
+        : WebllmClient(component.choice, onStatus: _setStatus);
 
     final capabilities = _processor.getClientCapabilities(
       includeInlineCatalogs: true,
@@ -84,6 +90,11 @@ class _ChatState extends State<Chat> {
       corpus: component.knowledge.corpus,
       modelIds: Knowledge.models,
     );
+  }
+
+  /// Progress from a model that is loading itself into this browser.
+  void _setStatus(String message) {
+    if (mounted) setState(() => _status = message);
   }
 
   /// A press on a generated button. Either it opens a landing page, or it
@@ -168,7 +179,10 @@ class _ChatState extends State<Chat> {
         );
       });
     } finally {
-      setState(() => _busy = false);
+      setState(() {
+        _busy = false;
+        _status = '';
+      });
     }
   }
 
@@ -180,7 +194,7 @@ class _ChatState extends State<Chat> {
           strong([Component.text('Just Shining')]),
           span(classes: 'sub', [
             Component.text(
-              '${component.choice.modelId} - temperature '
+              '${_client.label} - temperature '
               '${component.choice.temperature}, max '
               '${component.choice.maxOutputTokens} tokens',
             ),
@@ -214,7 +228,9 @@ class _ChatState extends State<Chat> {
           ]),
         if (_busy)
           div(classes: 'entry assistant', [
-            div(classes: 'bubble pending', [Component.text('Thinking...')]),
+            div(classes: 'bubble pending', [
+              Component.text(_status.isEmpty ? 'Thinking...' : _status),
+            ]),
           ]),
       ]),
       div(classes: 'composer', [

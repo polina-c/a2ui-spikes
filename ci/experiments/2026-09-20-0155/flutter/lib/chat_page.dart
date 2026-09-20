@@ -6,6 +6,8 @@ import 'package:genui/genui.dart';
 import 'gemini.dart';
 import 'knowledge.dart';
 import 'landing.dart';
+import 'local.dart';
+import 'model_client.dart';
 import 'models.dart';
 import 'prompt.dart';
 
@@ -51,12 +53,13 @@ class _ChatPageState extends State<ChatPage> {
   late final SurfaceController _controller;
   late final A2uiTransportAdapter _transport;
   late final Conversation _conversation;
-  late final GeminiClient _client;
+  late final ModelClient _client;
   late final String _systemPrompt;
 
   final _items = <_Item>[];
   final _history = <ChatMessage>[];
   final _draft = TextEditingController(text: _opening);
+  String _status = '';
   final _scroll = ScrollController();
   StreamSubscription<ConversationEvent>? _events;
   bool _busy = false;
@@ -72,7 +75,10 @@ class _ChatPageState extends State<ChatPage> {
     );
 
     _controller = SurfaceController(catalogs: [catalog]);
-    _client = GeminiClient(choice: widget.choice);
+    // The cloud model and the in-browser one are the same thing to the chat.
+    _client = widget.choice.familyId == 'gemini'
+        ? GeminiClient(choice: widget.choice)
+        : WebllmClient(choice: widget.choice, onStatus: _setStatus);
     _transport = A2uiTransportAdapter(onSend: _send);
     _conversation = Conversation(controller: _controller, transport: _transport);
 
@@ -97,6 +103,11 @@ class _ChatPageState extends State<ChatPage> {
     _draft.dispose();
     _scroll.dispose();
     super.dispose();
+  }
+
+  /// Progress from a model that is loading itself into this browser.
+  void _setStatus(String message) {
+    if (mounted) setState(() => _status = message);
   }
 
   void _onEvent(ConversationEvent event) {
@@ -136,7 +147,12 @@ class _ChatPageState extends State<ChatPage> {
         _items.add(_Said('That did not work: $error', fromUser: false, failed: true));
       });
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _status = '';
+        });
+      }
       _scrollToEnd();
     }
   }
@@ -172,7 +188,7 @@ class _ChatPageState extends State<ChatPage> {
           child: Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
-              '${widget.choice.modelId} - temperature '
+              '${_client.label} - temperature '
               '${widget.choice.temperature}, max '
               '${widget.choice.maxOutputTokens} tokens',
               style: theme.textTheme.bodySmall,
@@ -195,9 +211,11 @@ class _ChatPageState extends State<ChatPage> {
                   itemCount: _items.length + (_busy ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (index == _items.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Text('Thinking...'),
+                      return Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          _status.isEmpty ? 'Thinking...' : _status,
+                        ),
                       );
                     }
                     return switch (_items[index]) {

@@ -223,6 +223,15 @@ three fail in ways that look like something else. Fix them first.
 `jaspr build` also refuses to run when `which dart` is the Flutter wrapper:
 put `/opt/flutter/bin/cache/dart-sdk/bin` first on `PATH` for that command.
 
+An arm on the in-browser model cannot be recorded here at all, so do not plan
+one into a run in this container. WebLLM needs WebGPU and the weights from
+`huggingface.co`: on a served page `navigator.gpu` exists but
+`requestAdapter()` returns null, because there is no GPU, and `huggingface.co`
+is refused by the egress policy. All three apps implement the path and fail
+with a clear diagnostic rather than a hang. Recording it means a machine with
+a GPU and both hosts reachable, and a much longer wait per turn than Gemini
+needs - budget for the model download before the first answer.
+
 Point `recordVideo` at a directory of its own per run, then move the file to
 `videos/<framework>.webm`. Playwright names the file itself, so a run that picks
 its recording out of the shared `videos/` folder can pick up, or delete, another
