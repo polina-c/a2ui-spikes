@@ -1,8 +1,8 @@
 # Experiments inventory
 
-[2026-09-19-1347-react]: https://github.com/polina-c/a2ui-spikes-binaries/blob/main/ci/experiments/2026-09-19-1347/videos/react.webm
-[2026-09-19-1347-flutter]: https://github.com/polina-c/a2ui-spikes-binaries/blob/main/ci/experiments/2026-09-19-1347/videos/flutter.webm
-[2026-09-19-1347-jaspr]: https://github.com/polina-c/a2ui-spikes-binaries/blob/main/ci/experiments/2026-09-19-1347/videos/jaspr.webm
+[2026-09-19-1347-react]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/react.webm
+[2026-09-19-1347-flutter]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/flutter.webm
+[2026-09-19-1347-jaspr]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/jaspr.webm
 
 ## 2026-09-19-1347
 
@@ -19,6 +19,9 @@ Note: this experiment produced app that allow user to choose model, that took ex
 * a2ui commit [`2d2a714`](https://github.com/a2ui-project/a2ui/commit/2d2a714dafd22590e705c32a47cd5390ab96fdc5);
   all three arms ran on Gemini `gemini-flash-latest` at temperature 0.7, max
   4096 output tokens.
+
+### Observations
+
 * All three arms completed the CUJ and recommended the Just Shining Eco from
   the same answers, which is what the knowledge base prescribes for Jane.
 * a2ui ships a React renderer, no Flutter package (it points at flutter/genui),
@@ -35,6 +38,9 @@ Note: this experiment produced app that allow user to choose model, that took ex
   unknown components, links.
 * genui is the most complete of the three: it generates the system prompt from
   the catalog, runs the conversation loop itself, and has a built-in `openUrl`.
+
+### Issues
+
 * Biggest hole for client-only apps: prompt generation exists only in a2ui's
   Python SDK and in genui for Flutter, so the React and Jaspr arms hand-wrote
   the instructions that teach the model to emit A2UI.

@@ -1,18 +1,18 @@
 # Experiment 2026-09-19-1347
 
-[binaries]: https://github.com/polina-c/a2ui-spikes-binaries
-[react-video]: https://github.com/polina-c/a2ui-spikes-binaries/blob/main/ci/experiments/2026-09-19-1347/videos/react.webm
-[flutter-video]: https://github.com/polina-c/a2ui-spikes-binaries/blob/main/ci/experiments/2026-09-19-1347/videos/flutter.webm
-[jaspr-video]: https://github.com/polina-c/a2ui-spikes-binaries/blob/main/ci/experiments/2026-09-19-1347/videos/jaspr.webm
-[react-picker]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/react-picker.png
-[react-ui]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/react-generated-ui.png
-[react-landing]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/react-landing.png
-[flutter-picker]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/flutter-picker.png
-[flutter-ui]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/flutter-generated-ui.png
-[flutter-landing]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/flutter-landing.png
-[jaspr-picker]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/jaspr-picker.png
-[jaspr-ui]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/jaspr-generated-ui.png
-[jaspr-landing]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/jaspr-landing.png
+[gallery]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/
+[react-video]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/react.webm
+[flutter-video]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/flutter.webm
+[jaspr-video]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/jaspr.webm
+[react-picker]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/react-picker.png
+[react-ui]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/react-generated-ui.png
+[react-landing]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/react-landing.png
+[flutter-picker]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/flutter-picker.png
+[flutter-ui]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/flutter-generated-ui.png
+[flutter-landing]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/flutter-landing.png
+[jaspr-picker]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/jaspr-picker.png
+[jaspr-ui]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/jaspr-generated-ui.png
+[jaspr-landing]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/jaspr-landing.png
 
 One run of [the simple chat experiment](../../blueprints/experiment.md): build the
 [simple chat app](../../blueprints/simple_chat.md) for React, Flutter and Jaspr
@@ -28,8 +28,9 @@ against a pinned a2ui commit, run the CUJ against each, and record what happened
 * Model that generated the application code: Claude Opus 5, harness defaults
 * All three arms ran the same CUJ with the same model, so the framework is the
   only thing that differs between them.
-* The videos and screenshots below are in the [binaries repo][binaries] rather
-  than here, to keep this repo small. The CUJ logs stay here, being text.
+* The videos and screenshots are served from the [recordings site][gallery]
+  rather than kept here, to keep this repo small. That page plays all three
+  runs side by side. The CUJ logs stay here, being text.
 
 ## Result
 

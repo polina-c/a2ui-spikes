@@ -208,18 +208,32 @@ here, so `ci/experiments/<date>-<time>/videos/react.webm` in this repo becomes
 the same path in that one, and a link can be matched to a file by eye.
 
 Clone the binaries repo into a scratch directory, copy the files in, commit and
-push. Then check every file before linking it: fetch the raw URL and compare
+push. Then check every file before linking it: fetch the Pages URL and compare
 its sha256 with the local file. A push that half-succeeded and a link to a
-missing file look the same in a README.
+missing file look the same in a README. Pages takes a minute to redeploy, so
+poll the URL rather than reading one 404 as failure.
 
-Link the pushed copy two ways, because raw.githubusercontent serves `.webm` as
-`audio/webm`, which makes a browser play the sound of a screen recording and
-show nothing:
+The binaries repo is published with GitHub Pages from `main` at the repository
+root, so link the served copy and nothing else:
 
-- a video as `https://github.com/polina-c/a2ui-spikes-binaries/blob/main/<path>`,
-  where GitHub renders a real player
-- a screenshot as `https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/<path>`,
-  which serves the image itself, so it also works inside `![...](...)`
+```
+https://polina-c.github.io/a2ui-spikes-binaries/<path>
+```
+
+Neither GitHub URL for the same file is any use. A `.webm` committed to a repo
+gets no player on its blob page, which reports `viewable: false` and offers a
+download; GitHub renders a player only for videos attached to an issue, PR or
+release. And `raw.githubusercontent.com` serves `.webm` as `audio/webm`, so a
+raw link plays the sound of a screen recording and shows no picture. Pages
+serves it as `video/webm`, which plays. This was got wrong once already, so
+check the `Content-Type` rather than assuming.
+
+Give each experiment a gallery at `ci/experiments/<date>-<time>/index.html` in
+the binaries repo: a `<video controls>` per arm with its stills listed under it,
+so the run can be watched in one place. `style.css` at the site root is shared
+by every gallery, and `.nojekyll` beside it keeps Pages from processing the
+tree, so a new experiment is markup and nothing else. Add the experiment to the
+root `index.html` too.
 
 Those URLs are long enough to make the markdown unreadable inline, so put them
 in reference-style definitions under the file's `H1` and refer to them by name,
@@ -238,7 +252,8 @@ not about every file that happens to be a PNG.
 ## Step 5: add to inventory
 
 Add the experiment to `experiments/inventory.md`, newest first. An `H2` header
-that is exactly the folder name, then a table, then bullets.
+that is exactly the folder name, then a table, then the details, then two `H3`
+sections: `Observations` and `Issues`.
 
 The table has one row per framework, and carries the link to that framework's
 video, the link to its README in the experiment folder, and its line count. Keep
@@ -257,15 +272,34 @@ If the experiment ran more than one model, there is a row per framework and
 model combination rather than per framework, because that is what an arm is, and
 the row names both.
 
-The bullets carry the experiment details and the findings: the link to the
-experiment README, the a2ui commit, the model and its parameters, and what the
-run showed. Keep them short enough to scan, since the experiment README holds
-the full account.
+Under the table come the details, as loose bullets with no heading of their
+own: the link to the experiment README, the a2ui commit, and the model and its
+parameters. They are what the run was, not what it found, so they sit above
+both sections.
+
+Then the findings, split in two:
+
+- **Observations** is what the run showed. How the arms behaved, how they
+  compared, what the numbers mean. A reader who wants to know how ready a2ui is
+  reads this.
+- **Issues** is what got in the way: a gap, a bug, a missing piece. The test is
+  whether someone could act on it, so each one names the thing that is wrong and
+  what it cost. A reader deciding what to fix next reads this.
+
+The split is about the reader, not the tone. A bullet that says a2ui has no
+Jaspr renderer is an observation when it is measuring how far the SDK carries
+you, and an issue when it is the reason an arm could not be built. Put it where
+it would be looked for, and do not write it twice.
+
+Keep both sections short enough to scan, since the experiment README holds the
+full account. Either section can be empty, and an empty `Issues` is worth
+keeping with a bullet saying nothing blocked the run, because a missing section
+reads like it was forgotten.
 
 The line count in the table is the source count from step 2, not source plus
-tests. If an arm's test count is worth saying, say it in a bullet, because
-mixing the two in one column makes the arms look closer or further apart than
-they are.
+tests. If an arm's test count is worth saying, say it in an `Observations`
+bullet, because mixing the two in one column makes the arms look closer or
+further apart than they are.
 
 ## Integrity
 

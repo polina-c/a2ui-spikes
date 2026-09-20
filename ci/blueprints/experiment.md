@@ -4,6 +4,7 @@
 [simple_chat_blueprint]: simple_chat.md
 [inventory]: ../experiments/inventory.md
 [binaries]: https://github.com/polina-c/a2ui-spikes-binaries
+[recordings]: https://polina-c.github.io/a2ui-spikes-binaries/
 
 ## Goal
 
@@ -40,16 +41,23 @@ No images or videos are committed to this repo. They go to the
 version of a file forever, and a run a week that adds megabytes of recordings
 makes the repo slow for good.
 
-Push each video and screenshot to [binaries][binaries] at the same path it had
-here, delete it here, and link to the pushed copy:
+That repo is published with GitHub Pages as the [recordings site][recordings],
+because a video committed to a repo cannot be played on github.com at all.
 
-- a video as `https://github.com/polina-c/a2ui-spikes-binaries/blob/main/<path>`,
-  which GitHub shows in a player
-- a screenshot as `https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/<path>`,
-  which serves the image itself, so it can also be embedded
+Push each video and screenshot to [binaries][binaries] at the same path it had
+here, delete it here, and add a gallery page for the experiment at
+`ci/experiments/<date>-<time>/index.html` that plays the arms side by side.
+The site has one shared `style.css`, so the page is markup only.
+
+Link the served copy, never a github.com or raw URL:
+
+```
+https://polina-c.github.io/a2ui-spikes-binaries/<path>
+```
 
 Push before writing the link, and check that the link resolves. A link to a file
-that was never pushed looks exactly like a working one until someone clicks it.
+that was never pushed looks exactly like a working one until someone clicks it,
+and Pages takes a moment to redeploy after a push.
 
 Text stays here. The CUJ logs are small and worth reading in a diff.
 
