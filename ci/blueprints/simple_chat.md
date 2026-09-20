@@ -21,15 +21,7 @@ The application uses knowledge from [domain].
 - Domain knowledge can be either embedded into application statically or read via HTTP dynamically, depending on technical capabilities and limitations.
 - The application may use code or knowledge from [web-llm] when needed.
 - While building the application, you can use env variable GEMINI_API_KEY to run experiments. The final application also takes Gemini API key from environment or, if not provided, from user input.
-
-## Model used
-
-In the very beginning the app invites the user to choose a model. There are two families of models: Gemini and local models.
-
-For Gemini, if gemini key is not provided via environment, user should enter api_key (hidden behind dots). 
-
-For each family UI displays list of concrete models with their parameters. 
-The UI specifies allowed range for each configuration value.
+- Application should use 'gemini-flash-latest'.
 
 ## CUJ
 

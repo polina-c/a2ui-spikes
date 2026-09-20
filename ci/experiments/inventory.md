@@ -2,11 +2,13 @@
 
 ## 2026-09-19-1347
 
-| Framework | Video | README | Source lines |
-| --- | --- | --- | --- |
-| React | [react.webm](2026-09-19-1347/videos/react.webm) | [react](2026-09-19-1347/react/README.md) | 877 |
-| Flutter | [flutter.webm](2026-09-19-1347/videos/flutter.webm) | [flutter](2026-09-19-1347/flutter/README.md) | 929 |
-| Jaspr | [jaspr.webm](2026-09-19-1347/videos/jaspr.webm) | [jaspr](2026-09-19-1347/jaspr/README.md) | 1227 |
+Note: this experiment produced app that allow user to choose model, that took extra code lines.
+
+| Framework | Video                                               | README                                       | Source lines |
+| --------- | --------------------------------------------------- | -------------------------------------------- | ------------ |
+| React     | [react.webm](2026-09-19-1347/videos/react.webm)     | [react](2026-09-19-1347/react/README.md)     | 877          |
+| Flutter   | [flutter.webm](2026-09-19-1347/videos/flutter.webm) | [flutter](2026-09-19-1347/flutter/README.md) | 929          |
+| Jaspr     | [jaspr.webm](2026-09-19-1347/videos/jaspr.webm)     | [jaspr](2026-09-19-1347/jaspr/README.md)     | 1227         |
 
 * [Experiment README](2026-09-19-1347/README.md): the simple chat app built for
   React, Flutter and Jaspr, with the CUJ run and recorded against each.
