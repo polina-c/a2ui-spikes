@@ -21,7 +21,7 @@ class _PickerState extends State<Picker> {
   ModelFamily get _family =>
       families.firstWhere((f) => f.id == _choice.familyId);
 
-  bool get _ready => _family.id == 'gemini' && _key.trim().isNotEmpty;
+  bool get _ready => !_family.needsKey || _key.trim().isNotEmpty;
 
   @override
   Component build(BuildContext context) {
@@ -115,11 +115,11 @@ class _PickerState extends State<Picker> {
             ),
           ]),
         ]),
-      if (_family.id != 'gemini')
+      if (!_family.needsKey)
         p(classes: 'hint', [
           Component.text(
-            'The local family is listed for completeness. This build only '
-            'speaks to Gemini.',
+            'The model runs on this machine. Nothing is sent anywhere, and the '
+            'first run downloads a gigabyte or more before the first answer.',
           ),
         ]),
       button(
@@ -128,7 +128,11 @@ class _PickerState extends State<Picker> {
         events: {
           'click': (_) {
             if (_ready) {
-              component.onStart(_choice.copyWith(apiKey: _key.trim()));
+              component.onStart(
+                _family.needsKey
+                    ? _choice.copyWith(apiKey: _key.trim())
+                    : _choice,
+              );
             }
           },
         },

@@ -34,9 +34,39 @@ npm test
 * `src/chat.tsx` - the conversation, the `MessageProcessor` and the `A2uiSurface`
 * `src/prompt.ts` - the hand-written system prompt, with the catalog schema
   pulled in at runtime from `getClientCapabilities`
-* `src/gemini.ts`, `src/local.ts` - the two model families
+* `src/gemini.ts`, `src/local.ts` - the two model families; `local.ts` runs the
+  model in the browser with WebLLM, which the bundler imports directly
 * `src/knowledge.ts` - the knowledge base, embedded with Vite's `?raw`
 * `src/styles.css` - the app's chrome, and the handful of `--a2ui-*` tokens it
   overrides; the basic catalog ships its own defaults, so generated UI is
   styled without the host doing anything
 * `src/__tests__/` - the prompt, the reply parsing and the embedded knowledge
+
+## The in-browser model
+
+The picker's second family runs the model on this machine with
+[WebLLM](https://github.com/mlc-ai/web-llm) instead of calling Gemini: no key,
+nothing leaves the browser, and a download of a gigabyte or more before the
+first answer. It needs two things this repo cannot give it:
+
+* **A browser with a usable GPU.** WebLLM runs on WebGPU. `navigator.gpu` has
+  to exist (Chrome or Edge 113+, over https or localhost) *and*
+  `requestAdapter()` has to return an adapter, which a machine with no GPU - a
+  headless CI container, for instance - does not. Both cases are checked up
+  front and reported in the chat, because the failure from inside WebLLM
+  otherwise arrives much later and reads like a hang.
+* **A reachable weights host.** `huggingface.co`, where WebLLM fetches the
+  model. The library itself is bundled, so unlike the two Dart arms this one
+  needs no CDN at runtime.
+
+**This path has never been run.** The container these apps were built in
+refuses `huggingface.co`, where the weights come from, so there is nothing to
+load. Its WebGPU is a red herring worth knowing about: with default flags
+`requestAdapter()` returns null, but started with `--enable-unsafe-webgpu
+--enable-features=WebGPU,WebGPUService,Vulkan --enable-unsafe-swiftshader`
+Chromium hands back a SwiftShader software adapter that creates a device and
+runs a compute shader. It reports no `shader-f16`, which the `q4f16_1` models
+listed here need, and it runs on the CPU. So the path was verified only as far
+as it can be: the picker starts without a key, the chat header names the
+in-browser model, and the call reaches WebLLM and comes back with the GPU
+diagnostic. What happens after the weights load is untested.

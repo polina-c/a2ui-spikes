@@ -13,6 +13,12 @@
 [jaspr-picker]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-picker.png
 [jaspr-ui]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-generated-ui.png
 [jaspr-landing]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-landing.png
+[react-webllm]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react-webllm.webm
+[flutter-webllm]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter-webllm.webm
+[jaspr-webllm]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-webllm.webm
+[react-webllm-still]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react-webllm-failure.png
+[flutter-webllm-still]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter-webllm-failure.png
+[jaspr-webllm-still]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-webllm-failure.png
 
 One run of [the simple chat experiment](../../blueprints/experiment.md): build the
 [simple chat app](../../blueprints/simple_chat.md) for React, Flutter and Jaspr
@@ -51,6 +57,49 @@ reproduced each one. What is new here is in the apps and the harness rather
 than in a2ui: the landing page link, the per-message error handling in the Dart
 arm, and three environment problems that had to be solved before anything could
 be recorded at all.
+
+## The in-browser model, added after the run
+
+The picker has always offered a second model family, the one Jane reaches for
+when her API key is not to hand: a model running inside the browser through
+[WebLLM](https://github.com/mlc-ai/web-llm). During the run only the React arm
+implemented it; the Flutter and Jaspr arms listed it and spoke only to Gemini.
+All three implement it now. Neither Dart arm has a JavaScript bundler, so each
+loads WebLLM as an ES module through a small `web/webllm_bridge.js` and reaches
+it with `dart:js_interop`, handing the conversation across as JSON.
+
+**All three in-browser arms were run, and all three failed.** The recordings
+are kept, because how far an arm gets is the result: [react-webllm.webm][react-webllm],
+[flutter-webllm.webm][flutter-webllm] and [jaspr-webllm.webm][jaspr-webllm],
+with stills of where each stopped ([React][react-webllm-still],
+[Flutter][flutter-webllm-still], [Jaspr][jaspr-webllm-still]) and the logs in
+[videos/](videos). Each one shows the same thing: the picker takes the
+in-browser family with no key, the chat header names the local model, the
+default prompt goes out, and the app comes back with the GPU diagnostic instead
+of an answer. That is the whole arm, and it takes about fifteen seconds.
+
+**What is untested is everything after the weights load**, and two things stop
+them loading here.
+
+The first is the weights themselves: WebLLM fetches them from
+`huggingface.co`, which the egress policy refuses, along with the CDN the two
+Dart arms load the library from. Nothing to load, so nothing to answer with.
+
+The second is the GPU, and it is subtler than it looks - the first version of
+this note got it wrong. `navigator.gpu` is undefined on `about:blank` whatever
+the machine, which is what made the first check meaningless; on a served page
+it is there, and `requestAdapter()` returns null only under default flags. With
+`--enable-unsafe-webgpu --enable-features=WebGPU,WebGPUService,Vulkan
+--enable-unsafe-swiftshader` Chromium hands back a SwiftShader software adapter
+that creates a device and runs a compute shader in 36 ms. That adapter reports
+no `shader-f16`, which the `q4f16_1` models the apps list need, and it is a CPU
+rasteriser, so it would not carry a CUJ even with the weights to hand.
+
+So whether the three arms can drive the CUJ on a local model is still open, and
+the place to answer it is a run on a machine with a real GPU.
+
+The line counts above are the run's and are left alone; this work landed after
+it. It adds 29 lines to React, 126 to Flutter and 119 to Jaspr, plus tests.
 
 ## The recordings
 
