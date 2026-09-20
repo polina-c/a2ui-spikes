@@ -1,5 +1,19 @@
 # Experiment 2026-09-19-1347
 
+[binaries]: https://github.com/polina-c/a2ui-spikes-binaries
+[react-video]: https://github.com/polina-c/a2ui-spikes-binaries/blob/main/ci/experiments/2026-09-19-1347/videos/react.webm
+[flutter-video]: https://github.com/polina-c/a2ui-spikes-binaries/blob/main/ci/experiments/2026-09-19-1347/videos/flutter.webm
+[jaspr-video]: https://github.com/polina-c/a2ui-spikes-binaries/blob/main/ci/experiments/2026-09-19-1347/videos/jaspr.webm
+[react-picker]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/react-picker.png
+[react-ui]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/react-generated-ui.png
+[react-landing]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/react-landing.png
+[flutter-picker]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/flutter-picker.png
+[flutter-ui]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/flutter-generated-ui.png
+[flutter-landing]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/flutter-landing.png
+[jaspr-picker]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/jaspr-picker.png
+[jaspr-ui]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/jaspr-generated-ui.png
+[jaspr-landing]: https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/ci/experiments/2026-09-19-1347/videos/jaspr-landing.png
+
 One run of [the simple chat experiment](../../blueprints/experiment.md): build the
 [simple chat app](../../blueprints/simple_chat.md) for React, Flutter and Jaspr
 against a pinned a2ui commit, run the CUJ against each, and record what happened.
@@ -14,6 +28,8 @@ against a pinned a2ui commit, run the CUJ against each, and record what happened
 * Model that generated the application code: Claude Opus 5, harness defaults
 * All three arms ran the same CUJ with the same model, so the framework is the
   only thing that differs between them.
+* The videos and screenshots below are in the [binaries repo][binaries] rather
+  than here, to keep this repo small. The CUJ logs stay here, being text.
 
 ## Result
 
@@ -58,9 +74,9 @@ Uses `@a2ui/react` 0.11.1 with `@a2ui/web_core` 0.11.0, the only official
 renderer of the three. Code in [react/](react), and how to run it in
 [react/README.md](react/README.md).
 
-The CUJ ran end to end: [videos/react.webm](videos/react.webm). Stills of the
-[picker](videos/react-picker.png), the [first generated UI](videos/react-generated-ui.png)
-and the [landing page](videos/react-landing.png), and the options the driver saw
+The CUJ ran end to end: [react.webm][react-video]. Stills of the
+[picker][react-picker], the [first generated UI][react-ui]
+and the [landing page][react-landing], and the options the driver saw
 at every step in [videos/react-cuj.log](videos/react-cuj.log).
 
 This arm was the quickest to get running and the roughest at the edges.
@@ -91,9 +107,9 @@ Uses the [Flutter GenUI SDK](https://github.com/flutter/genui), `genui` 0.10.3,
 because a2ui has no Flutter package. Code in [flutter/](flutter), and how to run
 it in [flutter/README.md](flutter/README.md).
 
-The CUJ ran end to end: [videos/flutter.webm](videos/flutter.webm). Stills of the
-[picker](videos/flutter-picker.png), the [first generated UI](videos/flutter-generated-ui.png)
-and the [landing page](videos/flutter-landing.png), and the step by step log in
+The CUJ ran end to end: [flutter.webm][flutter-video]. Stills of the
+[picker][flutter-picker], the [first generated UI][flutter-ui]
+and the [landing page][flutter-landing], and the step by step log in
 [videos/flutter-cuj.log](videos/flutter-cuj.log).
 
 `dart/a2ui_flutter` in the a2ui repo is a README saying a package is coming and
@@ -124,9 +140,9 @@ the semantics tree on permanently to get one.
 Uses `a2ui_core` 0.1.1 and a renderer written for this experiment. Code in
 [jaspr/](jaspr), and how to run it in [jaspr/README.md](jaspr/README.md).
 
-The CUJ ran end to end: [videos/jaspr.webm](videos/jaspr.webm). Stills of the
-[picker](videos/jaspr-picker.png), the [first generated UI](videos/jaspr-generated-ui.png)
-and the [landing page](videos/jaspr-landing.png), and the step by step log in
+The CUJ ran end to end: [jaspr.webm][jaspr-video]. Stills of the
+[picker][jaspr-picker], the [first generated UI][jaspr-ui]
+and the [landing page][jaspr-landing], and the step by step log in
 [videos/jaspr-cuj.log](videos/jaspr-cuj.log).
 
 This was the arm that was supposed to be expensive, and it was the most

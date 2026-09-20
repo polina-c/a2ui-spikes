@@ -8,3 +8,10 @@ build/
 
 # Playwright leaves these behind when a run is interrupted.
 test-results/
+
+# Images and videos live in https://github.com/polina-c/a2ui-spikes-binaries,
+# not here, so that clones stay fast. A run records into videos/ and pushes the
+# result there; only the CUJ logs are committed. Flutter's web/ icons are app
+# scaffolding rather than experiment output, so they are not covered by this.
+ci/experiments/*/videos/*.webm
+ci/experiments/*/videos/*.png

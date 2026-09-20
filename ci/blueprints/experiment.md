@@ -3,6 +3,7 @@
 [a2ui]: https://github.com/a2ui-project/a2ui
 [simple_chat_blueprint]: simple_chat.md
 [inventory]: ../experiments/inventory.md
+[binaries]: https://github.com/polina-c/a2ui-spikes-binaries
 
 ## Goal
 
@@ -27,11 +28,32 @@ should contain README.md with steps to start the app.
 
 ### 3. Evaluate
 
-Execute primary CUJ for each UI framework and model combination, record a video, and place it into the 'videos' subdirectory. 
+Execute primary CUJ for each UI framework and model combination, record a video,
+and write it into the 'videos' subdirectory.
 
 Put your observations and link to the corresponding video into the experiment README.md.
 
-### 4. Add to inventory.
+### 4. Move the media to the binaries repo
+
+No images or videos are committed to this repo. They go to the
+[binaries repo][binaries], so that cloning this one stays fast. Git keeps every
+version of a file forever, and a run a week that adds megabytes of recordings
+makes the repo slow for good.
+
+Push each video and screenshot to [binaries][binaries] at the same path it had
+here, delete it here, and link to the pushed copy:
+
+- a video as `https://github.com/polina-c/a2ui-spikes-binaries/blob/main/<path>`,
+  which GitHub shows in a player
+- a screenshot as `https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/<path>`,
+  which serves the image itself, so it can also be embedded
+
+Push before writing the link, and check that the link resolves. A link to a file
+that was never pushed looks exactly like a working one until someone clicks it.
+
+Text stays here. The CUJ logs are small and worth reading in a diff.
+
+### 5. Add to inventory.
 
 Add short description of the experiment and link to the experiment README.md into the [inventory][inventory].
 

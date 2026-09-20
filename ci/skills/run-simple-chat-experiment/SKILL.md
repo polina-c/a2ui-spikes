@@ -187,15 +187,55 @@ model client a retry with a backoff before recording anything.
 
 Never write a link to a video that does not exist. If an arm cannot be driven to
 completion, say exactly how far it got and why, and link whatever partial
-recording exists. A README claiming a video that is not in `videos/` is worse
-than no video.
+recording exists. A README claiming a video that was never pushed is worse than
+no video, and it looks exactly like a working link until someone clicks it.
 
 Write the observations into the experiment README as the CUJ is executed, while
 the detail is still fresh: what the model produced, what the renderer did with
 it, where the UI was wrong or slow, and what had to be worked around. Compare
 the three arms at the end.
 
-## Step 4: add to inventory
+## Step 4: push the media out of this repo
+
+This repo holds no images and no videos. They go to
+`https://github.com/polina-c/a2ui-spikes-binaries`, because git keeps every
+version of a file forever and a weekly run that adds megabytes of recordings
+makes this repo permanently slow to clone.
+
+Record into `videos/` as above, then, once the arm is done, push what is there
+to the binaries repo and delete the local copy. Each file keeps the path it had
+here, so `ci/experiments/<date>-<time>/videos/react.webm` in this repo becomes
+the same path in that one, and a link can be matched to a file by eye.
+
+Clone the binaries repo into a scratch directory, copy the files in, commit and
+push. Then check every file before linking it: fetch the raw URL and compare
+its sha256 with the local file. A push that half-succeeded and a link to a
+missing file look the same in a README.
+
+Link the pushed copy two ways, because raw.githubusercontent serves `.webm` as
+`audio/webm`, which makes a browser play the sound of a screen recording and
+show nothing:
+
+- a video as `https://github.com/polina-c/a2ui-spikes-binaries/blob/main/<path>`,
+  where GitHub renders a real player
+- a screenshot as `https://raw.githubusercontent.com/polina-c/a2ui-spikes-binaries/main/<path>`,
+  which serves the image itself, so it also works inside `![...](...)`
+
+Those URLs are long enough to make the markdown unreadable inline, so put them
+in reference-style definitions under the file's `H1` and refer to them by name,
+which is how the blueprints already link. In `inventory.md` the names carry the
+experiment folder (`[2026-09-19-1347-react]`), since reference names are
+document-wide and the inventory grows an entry per run.
+
+Text stays in this repo. The CUJ logs are small and worth reading in a diff,
+so `videos/` keeps holding `<framework>-cuj.log` after the recordings leave.
+
+The one exception is scaffolding: the icons `flutter create` writes into
+`flutter/web/` are part of the app, referenced by its own `index.html` and
+`manifest.json`, and they stay. The rule is about what the experiment produces,
+not about every file that happens to be a PNG.
+
+## Step 5: add to inventory
 
 Add the experiment to `experiments/inventory.md`, newest first. An `H2` header
 that is exactly the folder name, then a table, then bullets.
@@ -207,9 +247,11 @@ README.
 
 | Framework | Video | README | Source lines |
 | --- | --- | --- | --- |
-| React | `[react.webm](<date>-<time>/videos/react.webm)` | `[react](<date>-<time>/react/README.md)` | 877 |
+| React | `[react.webm][<date>-<time>-react]` | `[react](<date>-<time>/react/README.md)` | 877 |
 
-The paths in that row are relative to `experiments/`, where the inventory lives.
+The README path in that row is relative to `experiments/`, where the inventory
+lives. The video is not, because it is in the binaries repo: it is a reference
+link whose definition sits under the inventory's `H1`, as step 4 describes.
 
 If the experiment ran more than one model, there is a row per framework and
 model combination rather than per framework, because that is what an arm is, and
