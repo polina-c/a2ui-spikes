@@ -6,7 +6,6 @@
 [2026-09-19-1347-flutter]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/flutter.webm
 [2026-09-19-1347-jaspr]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/jaspr.webm
 
-
 Note: this experiment produced app that allow user to choose model, that took extra code lines.
 
 | Framework | Video                                   | README                                       | Source lines |
