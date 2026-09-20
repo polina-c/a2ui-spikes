@@ -5,12 +5,25 @@
 [2026-09-20-0155-react]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react.webm
 [2026-09-20-0155-flutter]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter.webm
 [2026-09-20-0155-jaspr]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr.webm
+[2026-09-20-0155-react-webllm]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react-webllm.webm
+[2026-09-20-0155-flutter-webllm]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter-webllm.webm
+[2026-09-20-0155-jaspr-webllm]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-webllm.webm
 
 | Framework | Video                                   | README                                       | Source lines |
 | --------- | --------------------------------------- | -------------------------------------------- | ------------ |
 | React     | [react.webm][2026-09-20-0155-react]     | [react](2026-09-20-0155/react/README.md)     | 886          |
 | Flutter   | [flutter.webm][2026-09-20-0155-flutter] | [flutter](2026-09-20-0155/flutter/README.md) | 764          |
 | Jaspr     | [jaspr.webm][2026-09-20-0155-jaspr]     | [jaspr](2026-09-20-0155/jaspr/README.md)     | 1361         |
+
+The in-browser model was implemented in all three apps after the run and its
+arms recorded then. All three failed, and the recordings are kept as the record
+of how far each got.
+
+| Framework | Model | Video | Outcome |
+| --- | --- | --- | --- |
+| React | WebLLM, in the browser | [react-webllm.webm][2026-09-20-0155-react-webllm] | failed: no GPU adapter |
+| Flutter | WebLLM, in the browser | [flutter-webllm.webm][2026-09-20-0155-flutter-webllm] | failed: no GPU adapter |
+| Jaspr | WebLLM, in the browser | [jaspr-webllm.webm][2026-09-20-0155-jaspr-webllm] | failed: no GPU adapter |
 
 * [Experiment README](2026-09-20-0155/README.md): the simple chat app built
   fresh for React, Flutter and Jaspr, with the CUJ run and recorded against
@@ -19,8 +32,9 @@
   which is what `main` was on 2026-09-19 as well: nothing landed upstream
   between the two runs, and `@a2ui/react` 0.11.1, `@a2ui/web_core` 0.11.0,
   `a2ui_core` 0.1.1 and `genui` 0.10.3 are all unchanged too.
-* All three arms ran on Gemini `gemini-flash-latest` at temperature 0.7, max
-  4096 output tokens.
+* The three arms in the first table ran on Gemini `gemini-flash-latest` at
+  temperature 0.7, max 4096 output tokens; the three in the second ran on
+  `Llama-3.2-3B-Instruct-q4f16_1-MLC` in the browser, at the same settings.
 
 ### Observations
 
@@ -45,6 +59,12 @@
   the host overrides what it wants; the names are in a2ui's theming guide and
   in web_core's `basic_catalog/styles/default.ts`. Invented names are ignored
   silently.
+
+* The in-browser arms failed for the machine they ran on, not for the apps:
+  this container's only WebGPU adapter is a SwiftShader software one, which
+  reports no `shader-f16` that the `q4f16_1` models need, and `huggingface.co`
+  is blocked so the weights never arrive. Each recording is about fifteen
+  seconds and ends on the diagnostic the app shows the user.
 
 ### Issues
 

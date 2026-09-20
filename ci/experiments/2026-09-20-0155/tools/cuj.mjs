@@ -1,10 +1,15 @@
 /**
  * Drives the primary CUJ against one arm and records it.
  *
- * Usage: node tools/cuj.mjs <kind> <url> <videoDir> <name>
- *   kind: "dom" for the React and Jaspr arms, which render real elements,
- *         "flutter" for the Flutter arm, which paints a canvas and is driven
- *         through its semantics tree instead.
+ * Usage: node tools/cuj.mjs <kind> <url> <videoDir> <name> [family]
+ *   kind:   "dom" for the React and Jaspr arms, which render real elements,
+ *           "flutter" for the Flutter arm, which paints a canvas and is driven
+ *           through its semantics tree instead.
+ *   family: "gemini" (the default) types the key into the picker, "local"
+ *           takes the in-browser model, which needs no key.
+ *
+ * The recording is kept whatever happens. An arm that fails is a result, and
+ * the video of it failing is the evidence for how far it got.
  */
 import {chromium} from 'playwright';
 import fs from 'node:fs';
@@ -12,10 +17,11 @@ import path from 'node:path';
 import {choose, LANDING, PRODUCT, CHROME} from './answers.mjs';
 import {LAUNCH} from './launch.mjs';
 
-const [kind, url, videoDir, name] = process.argv.slice(2);
+const [kind, url, videoDir, name, family = 'gemini'] = process.argv.slice(2);
 const KEY = process.env.GEMINI_API_KEY;
-if (!KEY) throw new Error('GEMINI_API_KEY is not set.');
 if (!['dom', 'flutter'].includes(kind)) throw new Error(`unknown kind: ${kind}`);
+if (!['gemini', 'local'].includes(family)) throw new Error(`unknown family: ${family}`);
+if (family === 'gemini' && !KEY) throw new Error('GEMINI_API_KEY is not set.');
 
 const size = {width: 1280, height: 900};
 const beat = (ms = 1200) => new Promise(r => setTimeout(r, ms));
@@ -61,6 +67,24 @@ async function lastTurnShape() {
     .locator('.surface')
     .count();
   return ` [surfaces on screen: ${surfaces}, last reply drew one: ${drewHere > 0}]`;
+}
+
+/**
+ * The text of a failed turn, if the app is showing one.
+ *
+ * An arm that cannot answer says so straight away, and waiting three minutes
+ * for options that are never coming wastes most of the recording.
+ */
+async function failureText() {
+  if (kind === 'dom') {
+    const failed = page.locator('.bubble.failed');
+    return (await failed.count()) > 0 ? (await failed.last().innerText()).trim() : '';
+  }
+  // Flutter's semantics tree has no line breaks to split on, so the message is
+  // taken from where it starts to the end of that node's text.
+  const said = await questionText();
+  const at = said.indexOf('That did not work');
+  return at === -1 ? '' : said.slice(at).split('\n')[0].trim();
 }
 
 /** The last thing the assistant said in words, error bubbles included. */
@@ -147,6 +171,8 @@ async function pressUntil(label, expected, tries = 5) {
 async function waitForNewOptions(seen, timeout = 180000) {
   const deadline = Date.now() + timeout;
   while (Date.now() < deadline) {
+    const failed = await failureText();
+    if (failed) throw new ArmFailed(failed);
     const fresh = (await options()).filter(l => !seen.has(l));
     if (fresh.length > 0) {
       // Let the rest of the turn arrive before reading it.
@@ -159,12 +185,36 @@ async function waitForNewOptions(seen, timeout = 180000) {
   throw new Error('timed out waiting for the assistant to draw something new');
 }
 
+/** The app told the user it could not answer. */
+class ArmFailed extends Error {}
+
 await page.goto(url, {waitUntil: 'networkidle'});
 await beat(kind === 'flutter' ? 6000 : 2000);
 
 // Steps 2 and 3: the app opens on the model picker with the defaults chosen.
-note('opened the app on the model picker');
-await page.locator('input[type=password]').fill(KEY);
+note(`opened the app on the model picker, taking the ${family} family`);
+if (family === 'gemini') {
+  await page.locator('input[type=password]').fill(KEY);
+} else {
+  // Jane's other path: no key to hand, so the model runs in the browser.
+  //
+  // Matched on the card's heading and nothing else. Matching the card by the
+  // words anywhere inside it picks up the Gemini card too, whose note says the
+  // key "stays in this browser tab" - the same cross-talk the answer rules
+  // have to avoid when reading the assistant's options.
+  if (kind === 'dom') {
+    await page
+      .locator('.family')
+      .filter({has: page.getByText('In this browser', {exact: true})})
+      .click();
+  } else {
+    await page
+      .locator('flt-semantics')
+      .filter({hasText: 'In this browser'})
+      .last()
+      .evaluate(el => el.click());
+  }
+}
 await beat(1500);
 await pressUntil('Start the chat', 'Send');
 note('accepted the default model and started the chat');
@@ -179,12 +229,21 @@ await clickByName('Send');
 note('sent the default prompt');
 
 let landed = false;
+let failure = '';
 const seen = new Set();
 for (let step = 0; step < 8 && !landed; step++) {
   let labels;
   try {
     labels = await waitForNewOptions(seen);
-  } catch {
+  } catch (error) {
+    if (error instanceof ArmFailed) {
+      note(`step ${step}: the app could not answer: ${JSON.stringify(error.message.slice(0, 400))}`);
+      failure = error.message;
+      // A still of what the user is looking at, so the failure can be read
+      // without playing the video.
+      await page.screenshot({path: path.join(videoDir, `${name}-failure.png`)});
+      break;
+    }
     // Say what was on screen when it stopped: an error bubble here is the
     // difference between "the model refused" and "the driver missed it".
     const last = await lastSaid();
@@ -227,7 +286,9 @@ for (let step = 0; step < 8 && !landed; step++) {
   await beat(1500);
 }
 
-await beat(2500);
+// Hold on the last frame, longer when it is a failure: the point of the
+// recording is then the message on screen, and it has to be readable.
+await beat(failure ? 5000 : 2500);
 await context.close();
 await browser.close();
 
@@ -241,5 +302,11 @@ if (recorded[0]) {
   note('no video was recorded');
 }
 fs.rmSync(recordDir, {recursive: true, force: true});
+const outcome = landed
+  ? 'CUJ COMPLETE'
+  : failure
+    ? 'CUJ FAILED'
+    : 'CUJ INCOMPLETE';
+// note() prints as well as logging, so the outcome is not echoed again.
+note(outcome);
 fs.writeFileSync(path.join(videoDir, `${name}-cuj.log`), log.join('\n') + '\n');
-console.log(landed ? 'CUJ COMPLETE' : 'CUJ INCOMPLETE');

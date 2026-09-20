@@ -13,6 +13,12 @@
 [jaspr-picker]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-picker.png
 [jaspr-ui]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-generated-ui.png
 [jaspr-landing]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-landing.png
+[react-webllm]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react-webllm.webm
+[flutter-webllm]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter-webllm.webm
+[jaspr-webllm]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-webllm.webm
+[react-webllm-still]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react-webllm-failure.png
+[flutter-webllm-still]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter-webllm-failure.png
+[jaspr-webllm-still]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr-webllm-failure.png
 
 One run of [the simple chat experiment](../../blueprints/experiment.md): build the
 [simple chat app](../../blueprints/simple_chat.md) for React, Flutter and Jaspr
@@ -62,22 +68,35 @@ All three implement it now. Neither Dart arm has a JavaScript bundler, so each
 loads WebLLM as an ES module through a small `web/webllm_bridge.js` and reaches
 it with `dart:js_interop`, handing the conversation across as JSON.
 
-**It has never been run, on any arm.** WebLLM needs WebGPU and the weights from
-`huggingface.co`, and the container these were built in refuses that host, so
-there is nothing to load. The GPU half is subtler than it first looks, and the
-first version of this note got it wrong: `navigator.gpu` is undefined on
-`about:blank` but present on a served page, `requestAdapter()` returns null
-under default flags, and with `--enable-unsafe-webgpu
---enable-features=WebGPU,WebGPUService,Vulkan --enable-unsafe-swiftshader`
-Chromium hands back a SwiftShader software adapter that creates a device and
-runs a compute shader in 36 ms. That adapter reports no `shader-f16`, which the
-`q4f16_1` models the apps list need, and it is a CPU rasteriser, so even with
-the weights to hand it is not what a recorded CUJ would run on. The path was
-verified as far as it can be here - the picker starts without a key, the chat
-header names the in-browser model, the call crosses into WebLLM and comes back
-with the GPU diagnostic, identically on all three arms - and no further. Whether the three
-arms can drive the CUJ on a local model is an open question, and the honest
-place to answer it is a run on a machine with a GPU.
+**All three in-browser arms were run, and all three failed.** The recordings
+are kept, because how far an arm gets is the result: [react-webllm.webm][react-webllm],
+[flutter-webllm.webm][flutter-webllm] and [jaspr-webllm.webm][jaspr-webllm],
+with stills of where each stopped ([React][react-webllm-still],
+[Flutter][flutter-webllm-still], [Jaspr][jaspr-webllm-still]) and the logs in
+[videos/](videos). Each one shows the same thing: the picker takes the
+in-browser family with no key, the chat header names the local model, the
+default prompt goes out, and the app comes back with the GPU diagnostic instead
+of an answer. That is the whole arm, and it takes about fifteen seconds.
+
+**What is untested is everything after the weights load**, and two things stop
+them loading here.
+
+The first is the weights themselves: WebLLM fetches them from
+`huggingface.co`, which the egress policy refuses, along with the CDN the two
+Dart arms load the library from. Nothing to load, so nothing to answer with.
+
+The second is the GPU, and it is subtler than it looks - the first version of
+this note got it wrong. `navigator.gpu` is undefined on `about:blank` whatever
+the machine, which is what made the first check meaningless; on a served page
+it is there, and `requestAdapter()` returns null only under default flags. With
+`--enable-unsafe-webgpu --enable-features=WebGPU,WebGPUService,Vulkan
+--enable-unsafe-swiftshader` Chromium hands back a SwiftShader software adapter
+that creates a device and runs a compute shader in 36 ms. That adapter reports
+no `shader-f16`, which the `q4f16_1` models the apps list need, and it is a CPU
+rasteriser, so it would not carry a CUJ even with the weights to hand.
+
+So whether the three arms can drive the CUJ on a local model is still open, and
+the place to answer it is a run on a machine with a real GPU.
 
 The line counts above are the run's and are left alone; this work landed after
 it. It adds 29 lines to React, 126 to Flutter and 119 to Jaspr, plus tests.

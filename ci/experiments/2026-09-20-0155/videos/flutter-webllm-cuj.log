@@ -1,0 +1,6 @@
+opened the app on the model picker, taking the local family
+accepted the default model and started the chat
+sent the default prompt
+step 0: the app could not answer: "That did not work: Error: WebGPU is present but no GPU adapter is available, so the model cannot run in this browser. This is what a machine with no GPU, or a headless one, reports. Pick a Gemini model instead.Send"
+video saved as flutter-webllm.webm
+CUJ FAILED

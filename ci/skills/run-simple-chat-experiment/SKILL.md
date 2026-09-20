@@ -223,8 +223,10 @@ three fail in ways that look like something else. Fix them first.
 `jaspr build` also refuses to run when `which dart` is the Flutter wrapper:
 put `/opt/flutter/bin/cache/dart-sdk/bin` first on `PATH` for that command.
 
-An arm on the in-browser model cannot be recorded in this container, so do not
-plan one into a run here. The blocker is the weights, not the GPU:
+An arm on the in-browser model cannot *succeed* in this container, but record it
+anyway: `node tools/cuj.mjs <kind> <url> videos <framework>-webllm local` takes
+the in-browser family in the picker and films the failure, which is what the
+2026-09-20-0155 arms did. The blocker is the weights, not the GPU:
 `huggingface.co`, where WebLLM fetches them, is refused by the egress policy,
 and so is the CDN the two Dart arms load the library from.
 
@@ -238,16 +240,22 @@ which the `q4f16_1` models the apps list need, and it runs on the CPU, so it is
 not something to record a CUJ against even with the weights to hand.
 
 All three apps implement the path and fail with a clear diagnostic rather than
-a hang. Recording it means a machine with a real GPU and both hosts reachable,
-and a much longer wait per turn than Gemini needs - budget for the model
-download before the first answer.
+a hang, which is what the recording shows. A *successful* in-browser arm means
+a machine with a real GPU and both hosts reachable, and a much longer wait per
+turn than Gemini needs - budget for the model download before the first
+answer.
 
 Point `recordVideo` at a directory of its own per run, then move the file to
 `videos/<framework>.webm`. Playwright names the file itself, so a run that picks
 its recording out of the shared `videos/` folder can pick up, or delete, another
 arm's video. That happened in the 2026-09-19-1347 run and cost two re-records.
 
-One driver can serve all three arms if it takes the arm's kind. React and Jaspr
+One driver can serve all three arms if it takes the arm's kind, and the model
+family as a fifth argument: `gemini`, which types the key into the picker, or
+`local`, which takes the in-browser model and needs none. Pick the family by
+its heading rather than by words anywhere in its card - the Gemini card says the
+key "stays in this browser tab", which matches a search for the in-browser card,
+the same cross-talk the answer rules have to avoid. React and Jaspr
 render real elements and are driven normally. Flutter web paints a canvas, so
 the app has to call `SemanticsBinding.instance.ensureSemantics()` and the driver
 works through `flt-semantics[role="button"]`; a real pointer click is swallowed
@@ -262,6 +270,15 @@ labels that have not been seen before as the current question's options.
 
 Gemini returns 503 under load often enough to end a recorded run. Give the
 model client a retry with a backoff before recording anything.
+
+Record every arm, including one that cannot work here. An arm that fails is a
+result, and the recording is the evidence: it shows how far it got and what the
+user was looking at when it stopped. `tools/cuj.mjs` keeps the video whatever
+happens and ends in one of three ways - `CUJ COMPLETE`, `CUJ FAILED` when the
+app told the user it could not answer, or `CUJ INCOMPLETE` when it simply
+stopped drawing - and on a failure it also saves `<name>-failure.png`. Publish
+those recordings like any other and label them failed in the README, the
+gallery and the inventory, so nobody takes one for a working arm.
 
 Never write a link to a video that does not exist. If an arm cannot be driven to
 completion, say exactly how far it got and why, and link whatever partial
