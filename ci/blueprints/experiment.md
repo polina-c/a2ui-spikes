@@ -32,6 +32,13 @@ should contain README.md with steps to start the app.
 Execute primary CUJ for each UI framework and model combination, record a video,
 and write it into the 'videos' subdirectory.
 
+Record every arm, including one that does not work. An arm that fails is a
+result: the video of it failing shows how far it got and what the user was
+looking at when it stopped, and that is the evidence for the finding. Keep the
+recording, say in the README where it stopped and why, and label it as a failed
+arm so nobody takes it for a working one. The only run with no video is one that
+never started.
+
 Put your observations and link to the corresponding video into the experiment README.md.
 
 ### 4. Move the media to the binaries repo
@@ -46,7 +53,9 @@ because a video committed to a repo cannot be played on github.com at all.
 
 Push each video and screenshot to [binaries][binaries] at the same path it had
 here, delete it here, and add a gallery page for the experiment at
-`ci/experiments/<date>-<time>/index.html` that plays the arms side by side.
+`ci/experiments/<date>-<time>/index.html` that plays the arms side by side. A
+failed arm is published like any other, marked as failed on the gallery page and
+in the inventory.
 The site has one shared `style.css`, so the page is markup only.
 
 Link the served copy, never a github.com or raw URL:

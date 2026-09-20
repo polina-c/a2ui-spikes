@@ -40,6 +40,11 @@ flutter test
 * `lib/knowledge.dart` - the knowledge base, read from the bundled assets
 * `web/flutter_bootstrap.js` - loads CanvasKit from this app instead of
   gstatic.com, so the app starts with no third-party request
+* `lib/model_client.dart` - the interface the chat talks to, so Gemini and the
+  in-browser model are the same thing to it
+* `lib/local.dart` and `web/webllm_bridge.js` - the in-browser model: a Flutter
+  web app has no JavaScript bundler, so WebLLM is loaded as an ES module and
+  reached through `dart:js_interop`, with the conversation crossing as JSON
 
 ## Notes
 
@@ -47,6 +52,32 @@ The knowledge base is embedded rather than fetched: Flutter bundles assets only
 from inside the package, so `tools/sync-domain.sh` copies `ci/domain` into
 `assets/domain` and the app reads it from the bundle.
 
-The local model family is listed in the picker for completeness. This build
-only speaks to Gemini; WebLLM is a JavaScript library and wiring it into a
-Flutter web app through interop was out of scope for this run.
+The in-browser model is described below.
+
+## The in-browser model
+
+The picker's second family runs the model on this machine with
+[WebLLM](https://github.com/mlc-ai/web-llm) instead of calling Gemini: no key,
+nothing leaves the browser, and a download of a gigabyte or more before the
+first answer. It needs two things this repo cannot give it:
+
+* **A browser with a usable GPU.** WebLLM runs on WebGPU. `navigator.gpu` has
+  to exist (Chrome or Edge 113+, over https or localhost) *and*
+  `requestAdapter()` has to return an adapter, which a machine with no GPU - a
+  headless CI container, for instance - does not. Both cases are checked up
+  front and reported in the chat, because the failure from inside WebLLM
+  otherwise arrives much later and reads like a hang.
+* **Two reachable hosts.** The library itself, and the weights from
+  `huggingface.co`.
+
+**This path has never been run.** The container these apps were built in
+refuses `huggingface.co`, where the weights come from, so there is nothing to
+load. Its WebGPU is a red herring worth knowing about: with default flags
+`requestAdapter()` returns null, but started with `--enable-unsafe-webgpu
+--enable-features=WebGPU,WebGPUService,Vulkan --enable-unsafe-swiftshader`
+Chromium hands back a SwiftShader software adapter that creates a device and
+runs a compute shader. It reports no `shader-f16`, which the `q4f16_1` models
+listed here need, and it runs on the CPU. So the path was verified only as far
+as it can be: the picker starts without a key, the chat header names the
+in-browser model, and the call reaches WebLLM and comes back with the GPU
+diagnostic. What happens after the weights load is untested.

@@ -18,8 +18,7 @@ class _PickerPageState extends State<PickerPage> {
 
   ModelFamily get _family => families.firstWhere((f) => f.id == _choice.familyId);
 
-  bool get _ready =>
-      _family.id == 'gemini' && (_key.text.trim().isNotEmpty || !_family.needsKey);
+  bool get _ready => !_family.needsKey || _key.text.trim().isNotEmpty;
 
   @override
   void dispose() {
@@ -121,12 +120,13 @@ class _PickerPageState extends State<PickerPage> {
                   ),
                   onChanged: (_) => setState(() {}),
                 ),
-              if (_family.id != 'gemini')
+              if (!_family.needsKey)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
-                    'The local family is listed for completeness. This build '
-                    'only speaks to Gemini.',
+                    'The model runs on this machine. Nothing is sent anywhere, '
+                    'and the first run downloads a gigabyte or more before the '
+                    'first answer.',
                     style: theme.textTheme.bodySmall,
                   ),
                 ),
@@ -134,7 +134,9 @@ class _PickerPageState extends State<PickerPage> {
               FilledButton(
                 onPressed: _ready
                     ? () => widget.onStart(
-                        _choice.copyWith(apiKey: _key.text.trim()),
+                        _family.needsKey
+                            ? _choice.copyWith(apiKey: _key.text.trim())
+                            : _choice,
                       )
                     : null,
                 child: const Text('Start the chat'),

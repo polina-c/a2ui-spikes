@@ -1,0 +1,7 @@
+opened the app on the model picker, taking the local family
+accepted the default model and started the chat
+default prompt in the box: "Hi, I am looking for a dishwasher. I am overwhelmed with choices and don't know where to start."
+sent the default prompt
+step 0: the app could not answer: "That did not work: Error: WebGPU is present but no GPU adapter is available, so the model cannot run in this browser. This is what a machine with no GPU, or a headless one, reports. Pick a Gemini model instead."
+video saved as jaspr-webllm.webm
+CUJ FAILED

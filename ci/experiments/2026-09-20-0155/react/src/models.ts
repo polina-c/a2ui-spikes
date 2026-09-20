@@ -29,8 +29,8 @@ export const FAMILIES: Family[] = [
   },
   {
     id: 'local',
-    label: 'On this computer',
-    note: 'Downloads a model into the browser with WebLLM. No key, but a long first load and weaker answers.',
+    label: 'In this browser',
+    note: 'Runs the model on this machine with WebLLM. No key, but a long first load, and it needs a browser with WebGPU.',
     models: [
       {id: 'Llama-3.2-3B-Instruct-q4f16_1-MLC', label: 'Llama 3.2 3B'},
       {id: 'Qwen2.5-3B-Instruct-q4f16_1-MLC', label: 'Qwen 2.5 3B'},
