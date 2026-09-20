@@ -1,0 +1,26 @@
+name: simple_chat_jaspr
+description: The simple chat app on Jaspr, with an A2UI renderer written on a2ui_core.
+version: 0.0.1
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  a2ui_core: ^0.1.1
+  http: ^1.6.0
+  jaspr: ^0.23.4
+  json_schema_builder: ^0.1.7
+  web: ^1.1.1
+
+dev_dependencies:
+  build_runner: ^2.10.0
+  # Held below 4.8.6: from there it wants analyzer >=13.3.0 while
+  # jaspr_builder wants ^12.1.0, and a freshly generated project does not
+  # resolve. Same as in the 2026-09-19-1347 run.
+  build_web_compilers: ^4.8.5
+  jaspr_builder: ^0.23.4
+  lints: ^5.0.0
+  test: ^1.31.1
+
+jaspr:
+  mode: client

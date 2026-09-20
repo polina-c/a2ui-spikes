@@ -1,0 +1,10 @@
+{
+  "name": "cuj-tools",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Drives the primary CUJ against any of the arms and records it.",
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

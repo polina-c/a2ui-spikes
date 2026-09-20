@@ -1,5 +1,78 @@
 # Experiments inventory
 
+## 2026-09-20-0155
+
+[2026-09-20-0155-react]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/react.webm
+[2026-09-20-0155-flutter]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/flutter.webm
+[2026-09-20-0155-jaspr]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-20-0155/videos/jaspr.webm
+
+| Framework | Video                                   | README                                       | Source lines |
+| --------- | --------------------------------------- | -------------------------------------------- | ------------ |
+| React     | [react.webm][2026-09-20-0155-react]     | [react](2026-09-20-0155/react/README.md)     | 886          |
+| Flutter   | [flutter.webm][2026-09-20-0155-flutter] | [flutter](2026-09-20-0155/flutter/README.md) | 764          |
+| Jaspr     | [jaspr.webm][2026-09-20-0155-jaspr]     | [jaspr](2026-09-20-0155/jaspr/README.md)     | 1361         |
+
+* [Experiment README](2026-09-20-0155/README.md): the simple chat app built
+  fresh for React, Flutter and Jaspr, with the CUJ run and recorded against
+  each.
+* a2ui commit [`2d2a714`](https://github.com/a2ui-project/a2ui/commit/2d2a714dafd22590e705c32a47cd5390ab96fdc5),
+  which is what `main` was on 2026-09-19 as well: nothing landed upstream
+  between the two runs, and `@a2ui/react` 0.11.1, `@a2ui/web_core` 0.11.0,
+  `a2ui_core` 0.1.1 and `genui` 0.10.3 are all unchanged too.
+* All three arms ran on Gemini `gemini-flash-latest` at temperature 0.7, max
+  4096 output tokens.
+
+### Observations
+
+* All three arms completed the CUJ and recommended the Just Shining Eco from
+  the same answers, which is what the knowledge base prescribes for Jane.
+* Nothing moved upstream between this run and 2026-09-19-1347, and every defect
+  that run recorded reproduced exactly. That is the main thing a repeated run
+  buys.
+* Flutter is now the smallest arm at 764 lines, because genui writes the
+  protocol half of the system prompt, runs the conversation loop and themes the
+  generated widgets. Its prompt file is 24 lines; the two hand-written ones are
+  102 and 107.
+* Jaspr costs 475 lines more than React. 220 of those are the renderer and its
+  catalog; most of the rest is the stylesheet for the generated components,
+  which the React arm gets from its package.
+* The apps were written fresh for this run, so these line counts compare to
+  each other but not to the 2026-09-19-1347 row.
+* Tests on top of the source counts: React 53, Flutter 55, Jaspr 149. The React
+  arm has tests this time, which closes the gap the previous run flagged.
+* Correction to the previous run: the host does not have to define the
+  `--a2ui-*` palette. The basic catalog injects defaults at `:where(:root)` and
+  the host overrides what it wants; the names are in a2ui's theming guide and
+  in web_core's `basic_catalog/styles/default.ts`. Invented names are ignored
+  silently.
+
+### Issues
+
+* `gemini-flash-latest` rewrote a landing page URL it was asked to quote,
+  dropping a path segment, and the CUJ "completed" onto a GitHub 404. All three
+  arms now send the machine's name and let the app resolve the address; the
+  driver logs the page title so a 404 is visible.
+* `a2ui_core` throws on a message shape it does not recognise, so one malformed
+  message from the model loses the whole turn unless the host applies messages
+  one at a time. The Jaspr arm lost a recorded run to this before it did.
+* Prompt generation still exists only in a2ui's Python SDK and in genui, so the
+  React and Jaspr arms hand-wrote about a hundred lines of instructions each.
+* The web catalog still cannot express a link, so sending a user to a product
+  page needs a host-side workaround on every web app. genui's `openUrl` is the
+  exception, but it takes the address from the model, which is the shape that
+  failed above.
+* `@a2ui/react` 0.11.1 still advertises a stylesheet it does not ship, still
+  does not export the one it does, and still depends on a core that stops at
+  0.11.0. `@a2ui/web_core`'s root export still points at v0.8.
+* Jaspr still needs `build_web_compilers` held at `^4.8.5` to resolve at all,
+  and a project generated into a directory called `jaspr` is still named
+  `jaspr` and cannot depend on the package of the same name.
+* Publishing the recordings needed a second attempt: `git push` and the API
+  write path to both repositories were refused with 403 for this session until
+  the Claude GitHub App was installed on them. The videos are published now,
+  but the run had finished by then. A scheduled run should check that it can
+  push before it records anything.
+
 ## 2026-09-19-1347
 
 [2026-09-19-1347-react]: https://polina-c.github.io/a2ui-spikes-binaries/ci/experiments/2026-09-19-1347/videos/react.webm
