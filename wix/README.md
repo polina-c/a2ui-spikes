@@ -14,7 +14,7 @@ Is it possible to enable a Wix site to provide a chat that uses free local LLM, 
 
 ## Experiment 1
 
-Yes, it is easy to run a WebLLM chat on a Wix page, with RAG over the [facts 
+Yes, it is easy to run a WebLLM chat WITHOUT UI on a Wix page, with RAG over the [facts 
 about the business](./minimal/content/knowledge.js).
 
 [`wix/minimal`](minimal/README.md) is a Wix page with a chat whose model runs in the
@@ -37,4 +37,6 @@ Options for local models:
 - https://github.com/eugeneyan/open-llms
 - https://www.instaclustr.com/education/open-source-ai/top-7-open-source-llms-for-2026/
 
-Next step: run evals for a2ui on some local free models.
+An, we we run evals on Gemma 4 and the Chrome AI model, with reasonable results, against Express format.
+
+Next step: run evals for a2ui on some local free models, select model and create simple catalog.
