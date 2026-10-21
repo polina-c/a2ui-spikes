@@ -3,15 +3,20 @@
 ## Overview
 
 Build a Flutter app where the user chats with an assistant that answers in
-plain text only, with no generated UI.
+text only, with no generated UI.
 
 ## Screen
 
 The app has a single screen: a scrolling list of messages and a text field with
 a send button below it. The text field starts filled with "Hi, I am looking for
 a dishwasher. I am overwhelmed with choices and don't know where to start." so
-the user can send it as is. Links in the assistant's messages open in the
-browser.
+the user can send it as is.
+
+The model answers in Markdown, and the app renders it as formatted text:
+headings, bold and italic text, lists, tables, code blocks, and links that
+open in the browser. The user never sees raw Markdown syntax. An answer is
+rendered while it streams, so an unfinished list or code block at the end of
+a partial answer still looks right.
 
 ## Model
 
@@ -21,10 +26,10 @@ into the message list as it arrives.
 
 ## Prompt
 
-The system prompt is the content of [chat_blueprint.md](../doc/chat_blueprint.md),
+The system prompt is the content of [chat_blueprint.md](../../doc/chat_blueprint.md),
 followed by the domain knowledge in
-[knowledge.md](../doc/domain/just_shining/knowledge.md) and the landing pages
-in [landing_pages](../doc/domain/just_shining/landing_pages/). These files are
+[knowledge.md](../../doc/domain/just_shining/knowledge.md) and the landing pages
+in [landing_pages](../../doc/domain/just_shining/landing_pages/). These files are
 bundled with the app as assets.
 
 ## Conversation
@@ -44,3 +49,8 @@ answer and any added messages, and asks the model to continue. If the user
 added nothing, the answer continues in the same message. If the user added
 context, the model writes a new answer that takes it into account. Sending a
 message while the answer is streaming, without pausing first, is not possible.
+
+## Code quality
+
+The code should be easy to read, nice and simple, because it will be used
+as boilerplaite for enhancements.
