@@ -39,4 +39,4 @@ and a drain in about an hour.
 
 $699. [Add to Cart]
 
-Self-link: https://github.com/polina-c/a2ui-spikes/blob/main/domain/landing_pages/classic.md
+Self-link: https://github.com/polina-c/a2ui-spikes/blob/main/simple_chat/doc/domain/just_shining/landing_pages/classic.md

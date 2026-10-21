@@ -26,3 +26,7 @@ class _Json {
   static const String storyScriptYaml = 'storyScriptYaml';
 }
 ```
+
+## Non-asset binaries
+
+Stor binaries, that are not in-app assets (for example, ofr documentation), in https://github.com/polina-c/a2ui-spikes-binaries.

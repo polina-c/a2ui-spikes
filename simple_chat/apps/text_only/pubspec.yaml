@@ -1,0 +1,33 @@
+name: text_only
+description: "Text-only chat that guides users to a product."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.5
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_markdown_plus: ^1.0.7
+  http: ^1.6.0
+  shared_ui:
+    path: ../../shared_ui
+  url_launcher: ^6.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # assets/doc links to simple_chat/doc, so the chat blueprint and the domain
+  # knowledge are bundled from where they are written rather than copied.
+  assets:
+    - assets/doc/chat_blueprint.md
+    - assets/doc/domain/just_shining/
+    - assets/doc/domain/just_shining/landing_pages/

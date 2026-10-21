@@ -5,4 +5,5 @@ environment:
   sdk: ^3.13.5
 
 workspace:
+  - simple_chat/apps/text_only
   - simple_chat/shared_ui

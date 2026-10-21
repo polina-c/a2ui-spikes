@@ -36,4 +36,4 @@ No installation is needed.
 
 $329. [Add to Cart]
 
-Self-link: https://github.com/polina-c/a2ui-spikes/blob/main/domain/landing_pages/mini.md
+Self-link: https://github.com/polina-c/a2ui-spikes/blob/main/simple_chat/doc/domain/just_shining/landing_pages/mini.md
