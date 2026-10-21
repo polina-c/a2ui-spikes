@@ -1,0 +1,8 @@
+name: a2ui_spikes
+publish_to: none
+
+environment:
+  sdk: ^3.13.5
+
+workspace:
+  - simple_chat/shared_ui

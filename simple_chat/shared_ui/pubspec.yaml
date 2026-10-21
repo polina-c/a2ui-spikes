@@ -1,0 +1,19 @@
+name: shared_ui
+description: UI components shared by the simple chat experiments.
+publish_to: "none"
+
+environment:
+  sdk: ^3.13.5
+  flutter: ">=3.35.7"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_markdown_plus: ^1.0.7
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter

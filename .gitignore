@@ -4,6 +4,7 @@ dist/
 build/
 .dart_tool/
 .packages
+/pubspec.lock
 *.tsbuildinfo
 
 # Playwright leaves these behind when a run is interrupted.
