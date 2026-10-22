@@ -69,6 +69,16 @@ class _ChatPageState extends State<ChatPage> {
       for (final message in messages)
         if (message.text.isNotEmpty) _MessageBubble(message: message),
       ThinkingBox(controller: _chat.thinking),
+      // Once the answer is streaming the thinking box is gone, so the dots
+      // carry on under the answer instead.
+      if (_chat.status == ChatStatus.streaming && !_chat.thinking.isVisible)
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            child: AnimatedEllipsis(),
+          ),
+        ),
       if (error != null)
         Padding(
           padding: const EdgeInsets.all(8),

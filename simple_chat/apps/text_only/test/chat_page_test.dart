@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_ui/shared_ui.dart';
 import 'package:text_only/chat_page.dart';
 
 import 'fake_assistant.dart';
@@ -32,6 +33,20 @@ void main() {
       find.textContaining('Pick the Slim.', findRichText: true),
       findsOneWidget,
     );
+  });
+
+  testWidgets('dots stay under the answer while it streams', (tester) async {
+    await pumpPage(tester);
+    await tester.tap(find.byTooltip('Send'));
+    await tester.pump();
+
+    assistant.write('Partial');
+    await tester.pump();
+    expect(find.byType(AnimatedEllipsis), findsOneWidget);
+
+    await assistant.finish();
+    await tester.pump();
+    expect(find.byType(AnimatedEllipsis), findsNothing);
   });
 
   testWidgets('pause, add context, and resume', (tester) async {

@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "simple-chat-text",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "simple_chat/apps/text_only",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "toolArgs": ["--dart-define=GEMINI_API_KEY=${env:GEMINI_API_KEY}"]
+    }
+  ]
+}

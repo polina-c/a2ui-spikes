@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
+import 'animated_ellipsis.dart';
+
 /// Collects the agent's thinking as it streams in.
 ///
 /// A [ThinkingBox] listens to this, so chunks can be added from wherever the
@@ -66,17 +68,12 @@ class ThinkingBox extends StatefulWidget {
   /// long ramble cannot push the conversation off screen.
   static const double _maxHeight = 120.0;
 
-  /// One full cycle of the ellipsis.
-  static const Duration _ellipsisPeriod = Duration(milliseconds: 1200);
-
   @override
   State<ThinkingBox> createState() => _ThinkingBoxState();
 }
 
-class _ThinkingBoxState extends State<ThinkingBox>
-    with SingleTickerProviderStateMixin {
+class _ThinkingBoxState extends State<ThinkingBox> {
   final ScrollController _scrollController = ScrollController();
-  late final AnimationController _ellipsis;
 
   /// Whether new thought should pull the view down with it.
   ///
@@ -90,20 +87,7 @@ class _ThinkingBoxState extends State<ThinkingBox>
   static const double _tailTolerance = 8.0;
 
   @override
-  void initState() {
-    super.initState();
-    // Built here rather than in a field initializer: an empty box never
-    // reaches the ellipsis while building, so a lazy `late final` would first
-    // run in `dispose`, where looking up the ticker's ancestor is not allowed.
-    _ellipsis = AnimationController(
-      vsync: this,
-      duration: ThinkingBox._ellipsisPeriod,
-    )..repeat();
-  }
-
-  @override
   void dispose() {
-    _ellipsis.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -178,9 +162,8 @@ class _ThinkingBoxState extends State<ThinkingBox>
                           controller: _scrollController,
                           child: MarkdownBody(
                             data: thought,
-                            styleSheet: MarkdownStyleSheet.fromTheme(
-                              theme,
-                            ).copyWith(p: style),
+                            styleSheet: MarkdownStyleSheet.fromTheme(theme)
+                                .copyWith(p: style),
                           ),
                         ),
                       ),
@@ -188,35 +171,14 @@ class _ThinkingBoxState extends State<ThinkingBox>
                   ),
                 // Kept outside the scroll view so it stays visible while the
                 // thought above it scrolls.
-                Align(
+                const Align(
                   alignment: Alignment.center,
-                  child: _AnimatedEllipsis(animation: _ellipsis, style: style),
+                  child: AnimatedEllipsis(),
                 ),
               ],
             ),
           ),
         );
-      },
-    );
-  }
-}
-
-/// A '.', '..', '...' cycle, showing that more thought is still coming.
-class _AnimatedEllipsis extends StatelessWidget {
-  const _AnimatedEllipsis({required this.animation, required this.style});
-
-  final Animation<double> animation;
-  final TextStyle? style;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, _) {
-        final int dots = 1 + (animation.value * 3).floor().clamp(0, 2);
-        // Padded to a constant width so the line does not twitch as the dot
-        // count changes.
-        return Text('.' * dots + ' ' * (3 - dots), style: style);
       },
     );
   }
