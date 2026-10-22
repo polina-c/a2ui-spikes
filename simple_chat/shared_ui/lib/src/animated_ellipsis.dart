@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 
-/// A '.', '..', '...' cycle, showing that more is still coming.
+/// Dots that cycle from one to three, showing that more is still coming.
+///
+/// Drawn as circles rather than text, because a period is a small glyph even
+/// in a large font.
 class AnimatedEllipsis extends StatefulWidget {
-  const AnimatedEllipsis({super.key, this.style});
+  const AnimatedEllipsis({super.key, this.dotSize = 10.0, this.color});
 
-  /// Defaults to heavy, widely spaced [TextTheme.headlineLarge] in the muted
-  /// text color, big enough to notice beside body text.
-  final TextStyle? style;
+  /// The diameter of each dot.
+  final double dotSize;
+
+  /// Defaults to the muted text color of the theme.
+  final Color? color;
 
   /// One full cycle of the ellipsis.
   static const Duration period = Duration(milliseconds: 1200);
+
+  static const int _maxDots = 3;
 
   @override
   State<AnimatedEllipsis> createState() => _AnimatedEllipsisState();
@@ -30,23 +37,34 @@ class _AnimatedEllipsisState extends State<AnimatedEllipsis>
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final TextStyle? style =
-        widget.style ??
-        theme.textTheme.headlineLarge?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 6,
-          height: 0.8,
-        );
+    final Color color =
+        widget.color ?? Theme.of(context).colorScheme.onSurfaceVariant;
 
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, _) {
-        final int dots = 1 + (_animation.value * 3).floor().clamp(0, 2);
-        // Padded to a constant width so the line does not twitch as the dot
-        // count changes.
-        return Text('.' * dots + ' ' * (3 - dots), style: style);
+        const int max = AnimatedEllipsis._maxDots;
+        final int dots = 1 + (_animation.value * max).floor().clamp(0, max - 1);
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < max; i++)
+              // Hidden dots keep their space, so the row does not twitch as
+              // the count changes.
+              Opacity(
+                opacity: i < dots ? 1.0 : 0.0,
+                child: Container(
+                  width: widget.dotSize,
+                  height: widget.dotSize,
+                  margin: EdgeInsets.all(widget.dotSize / 3),
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+          ],
+        );
       },
     );
   }

@@ -10,6 +10,14 @@ void main() {
     addTearDown(controller.dispose);
   });
 
+  /// How many dots of the ellipsis are showing.
+  int visibleDots(WidgetTester tester) => tester
+      .widgetList<Opacity>(
+        find.descendant(of: findEllipsis(), matching: find.byType(Opacity)),
+      )
+      .where((o) => o.opacity == 1.0)
+      .length;
+
   /// The ellipsis animates forever, so `pumpAndSettle` would never return.
   Future<void> settle(WidgetTester tester) async {
     for (var i = 0; i < 10; i++) {
@@ -25,12 +33,7 @@ void main() {
     );
   }
 
-  /// The ellipsis is the only text made purely of dots.
-  Finder findEllipsis() => find.byWidgetPredicate((widget) {
-    if (widget is! Text) return false;
-    final String data = widget.data?.trim() ?? '';
-    return data.isNotEmpty && data.replaceAll('.', '').isEmpty;
-  });
+  Finder findEllipsis() => find.byType(AnimatedEllipsis);
 
   testWidgets('shows nothing while not visible', (tester) async {
     await pumpBox(tester);
@@ -156,11 +159,10 @@ void main() {
     controller.isVisible = true;
     await tester.pump();
 
-    final seen = <String>{};
+    final seen = <int>{};
     for (var i = 0; i < 12; i++) {
       await tester.pump(const Duration(milliseconds: 100));
-      final Iterable<Text> texts = tester.widgetList<Text>(findEllipsis());
-      seen.addAll(texts.map((t) => t.data!.trim()));
+      seen.add(visibleDots(tester));
     }
     expect(seen.length, greaterThan(1), reason: 'dot count should change');
   });
