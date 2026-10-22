@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'package:text_only/chat_page.dart';
+import '../lib/chat_page.dart';
 
 import 'fake_assistant.dart';
 

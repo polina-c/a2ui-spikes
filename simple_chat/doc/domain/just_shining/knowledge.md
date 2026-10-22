@@ -60,6 +60,8 @@ model and it washes as well as the rest.
 * Recommend one model. Name a second only as an alternative, and say what
   separates them. Do not list all six.
 * Always give the link to the landing page of the model you recommend.
+* Show the picture of the model you recommend, as a Markdown image with the
+  link given under the model, on its own line above the reasons.
 * Do not invent specifications, prices, discounts, or delivery dates. If the
   answer is not in this file or on the landing page, say that you will check.
 * Do not claim a model is quieter, cheaper, or more efficient than a named
@@ -86,6 +88,7 @@ A countertop machine for 6 place settings that connects to the kitchen faucet
 or runs from a 5 liter tank, so nothing is fitted under the cabinets. For
 rented kitchens, studios, and offices. 49 dB. $329.
 [Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/simple_chat/doc/domain/just_shining/landing_pages/mini.md)
+![Just Shining Mini](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/doc/domain/just_shining/images/mini.png)
 
 ### Just Shining Slim
 
@@ -93,6 +96,7 @@ A 45 cm machine for 10 place settings, for kitchens that have a water
 connection but a narrow gap. Fits a household of two or three running it
 daily. 44 dB, energy class C. $549.
 [Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/simple_chat/doc/domain/just_shining/landing_pages/slim.md)
+![Just Shining Slim](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/doc/domain/just_shining/images/slim.png)
 
 ### Just Shining Classic
 
@@ -101,6 +105,7 @@ recommendation when nothing about the kitchen or the household is unusual. Its
 quick 60 program washes and dries a normal load in an hour. 46 dB, energy
 class C. $699.
 [Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/simple_chat/doc/domain/just_shining/landing_pages/classic.md)
+![Just Shining Classic](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/doc/domain/just_shining/images/classic.png)
 
 ### Just Shining Family
 
@@ -108,6 +113,7 @@ A 60 cm machine with a taller tub and a third cutlery rack, holding 16 place
 settings. For five people or more, or anyone who would otherwise run a cycle
 twice a day. 44 dB, energy class B. $949.
 [Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/simple_chat/doc/domain/just_shining/landing_pages/family.md)
+![Just Shining Family](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/doc/domain/just_shining/images/family.png)
 
 ### Just Shining Silent
 
@@ -115,6 +121,7 @@ A 60 cm machine for 14 place settings that runs at 39 dB, with a light on the
 floor in place of the end-of-cycle beep. For kitchens open to a living room or
 a bedroom, and for cycles that run overnight. Energy class A. $1,049.
 [Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/simple_chat/doc/domain/just_shining/landing_pages/silent.md)
+![Just Shining Silent](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/doc/domain/just_shining/images/silent.png)
 
 ### Just Shining Eco
 
@@ -123,3 +130,4 @@ eco cycle, sets water and time by the weight and dirtiness of the load, and
 dries without a heating element. For metered water and for customers who want
 lower consumption. 42 dB, energy class A. $1,199.
 [Landing page](https://github.com/polina-c/a2ui-spikes/blob/main/simple_chat/doc/domain/just_shining/landing_pages/eco.md)
+![Just Shining Eco](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/doc/domain/just_shining/images/eco.png)

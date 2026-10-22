@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:text_only/chat_controller.dart';
-import 'package:text_only/gemini.dart';
+import '../lib/chat_controller.dart';
+import '../lib/gemini.dart';
 
 void main() {
   List<String> roles(List<Map<String, Object?>> contents) => [

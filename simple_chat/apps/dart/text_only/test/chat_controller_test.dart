@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:text_only/chat_controller.dart';
+import '../lib/chat_controller.dart';
 
 import 'fake_assistant.dart';
 

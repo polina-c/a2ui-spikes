@@ -223,6 +223,8 @@ class _MessageBubble extends StatelessWidget {
                 onTapLink: (text, href, title) {
                   if (href != null) launchUrl(Uri.parse(href));
                 },
+                imageBuilder: (uri, title, alt) =>
+                    _MarkdownImage(uri: uri, alt: alt),
               ),
             if (message.interrupted)
               Padding(
@@ -235,6 +237,35 @@ class _MessageBubble extends StatelessWidget {
                 ),
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A picture in an answer, such as the photo of a recommended product.
+///
+/// Kept narrower than the bubble so that it does not push the text out of
+/// view, and replaced by its alt text when it cannot be loaded.
+class _MarkdownImage extends StatelessWidget {
+  const _MarkdownImage({required this.uri, required this.alt});
+
+  final Uri uri;
+  final String? alt;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 360),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            uri.toString(),
+            semanticLabel: alt,
+            errorBuilder: (context, error, stackTrace) => Text(alt ?? ''),
+          ),
         ),
       ),
     );
