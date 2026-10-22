@@ -53,17 +53,20 @@ class ChatController extends ChangeNotifier {
 
   StreamSubscription<AnswerChunk>? _answer;
 
-  /// Adds a user message.
+  /// The answer being written, or the paused one.
+  ChatMessage? _current;
+  ChatMessage? get currentAnswer => _current;
+
+  /// Adds a user message, and starts an answer that takes it into account.
   ///
-  /// While idle, this starts an answer. While paused, the message is context
-  /// for the answer that [resume] continues.
+  /// While an answer is streaming, the message waits for that answer to
+  /// finish. While paused, it starts a new answer straight away.
   void send(String text) {
-    assert(_status != ChatStatus.streaming);
     _messages.add(ChatMessage.user(text));
-    if (_status == ChatStatus.idle) {
-      _startAnswer();
-    } else {
+    if (_status == ChatStatus.streaming) {
       notifyListeners();
+    } else {
+      _startAnswer();
     }
   }
 
@@ -73,14 +76,37 @@ class ChatController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Continues the paused answer, or writes a new one when the user added
-  /// context while it was paused.
+  /// Continues the paused answer in the same message, or writes a new one
+  /// when the user added context after it.
   void resume() {
     assert(_status == ChatStatus.paused);
     _startAnswer();
   }
 
+  /// Gives up on the paused answer, keeping what was written of it.
+  void cancel() {
+    assert(_status == ChatStatus.paused);
+    final ChatMessage? answer = _current;
+    if (answer != null && answer.text.isEmpty) _messages.remove(answer);
+    _current = null;
+    _status = ChatStatus.idle;
+    _error = null;
+    thinking
+      ..isPaused = false
+      ..isVisible = false;
+    notifyListeners();
+  }
+
   void _startAnswer() {
+    // An answer paused before any text has nothing to keep once the user adds
+    // context after it; the new answer takes its place.
+    final ChatMessage? paused = _current;
+    if (paused != null &&
+        paused.text.isEmpty &&
+        !identical(paused, _messages.last)) {
+      _messages.remove(paused);
+    }
+
     // The assistant sees the conversation as it is now: the last message is
     // either the user's, or the partial answer to continue.
     final List<ChatMessage> history = List.of(_messages);
@@ -91,11 +117,13 @@ class ChatController extends ChangeNotifier {
       answer = ChatMessage.model();
       _messages.add(answer);
     }
+    _current = answer;
 
     _status = ChatStatus.streaming;
     _error = null;
     thinking
       ..clear()
+      ..isPaused = false
       ..isVisible = true;
     notifyListeners();
 
@@ -120,9 +148,16 @@ class ChatController extends ChangeNotifier {
           onDone: () {
             answer.interrupted = false;
             _answer = null;
-            _status = ChatStatus.idle;
+            _current = null;
             thinking.isVisible = false;
-            notifyListeners();
+            // Context the user sent while this answer was streaming gets an
+            // answer of its own.
+            if (_messages.last.role == Role.user) {
+              _startAnswer();
+            } else {
+              _status = ChatStatus.idle;
+              notifyListeners();
+            }
           },
         );
   }
@@ -132,14 +167,9 @@ class ChatController extends ChangeNotifier {
     _answer?.cancel();
     _answer = null;
     _status = ChatStatus.paused;
-    thinking.isVisible = false;
-
-    final ChatMessage answer = _messages.last;
-    if (answer.text.isEmpty) {
-      _messages.removeLast();
-    } else {
-      answer.interrupted = true;
-    }
+    // A thinking box still on screen stays there, with its dots stopped.
+    thinking.isPaused = true;
+    _current!.interrupted = true;
   }
 
   @override

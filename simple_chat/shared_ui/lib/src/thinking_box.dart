@@ -25,6 +25,20 @@ class ThinkingBoxController extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _isPaused = false;
+
+  /// Whether the turn is paused.
+  ///
+  /// A paused box stays on screen with its thought, and its ellipsis stops
+  /// moving until the turn resumes.
+  bool get isPaused => _isPaused;
+
+  set isPaused(bool value) {
+    if (_isPaused == value) return;
+    _isPaused = value;
+    notifyListeners();
+  }
+
   final StringBuffer _thought = StringBuffer();
 
   /// Everything added since the last [clear].
@@ -171,9 +185,9 @@ class _ThinkingBoxState extends State<ThinkingBox> {
                   ),
                 // Kept outside the scroll view so it stays visible while the
                 // thought above it scrolls.
-                const Align(
+                Align(
                   alignment: Alignment.center,
-                  child: AnimatedEllipsis(),
+                  child: AnimatedEllipsis(animate: !widget.controller.isPaused),
                 ),
               ],
             ),

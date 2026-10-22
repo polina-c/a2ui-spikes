@@ -32,12 +32,15 @@ class _ChatPageState extends State<ChatPage> {
     super.dispose();
   }
 
+  /// Sends the message, or, while paused with nothing typed, resumes.
   void _send() {
-    if (_chat.status == ChatStatus.streaming) return;
     final String text = _input.text.trim();
-    if (text.isEmpty) return;
-    _chat.send(text);
-    _input.clear();
+    if (text.isNotEmpty) {
+      _chat.send(text);
+      _input.clear();
+    } else if (_chat.status == ChatStatus.paused) {
+      _chat.resume();
+    }
   }
 
   @override
@@ -63,27 +66,41 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _buildMessages() {
-    final List<ChatMessage> messages = _chat.messages;
+    final ChatStatus status = _chat.status;
+    final ChatMessage? current = _chat.currentAnswer;
     final String? error = _chat.error;
     final List<Widget> items = [
-      for (final message in messages)
-        if (message.text.isNotEmpty) _MessageBubble(message: message),
-      ThinkingBox(controller: _chat.thinking),
-      // Once the answer is streaming the thinking box is gone, so the dots
-      // carry on under the answer instead.
-      if (_chat.status == ChatStatus.streaming && !_chat.thinking.isVisible)
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            child: AnimatedEllipsis(),
+      for (final message in _chat.messages) ...[
+        if (message.text.isNotEmpty)
+          _MessageBubble(
+            message: message,
+            // Only the current answer can still be resumed; an earlier one
+            // was stopped for good.
+            isPaused:
+                status == ChatStatus.paused && identical(message, current),
           ),
-        ),
+        // Kept with the current answer, above any context the user sends
+        // meanwhile.
+        if (identical(message, current)) ...[
+          ThinkingBox(controller: _chat.thinking),
+          // Once the answer is streaming the thinking box is gone, so the
+          // dots carry on under the answer instead.
+          if (status == ChatStatus.streaming && !_chat.thinking.isVisible)
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: AnimatedEllipsis(),
+              ),
+            ),
+        ],
+      ],
       if (error != null)
         Padding(
           padding: const EdgeInsets.all(8),
           child: Text(
-            'Could not get an answer: $error\nResume to try again.',
+            'Could not get an answer: $error\n'
+            'Send to try again, or cancel.',
             style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
         ),
@@ -111,33 +128,38 @@ class _ChatPageState extends State<ChatPage> {
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => _send(),
               decoration: InputDecoration(
-                hintText: status == ChatStatus.paused
-                    ? 'Add context, then resume'
-                    : 'Message',
+                hintText: switch (status) {
+                  ChatStatus.idle => 'Message',
+                  ChatStatus.streaming => 'Add context, or pause',
+                  ChatStatus.paused =>
+                    'Add context and send, send empty to resume, or cancel',
+                },
                 border: const OutlineInputBorder(),
               ),
             ),
           ),
           const SizedBox(width: 8),
-          if (status == ChatStatus.streaming)
-            IconButton.filled(
+          if (status == ChatStatus.streaming) ...[
+            IconButton.filledTonal(
               tooltip: 'Pause',
               icon: const Icon(Icons.pause),
               onPressed: _chat.pause,
-            )
-          else ...[
-            if (status == ChatStatus.paused)
-              IconButton.filledTonal(
-                tooltip: 'Resume',
-                icon: const Icon(Icons.play_arrow),
-                onPressed: _chat.resume,
-              ),
-            IconButton.filled(
-              tooltip: 'Send',
-              icon: const Icon(Icons.send),
-              onPressed: _send,
             ),
+            const SizedBox(width: 8),
           ],
+          if (status == ChatStatus.paused) ...[
+            IconButton.filledTonal(
+              tooltip: 'Cancel',
+              icon: const Icon(Icons.close),
+              onPressed: _chat.cancel,
+            ),
+            const SizedBox(width: 8),
+          ],
+          IconButton.filled(
+            tooltip: 'Send',
+            icon: const Icon(Icons.send),
+            onPressed: _send,
+          ),
         ],
       ),
     );
@@ -145,9 +167,10 @@ class _ChatPageState extends State<ChatPage> {
 }
 
 class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({required this.message});
+  const _MessageBubble({required this.message, required this.isPaused});
 
   final ChatMessage message;
+  final bool isPaused;
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +208,7 @@ class _MessageBubble extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  'Paused',
+                  isPaused ? 'Paused' : 'Stopped',
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),

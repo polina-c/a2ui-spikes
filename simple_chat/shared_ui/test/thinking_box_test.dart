@@ -267,4 +267,25 @@ void main() {
         .position;
     expect(position.pixels, position.maxScrollExtent);
   });
+
+  testWidgets('pausing keeps the box and its thought, and stops the dots', (
+    tester,
+  ) async {
+    await pumpBox(tester);
+    controller
+      ..isVisible = true
+      ..addChunk('a thought');
+    await tester.pump();
+
+    controller.isPaused = true;
+    await tester.pump();
+
+    expect(find.byType(Card), findsOneWidget);
+    expect(find.textContaining('a thought'), findsOneWidget);
+    final int frozen = visibleDots(tester);
+    for (var i = 0; i < 12; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(visibleDots(tester), frozen);
+    }
+  });
 }

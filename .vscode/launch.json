@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "simple-chat-text",
+      "name": "sc-text-dart",
       "request": "launch",
       "type": "dart",
       "cwd": "simple_chat/apps/text_only",

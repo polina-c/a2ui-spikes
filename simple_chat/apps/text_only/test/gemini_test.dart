@@ -47,7 +47,7 @@ void main() {
     expect(roles(contents), ['user', 'model', 'user']);
     final List<String> added = textsOf(contents.last);
     expect(added, hasLength(3));
-    expect(added.first, contains('new answer'));
+    expect(added.first, contains('stopped'));
     expect(added.skip(1), ['45 cm', 'two people']);
   });
 }

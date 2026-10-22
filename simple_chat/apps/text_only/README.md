@@ -1,7 +1,8 @@
 # Text-only chat
 
 A Flutter chat where a Gemini model guides the user to a product, answering in
-Markdown. See [blueprint.md](blueprint.md) for what it does.
+Markdown. See [blueprint.md](blueprint.md) for what it does, and
+[states.md](states.md) for the buttons in each state.
 
 [Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/text_only/videos/chat.webm):
 the default prompt, two questions, then a pause to add context and a resume,

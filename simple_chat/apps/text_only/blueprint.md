@@ -40,15 +40,32 @@ ThinkingBox from simple_chat/shared_ui.
 
 ## Interruption
 
-While an answer is streaming, the send button turns into a pause button.
-Pausing stops the stream, keeps the partial answer in the list marked as
-paused, and shows a resume button. While the answer is paused, the user can
-send messages to add context. These messages appear in the list but do not
-start a new answer. Resuming sends the conversation, including the partial
-answer and any added messages, and asks the model to continue. If the user
-added nothing, the answer continues in the same message. If the user added
-context, the model writes a new answer that takes it into account. Sending a
-message while the answer is streaming, without pausing first, is not possible.
+While an answer is streaming, there are two buttons, pause and send, and the
+hint in the text field says the user can add context or pause.
+
+1. Add context without pausing: the user types a message and sends it. The
+   message appears in the list, the current answer finishes, and then the
+   model writes a new answer that takes the message into account.
+2. Pause: the stream stops and the partial answer stays in the list marked as
+   paused. If the thinking box is showing, it stays on screen with its
+   thoughts, and its dots stop moving until the answer resumes.
+
+While the answer is paused, there are two buttons, send and cancel, with some
+space between them. The hint in the text field explains the three options:
+
+1. Add context and resume: the user types a message and sends it. The model
+   writes a new answer that takes the message into account.
+2. Just resume: the user sends with the text field empty. The model continues
+   the answer in the same message, or, if the user added context before
+   pausing, writes a new answer that takes it into account.
+3. Cancel: the partial answer stays in the list marked as stopped, and the
+   chat waits for the user's next message.
+
+When resuming, the app sends the whole conversation, including the partial
+answer, and tells the model that the answer was paused.
+
+If an answer fails, the chat shows the error and treats the answer as paused,
+so the user can resume to try again, or cancel.
 
 ## Code quality
 

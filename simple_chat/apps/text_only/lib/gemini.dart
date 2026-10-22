@@ -11,8 +11,7 @@ class _Note {
       '(The answer above was paused by the user and is now resumed. '
       'Continue it exactly where it stopped, without repeating anything.)';
   static const String interrupted =
-      '(The answer above was paused by the user, who then added what follows. '
-      'Take it into account in a new answer.)';
+      '(The user stopped the answer above before it was finished.)';
 }
 
 /// Streams answers from the Gemini API, called directly from the app.

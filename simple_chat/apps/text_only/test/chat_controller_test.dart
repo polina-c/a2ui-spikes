@@ -56,11 +56,38 @@ void main() {
     expect(chat.messages.last.interrupted, isTrue);
   });
 
-  test('pausing before any text drops the empty answer', () async {
+  test('pausing while thinking keeps the box, stopped', () async {
+    chat.send('hi');
+    assistant.think('Let me see');
+    await pumpEventQueue();
+
+    chat.pause();
+
+    expect(chat.thinking.isVisible, isTrue);
+    expect(chat.thinking.isPaused, isTrue);
+    expect(chat.thinking.text, 'Let me see');
+
+    chat.resume();
+    expect(chat.thinking.isPaused, isFalse);
+  });
+
+  test('cancelling while thinking drops the empty answer and the box', () {
     chat.send('hi');
     chat.pause();
 
+    chat.cancel();
+
     expect(texts(), ['hi']);
+    expect(chat.thinking.isVisible, isFalse);
+  });
+
+  test('context after a pause while thinking replaces the empty answer', () {
+    chat.send('hi');
+    chat.pause();
+
+    chat.send('I rent');
+
+    expect(texts(), ['hi', 'I rent', '']);
   });
 
   test('resuming with nothing added continues the same message', () async {
@@ -81,26 +108,74 @@ void main() {
   });
 
   test(
-    'context sent while paused waits for resume, then gets a new answer',
+    'context sent while streaming waits, then gets its own answer',
+    () async {
+      chat.send('hi');
+      assistant.write('Hello');
+      await pumpEventQueue();
+
+      chat.send('I rent');
+      expect(assistant.requests, hasLength(1), reason: 'the answer goes on');
+      assistant.write(', there');
+      await assistant.finish();
+      await pumpEventQueue();
+
+      expect(texts(), ['hi', 'Hello, there', 'I rent', '']);
+      expect(chat.status, ChatStatus.streaming);
+      expect(assistant.requests.last.last.text, 'I rent');
+    },
+  );
+
+  test(
+    'resuming after context sent before the pause writes a new answer',
     () async {
       chat.send('hi');
       assistant.write('Hel');
       await pumpEventQueue();
+      chat.send('I rent');
       chat.pause();
 
-      chat.send('I have a 45 cm gap');
-      expect(chat.status, ChatStatus.paused);
-      expect(assistant.requests, hasLength(1));
-
       chat.resume();
-      assistant.write('Then the Slim.');
+
+      expect(assistant.requests.last.last.text, 'I rent');
+      assistant.write('Then the Mini.');
       await assistant.finish();
       await pumpEventQueue();
-
-      expect(texts(), ['hi', 'Hel', 'I have a 45 cm gap', 'Then the Slim.']);
-      expect(chat.messages[1].interrupted, isTrue);
+      expect(texts(), ['hi', 'Hel', 'I rent', 'Then the Mini.']);
     },
   );
+
+  test('context sent while paused starts a new answer', () async {
+    chat.send('hi');
+    assistant.write('Hel');
+    await pumpEventQueue();
+    chat.pause();
+
+    chat.send('I have a 45 cm gap');
+    expect(chat.status, ChatStatus.streaming);
+    expect(assistant.requests, hasLength(2));
+
+    assistant.write('Then the Slim.');
+    await assistant.finish();
+    await pumpEventQueue();
+
+    expect(texts(), ['hi', 'Hel', 'I have a 45 cm gap', 'Then the Slim.']);
+    expect(chat.messages[1].interrupted, isTrue);
+  });
+
+  test('cancelling keeps the partial answer and waits for the user', () async {
+    chat.send('hi');
+    assistant.write('Hel');
+    await pumpEventQueue();
+    chat.pause();
+
+    chat.cancel();
+
+    expect(chat.status, ChatStatus.idle);
+    expect(texts(), ['hi', 'Hel']);
+    expect(chat.messages.last.interrupted, isTrue);
+    expect(assistant.requests, hasLength(1));
+  });
 
   test('a failed answer can be resumed', () async {
     chat.send('hi');
