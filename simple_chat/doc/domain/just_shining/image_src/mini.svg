@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="640" viewBox="0 0 560 640">
+<defs>
+  <linearGradient id="steel" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#C3C9D1"/><stop offset=".45" stop-color="#E9ECF0"/>
+    <stop offset="1" stop-color="#B4BBC4"/>
+  </linearGradient>
+  <linearGradient id="darksteel" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#3A414C"/><stop offset=".5" stop-color="#555E6B"/>
+    <stop offset="1" stop-color="#363C46"/>
+  </linearGradient>
+  <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#F4F6F8"/><stop offset="1" stop-color="#E6EAEE"/>
+  </linearGradient>
+  <radialGradient id="glow" cx=".5" cy=".5" r=".5">
+    <stop offset="0" stop-color="#7FD3FF" stop-opacity=".95"/>
+    <stop offset="1" stop-color="#7FD3FF" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9FB3C6" stop-opacity=".9"/>
+    <stop offset="1" stop-color="#5E7388" stop-opacity=".9"/>
+  </linearGradient>
+</defs><rect width="560" height="640" fill="url(#wall)"/><rect y="560" width="560" height="80" fill="#CDD2D8"/><rect y="560" width="560" height="3" fill="#000" opacity=".08"/><rect x="0" y="400" width="560" height="24" fill="#5B6472"/><rect x="0" y="424" width="560" height="136" fill="#FBFBFA" stroke="#D5D9DE" stroke-width="2"/><rect x="20" y="440" width="520" height="90" rx="3" fill="none" stroke="#D5D9DE" stroke-width="2"/><g transform="translate(-40 0)"><rect x="60" y="394" width="180" height="10" rx="4" fill="#AEB5BE"/><path d="M150 394 v-90 q0 -30 30 -30 h40 q14 0 14 14 v14" fill="none" stroke="#9AA2AD" stroke-width="12" stroke-linecap="round"/><rect x="132" y="372" width="36" height="22" rx="4" fill="#9AA2AD"/><path d="M234 288 c40 0 40 60 75 60" fill="none" stroke="#4E5A68" stroke-width="7" stroke-linecap="round"/><g transform="translate(0 -160)"><rect x="300" y="340" width="275" height="220" rx="6" fill="url(#steel)" stroke="#8A929C" stroke-width="2"/><rect x="300" y="340" width="275" height="54" rx="6" fill="#1E232B"/><rect x="300" y="384" width="275" height="10" fill="#1E232B"/><text x="316" y="373" font-family="Helvetica, Arial" font-size="15" fill="#D8DEE6" letter-spacing="1">MINI</text><rect x="479" y="355" width="62" height="24" rx="4" fill="#0B0E12"/><text x="510" y="373" text-anchor="middle" font-family="Menlo, monospace" font-size="15" fill="#6FE3FF">0:40</text><circle cx="557" cy="367" r="7" fill="none" stroke="#9AA4B0" stroke-width="2"/><rect x="355.0" y="412" width="165.0" height="12" rx="6" fill="#8D96A1" stroke="#6E7782" stroke-width="1.5"/><rect x="333.0" y="440" width="19.250000000000004" height="90" rx="4" fill="#fff" opacity="0.35"/><rect x="306" y="538" width="263" height="16" rx="3" fill="#000" opacity=".25"/></g></g><g transform="translate(-202 0)"><circle cx="700" cy="62" r="42" fill="#fff" stroke="#5B6472" stroke-width="3"/><path d="M700 34 c-14 20 -22 32 -22 44 a22 22 0 0 0 44 0 c0 -12 -8 -24 -22 -44z" fill="#5AA9E6"/><text x="700" y="86" text-anchor="middle" font-family="Helvetica, Arial" font-weight="bold" font-size="15" fill="#fff">5 L</text></g></svg>

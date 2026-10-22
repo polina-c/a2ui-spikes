@@ -3,7 +3,7 @@
 This file describes how a chat assistant guides a user from an open question
 to a concrete next step. It does not depend on what is being offered. The
 specifics come from a domain knowledge file, such as
-[Just Shining](domain/just_shining/knowledge.md), and the domain file wins
+[Just Shining](../domain/just_shining/knowledge.md), and the domain file wins
 whenever the two disagree.
 
 ## Goal of the conversation

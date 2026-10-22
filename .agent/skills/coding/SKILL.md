@@ -32,8 +32,8 @@ repo. Git keeps every version of a file forever, so a few recordings would make
 this repo slow to clone.
 
 1. Give the file the same path in the binaries repo that it would have here.
-   For example, a video for `simple_chat/apps/text_only/README.md` goes to
-   `simple_chat/apps/text_only/videos/chat.webm`.
+   For example, a video for `simple_chat/apps/dart/text_only/README.md` goes to
+   `simple_chat/apps/dart/text_only/videos/chat.webm`.
 2. Link the GitHub Pages copy, which is the only URL where a `.webm` plays:
    `https://polina-c.github.io/a2ui-spikes-binaries/<path>`. A blob page on
    github.com only offers a download, and `raw.githubusercontent.com` serves
@@ -47,7 +47,7 @@ this repo slow to clone.
    commit through the API:
    `gh api -X PUT repos/polina-c/a2ui-spikes-binaries/contents/<path>` with
    the base64 content and `"branch": "main"`.
-4. Keep the local copy out of git: `simple_chat/apps/*/videos/*.webm` is in
+4. Keep the local copy out of git: `simple_chat/apps/**/videos/*.webm` is in
    the root `.gitignore`.
 
 Never write a link to a file that is not published yet. Saving a recording

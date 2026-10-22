@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import '../lib/chat_controller.dart';
+import 'package:text_only/chat_controller.dart';
 
 /// An assistant whose answers the test writes chunk by chunk.
 class FakeAssistant implements Assistant {

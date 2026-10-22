@@ -14,7 +14,7 @@ dependencies:
   flutter_markdown_plus: ^1.0.7
   http: ^1.6.0
   shared_ui:
-    path: ../../shared_ui
+    path: ../shared_ui
   url_launcher: ^6.3.2
 
 dev_dependencies:
@@ -28,6 +28,6 @@ flutter:
   # assets/doc links to simple_chat/doc, so the chat blueprint and the domain
   # knowledge are bundled from where they are written rather than copied.
   assets:
-    - assets/doc/chat_blueprint.md
+    - assets/doc/blueprints/0-chat.md
     - assets/doc/domain/just_shining/
     - assets/doc/domain/just_shining/landing_pages/

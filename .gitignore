@@ -16,4 +16,4 @@ test-results/
 # scaffolding rather than experiment output, so they are not covered by this.
 ci/experiments/*/videos/*.webm
 ci/experiments/*/videos/*.png
-simple_chat/apps/*/videos/*.webm
+simple_chat/apps/**/videos/*.webm

@@ -26,7 +26,7 @@ into the message list as it arrives.
 
 ## Prompt
 
-The system prompt is the content of [chat_blueprint.md](../../doc/chat_blueprint.md),
+The system prompt is the content of [0-chat.md](0-chat.md),
 followed by the domain knowledge in
 [knowledge.md](../../doc/domain/just_shining/knowledge.md) and the landing pages
 in [landing_pages](../../doc/domain/just_shining/landing_pages/). These files are
@@ -36,7 +36,7 @@ bundled with the app as assets.
 
 The app sends the whole conversation with every request and keeps it in memory
 only. While it waits for the first part of an answer, it shows thinking with 
-ThinkingBox from simple_chat/shared_ui.
+ThinkingBox from simple_chat/apps/dart/shared_ui.
 
 ## Interruption
 
@@ -70,7 +70,7 @@ If an answer fails, the chat shows the error and treats the answer as paused,
 so the user can resume to try again, or cancel.
 
 The send button is disabled while the text field is empty or holds only
-whitespace. The states and their buttons are listed in [states.md](states.md).
+whitespace. The states and their buttons are listed in [states.md](../../apps/dart/text_only/states.md).
 
 ## Code quality
 

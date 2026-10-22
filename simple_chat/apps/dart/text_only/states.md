@@ -3,7 +3,7 @@
 The chat is always in one of three states: idle, streaming, or paused. The
 state decides which buttons sit next to the text field, what the hint in the
 field says, and whether the thinking box and its dots show. The behavior behind
-each button is specified in [blueprint.md](blueprint.md).
+each button is specified in [1-text-only.md](../../../doc/blueprints/1-text-only.md).
 
 1. Idle (first launch or after answer): 
    - buttons: Send
