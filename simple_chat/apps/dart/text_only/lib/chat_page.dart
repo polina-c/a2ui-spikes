@@ -19,31 +19,12 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final TextEditingController _input = TextEditingController(
-    text: ChatPage.firstPrompt,
-  );
-
   late final ChatController _chat = ChatController(assistant: widget.assistant);
 
   @override
   void dispose() {
-    _input.dispose();
     _chat.dispose();
     super.dispose();
-  }
-
-  /// Sends the message, or, while paused with nothing typed, resumes.
-  ///
-  /// Enter in the text field lands here, so it does what the main button
-  /// does.
-  void _send() {
-    final String text = _input.text.trim();
-    if (text.isNotEmpty) {
-      _chat.send(text);
-      _input.clear();
-    } else if (_chat.status == ChatStatus.paused) {
-      _chat.resume();
-    }
   }
 
   @override
@@ -58,7 +39,14 @@ class _ChatPageState extends State<ChatPage> {
               builder: (context, _) => Column(
                 children: [
                   Expanded(child: _buildMessages()),
-                  _buildInput(),
+                  ChatInputPane(
+                    status: _chat.status,
+                    initialText: ChatPage.firstPrompt,
+                    onSend: _chat.send,
+                    onPause: _chat.pause,
+                    onResume: _chat.resume,
+                    onCancel: _chat.cancel,
+                  ),
                 ],
               ),
             ),
@@ -114,74 +102,6 @@ class _ChatPageState extends State<ChatPage> {
       reverse: true,
       padding: const EdgeInsets.all(16),
       children: items.reversed.toList(),
-    );
-  }
-
-  Widget _buildInput() {
-    final ChatStatus status = _chat.status;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _input,
-              minLines: 1,
-              maxLines: 5,
-              textInputAction: TextInputAction.send,
-              onSubmitted: (_) => _send(),
-              decoration: InputDecoration(
-                hintText: switch (status) {
-                  ChatStatus.idle => 'Message',
-                  ChatStatus.streaming => 'Add context, or pause',
-                  ChatStatus.paused =>
-                    'Add context and resume, just resume, or cancel',
-                },
-                border: const OutlineInputBorder(),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          if (status == ChatStatus.streaming) ...[
-            IconButton.filledTonal(
-              tooltip: 'Pause',
-              icon: const Icon(Icons.pause),
-              onPressed: _chat.pause,
-            ),
-            const SizedBox(width: 8),
-          ],
-          if (status == ChatStatus.paused) ...[
-            IconButton.filledTonal(
-              tooltip: 'Cancel',
-              icon: const Icon(Icons.close),
-              onPressed: _chat.cancel,
-            ),
-            const SizedBox(width: 8),
-          ],
-          // Rebuilt as the user types, because the main button depends on
-          // whether there is anything to send.
-          ValueListenableBuilder<TextEditingValue>(
-            valueListenable: _input,
-            builder: (context, value, _) {
-              final bool hasText = value.text.trim().isNotEmpty;
-              if (status == ChatStatus.paused && !hasText) {
-                return IconButton.filled(
-                  tooltip: 'Resume',
-                  icon: const Icon(Icons.play_arrow),
-                  onPressed: _chat.resume,
-                );
-              }
-              return IconButton.filled(
-                tooltip: status == ChatStatus.paused
-                    ? 'Send and resume'
-                    : 'Send',
-                icon: const Icon(Icons.send),
-                onPressed: hasText ? _send : null,
-              );
-            },
-          ),
-        ],
-      ),
     );
   }
 }

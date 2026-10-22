@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/shared_ui.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 void main() {
   Future<void> pumpDots(WidgetTester tester, {double dotSize = 10.0}) =>

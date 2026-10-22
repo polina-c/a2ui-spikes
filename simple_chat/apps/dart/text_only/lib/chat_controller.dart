@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:shared_ui/shared_ui.dart';
 
+export 'package:shared_ui/shared_ui.dart' show ChatStatus;
+
 enum Role { user, model }
 
 class ChatMessage {
@@ -29,8 +31,6 @@ abstract interface class Assistant {
   /// Cancelling the subscription stops the answer.
   Stream<AnswerChunk> answer(List<ChatMessage> history);
 }
-
-enum ChatStatus { idle, streaming, paused }
 
 /// The conversation, and the answer currently being written.
 class ChatController extends ChangeNotifier {
