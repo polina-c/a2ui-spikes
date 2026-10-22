@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:shared_ui/shared_ui.dart';
+import '../../shared_ui/lib/shared_ui.dart';
 
 enum Role { user, model }
 
