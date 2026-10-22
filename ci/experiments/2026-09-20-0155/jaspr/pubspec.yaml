@@ -1,9 +1,11 @@
-name: simple_chat_jaspr
+name: simple_chat_jaspr_2026_09_20_0155
 description: The simple chat app on Jaspr, with an A2UI renderer written on a2ui_core.
 version: 0.0.1
 
 environment:
   sdk: ^3.10.0
+
+resolution: workspace
 
 dependencies:
   a2ui_core: ^0.1.1
@@ -19,7 +21,7 @@ dev_dependencies:
   # resolve. Same as in the 2026-09-19-1347 run.
   build_web_compilers: ^4.8.5
   jaspr_builder: ^0.23.4
-  lints: ^5.0.0
+  lints: ^6.0.0
   test: ^1.31.1
 
 jaspr:

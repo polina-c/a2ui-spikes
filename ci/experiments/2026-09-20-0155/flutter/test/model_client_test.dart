@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:genui/genui.dart';
-import 'package:simple_chat_flutter/model_client.dart';
+import 'package:simple_chat_flutter_2026_09_20_0155/model_client.dart';
 
 /// The in-browser model itself needs WebGPU and cannot run under `flutter
 /// test`, so what is checked here is the pure part: the conversation turned

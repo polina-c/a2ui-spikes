@@ -1,5 +1,5 @@
 import 'package:a2ui_core/a2ui_core.dart';
-import 'package:simple_chat_jaspr/a2ui/catalog.dart';
+import 'package:simple_chat_jaspr_2026_09_20_0155/a2ui/catalog.dart';
 import 'package:test/test.dart';
 
 /// The renderer itself needs a browser, but the protocol layer under it does

@@ -198,6 +198,11 @@ final RegExp _wordStart = RegExp(r'^[\p{L}\p{N}]', unicode: true);
 /// space that would separate it from the last word of [partial], which would
 /// run 'dedicated' and 'water' together. A pause in the middle of a word gets
 /// a stray space instead, which is the less likely and less harmful mistake.
+///
+/// Getting both cases right would mean asking the model to start by repeating
+/// the last word of [partial], then dropping the overlap from the stream. That
+/// needs buffering until the repeated word has fully arrived, and a fallback
+/// for when the model does not repeat it, which is more than this app needs.
 @visibleForTesting
 String joinContinuation(String partial, String next) {
   final bool needsSpace =

@@ -1,4 +1,4 @@
-import 'package:simple_chat_jaspr/prompt.dart';
+import 'package:simple_chat_jaspr_2026_09_20_0155/prompt.dart';
 import 'package:test/test.dart';
 
 void main() {

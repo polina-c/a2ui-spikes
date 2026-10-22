@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:simple_chat_jaspr/model_client.dart';
+import 'package:simple_chat_jaspr_2026_09_20_0155/model_client.dart';
 import 'package:test/test.dart';
 
 /// The in-browser model itself needs WebGPU and a browser, so what is checked

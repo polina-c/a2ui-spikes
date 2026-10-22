@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:simple_chat_flutter/models.dart';
-import 'package:simple_chat_flutter/picker_page.dart';
+import 'package:simple_chat_flutter_2026_09_20_0155/models.dart';
+import 'package:simple_chat_flutter_2026_09_20_0155/picker_page.dart';
 
 void main() {
   /// The picker is taller than the default 800x600 test window, and a ListView

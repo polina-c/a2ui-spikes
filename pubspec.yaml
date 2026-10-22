@@ -7,3 +7,7 @@ environment:
 workspace:
   - simple_chat/apps/dart/text_only
   - simple_chat/apps/dart/shared_ui
+  - ci/experiments/2026-09-19-1347/flutter
+  - ci/experiments/2026-09-19-1347/jaspr
+  - ci/experiments/2026-09-20-0155/flutter
+  - ci/experiments/2026-09-20-0155/jaspr

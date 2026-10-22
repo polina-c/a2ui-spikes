@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:simple_chat_flutter/knowledge.dart';
+import 'package:simple_chat_flutter_2026_09_20_0155/knowledge.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:simple_chat_flutter/models.dart';
-import 'package:simple_chat_flutter/picker_page.dart';
+import 'package:simple_chat_flutter_2026_09_19_1347/models.dart';
+import 'package:simple_chat_flutter_2026_09_19_1347/picker_page.dart';
 
 void main() {
   testWidgets('the picker opens on a default model and can start', (
