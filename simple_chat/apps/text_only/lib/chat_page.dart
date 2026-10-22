@@ -103,7 +103,7 @@ class _ChatPageState extends State<ChatPage> {
           padding: const EdgeInsets.all(8),
           child: Text(
             'Could not get an answer: $error\n'
-            'Send to try again, or cancel.',
+            'Resume to try again, or cancel.',
             style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
         ),

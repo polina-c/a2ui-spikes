@@ -48,16 +48,18 @@ hint in the text field says the user can add context or pause.
    model writes a new answer that takes the message into account.
 2. Pause: the stream stops and the partial answer stays in the list marked as
    paused. If the thinking box is showing, it stays on screen with its
-   thoughts, and its dots stop moving until the answer resumes.
+   thoughts, without its dots, until the answer resumes.
 
-While the answer is paused, there are two buttons, send and cancel, with some
-space between them. The hint in the text field explains the three options:
+While the answer is paused, there are two buttons with some space between
+them: cancel, and either resume, while the text field is empty, or send and
+resume, once the user types. The hint in the text field, "Add context and
+resume, just resume, or cancel", explains the three options:
 
-1. Add context and resume: the user types a message and sends it. The model
-   writes a new answer that takes the message into account.
-2. Just resume: the user sends with the text field empty. The model continues
-   the answer in the same message, or, if the user added context before
-   pausing, writes a new answer that takes it into account.
+1. Add context and resume: the user types a message and presses send and
+   resume. The model writes a new answer that takes the message into account.
+2. Just resume: the user presses resume. The model continues the answer in the
+   same message, or, if the user added context before pausing, writes a new
+   answer that takes it into account.
 3. Cancel: the partial answer stays in the list marked as stopped, and the
    chat waits for the user's next message.
 
@@ -66,6 +68,9 @@ answer, and tells the model that the answer was paused.
 
 If an answer fails, the chat shows the error and treats the answer as paused,
 so the user can resume to try again, or cancel.
+
+The send button is disabled while the text field is empty or holds only
+whitespace. The states and their buttons are listed in [states.md](states.md).
 
 ## Code quality
 
