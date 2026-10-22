@@ -3,6 +3,8 @@ library;
 
 export 'src/animated_ellipsis.dart';
 export 'src/chat_input_pane.dart';
+export 'src/chat_layout.dart';
+export 'src/gemini_api_key.dart';
 export 'src/join_continuation.dart';
 export 'src/md_carousel_view.dart';
 export 'src/message_bubble.dart';

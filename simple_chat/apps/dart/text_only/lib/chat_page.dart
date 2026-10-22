@@ -28,37 +28,28 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: ListenableBuilder(
-              listenable: _chat,
-              builder: (context, _) => Column(
-                children: [
-                  Expanded(child: _buildMessages()),
-                  ChatInputPane(
-                    status: _chat.status,
-                    initialText: ChatPage.firstPrompt,
-                    onSend: _chat.send,
-                    onPause: _chat.pause,
-                    onResume: _chat.resume,
-                    onCancel: _chat.cancel,
-                  ),
-                ],
-              ),
-            ),
+      body: ListenableBuilder(
+        listenable: _chat,
+        builder: (context, _) => ChatLayout(
+          messages: _buildMessages(),
+          input: ChatInputPane(
+            status: _chat.status,
+            initialText: ChatPage.firstPrompt,
+            onSend: _chat.send,
+            onPause: _chat.pause,
+            onResume: _chat.resume,
+            onCancel: _chat.cancel,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildMessages() {
+  List<Widget> _buildMessages() {
     final ChatStatus status = _chat.status;
     final ChatMessage? current = _chat.currentAnswer;
     final String? error = _chat.error;
-    final List<Widget> items = [
+    return [
       for (final message in _chat.messages) ...[
         if (message.text.isNotEmpty)
           MessageBubble(
@@ -96,12 +87,5 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
     ];
-
-    // Reversed, so the list stays pinned to the newest message as it grows.
-    return ListView(
-      reverse: true,
-      padding: const EdgeInsets.all(16),
-      children: items.reversed.toList(),
-    );
   }
 }

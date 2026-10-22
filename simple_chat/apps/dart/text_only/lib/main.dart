@@ -1,7 +1,5 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 import 'chat_page.dart';
 import 'gemini.dart';
@@ -10,15 +8,7 @@ import 'prompt.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final String systemPrompt = await loadSystemPrompt();
-  runApp(TextOnlyApp(apiKey: _apiKey(), systemPrompt: systemPrompt));
-}
-
-/// Takes the key from `--dart-define=GEMINI_API_KEY=...`, or, outside the
-/// browser, from the environment.
-String _apiKey() {
-  const String defined = String.fromEnvironment('GEMINI_API_KEY');
-  if (defined.isNotEmpty || kIsWeb) return defined;
-  return Platform.environment['GEMINI_API_KEY'] ?? '';
+  runApp(TextOnlyApp(apiKey: loadGeminiApiKey(), systemPrompt: systemPrompt));
 }
 
 class TextOnlyApp extends StatelessWidget {
