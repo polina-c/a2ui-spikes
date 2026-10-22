@@ -33,6 +33,9 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   /// Sends the message, or, while paused with nothing typed, resumes.
+  ///
+  /// Enter in the text field lands here, so it does what the main button
+  /// does.
   void _send() {
     final String text = _input.text.trim();
     if (text.isNotEmpty) {
@@ -132,7 +135,7 @@ class _ChatPageState extends State<ChatPage> {
                   ChatStatus.idle => 'Message',
                   ChatStatus.streaming => 'Add context, or pause',
                   ChatStatus.paused =>
-                    'Add context and send, send empty to resume, or cancel',
+                    'Add context and resume, just resume, or cancel',
                 },
                 border: const OutlineInputBorder(),
               ),
@@ -155,10 +158,27 @@ class _ChatPageState extends State<ChatPage> {
             ),
             const SizedBox(width: 8),
           ],
-          IconButton.filled(
-            tooltip: 'Send',
-            icon: const Icon(Icons.send),
-            onPressed: _send,
+          // Rebuilt as the user types, because the main button depends on
+          // whether there is anything to send.
+          ValueListenableBuilder<TextEditingValue>(
+            valueListenable: _input,
+            builder: (context, value, _) {
+              final bool hasText = value.text.trim().isNotEmpty;
+              if (status == ChatStatus.paused && !hasText) {
+                return IconButton.filled(
+                  tooltip: 'Resume',
+                  icon: const Icon(Icons.play_arrow),
+                  onPressed: _chat.resume,
+                );
+              }
+              return IconButton.filled(
+                tooltip: status == ChatStatus.paused
+                    ? 'Send and resume'
+                    : 'Send',
+                icon: const Icon(Icons.send),
+                onPressed: hasText ? _send : null,
+              );
+            },
           ),
         ],
       ),

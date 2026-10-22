@@ -5,24 +5,13 @@ import 'package:flutter/material.dart';
 /// Drawn as circles rather than text, because a period is a small glyph even
 /// in a large font.
 class AnimatedEllipsis extends StatefulWidget {
-  const AnimatedEllipsis({
-    super.key,
-    this.dotSize = 10.0,
-    this.color,
-    this.animate = true,
-  });
+  const AnimatedEllipsis({super.key, this.dotSize = 10.0, this.color});
 
   /// The diameter of each dot.
   final double dotSize;
 
   /// Defaults to the muted text color of the theme.
   final Color? color;
-
-  /// Whether the dots move.
-  ///
-  /// Turning this off freezes the dots where they are, and turning it back on
-  /// carries on from there.
-  final bool animate;
 
   /// One full cycle of the ellipsis.
   static const Duration period = Duration(milliseconds: 1200);
@@ -38,24 +27,7 @@ class _AnimatedEllipsisState extends State<AnimatedEllipsis>
   late final AnimationController _animation = AnimationController(
     vsync: this,
     duration: AnimatedEllipsis.period,
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.animate) _animation.repeat();
-  }
-
-  @override
-  void didUpdateWidget(AnimatedEllipsis oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.animate == oldWidget.animate) return;
-    if (widget.animate) {
-      _animation.repeat();
-    } else {
-      _animation.stop();
-    }
-  }
+  )..repeat();
 
   @override
   void dispose() {

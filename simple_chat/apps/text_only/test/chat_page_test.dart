@@ -61,8 +61,10 @@ void main() {
     expect(find.text('Add context, or pause'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField), 'I rent');
+    await tester.pump();
     await tester.tap(find.byTooltip('Send'));
     await tester.pump();
+    expect(_input(tester).text, isEmpty, reason: 'the message was sent');
     expect(find.text('I rent'), findsOneWidget);
     expect(assistant.requests, hasLength(1));
 
@@ -81,19 +83,54 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('paused shows send and cancel, and explains them', (
+  testWidgets('paused shows resume and cancel, and explains them', (
     tester,
   ) async {
     await pumpAnswerAndPause(tester);
 
     expect(find.text('Paused'), findsOneWidget);
-    expect(find.byTooltip('Send'), findsOneWidget);
+    expect(find.byTooltip('Resume'), findsOneWidget);
     expect(find.byTooltip('Cancel'), findsOneWidget);
     expect(find.byTooltip('Pause'), findsNothing);
-    expect(find.textContaining('send empty to resume'), findsOneWidget);
+    expect(
+      find.text('Add context and resume, just resume, or cancel'),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('pausing while thinking keeps the thinking box', (tester) async {
+  testWidgets('typing while paused turns resume into send and resume', (
+    tester,
+  ) async {
+    await pumpAnswerAndPause(tester);
+
+    await tester.enterText(find.byType(TextField), 'I rent');
+    await tester.pump();
+    expect(find.byTooltip('Send and resume'), findsOneWidget);
+    expect(find.byTooltip('Resume'), findsNothing);
+
+    await tester.enterText(find.byType(TextField), '  ');
+    await tester.pump();
+    expect(find.byTooltip('Resume'), findsOneWidget);
+  });
+
+  testWidgets('send is disabled for whitespace only', (tester) async {
+    await pumpPage(tester);
+    IconButton sendButton() => tester.widget<IconButton>(
+      find.ancestor(
+        of: find.byIcon(Icons.send),
+        matching: find.byType(IconButton),
+      ),
+    );
+    expect(sendButton().onPressed, isNotNull);
+
+    await tester.enterText(find.byType(TextField), '   ');
+    await tester.pump();
+    expect(sendButton().onPressed, isNull);
+  });
+
+  testWidgets('pausing while thinking keeps the thinking box, without dots', (
+    tester,
+  ) async {
     await pumpPage(tester);
     await tester.tap(find.byTooltip('Send'));
     await tester.pump();
@@ -105,17 +142,15 @@ void main() {
 
     expect(find.byType(ThinkingBox), findsOneWidget);
     expect(find.textContaining('Weighing the options'), findsOneWidget);
-    expect(
-      tester.widget<AnimatedEllipsis>(find.byType(AnimatedEllipsis)).animate,
-      isFalse,
-    );
+    expect(find.byType(AnimatedEllipsis), findsNothing);
   });
 
   testWidgets('sending context while paused resumes', (tester) async {
     await pumpAnswerAndPause(tester);
 
     await tester.enterText(find.byType(TextField), 'I rent');
-    await tester.tap(find.byTooltip('Send'));
+    await tester.pump();
+    await tester.tap(find.byTooltip('Send and resume'));
     await tester.pump();
 
     expect(find.text('I rent'), findsOneWidget);
@@ -124,10 +159,12 @@ void main() {
     expect(find.byTooltip('Pause'), findsOneWidget);
   });
 
-  testWidgets('sending empty while paused just resumes', (tester) async {
+  testWidgets('resume with the field empty continues the answer', (
+    tester,
+  ) async {
     await pumpAnswerAndPause(tester);
 
-    await tester.tap(find.byTooltip('Send'));
+    await tester.tap(find.byTooltip('Resume'));
     await tester.pump();
 
     expect(assistant.requests, hasLength(2));
@@ -147,3 +184,6 @@ void main() {
     expect(assistant.requests, hasLength(1));
   });
 }
+
+TextEditingController _input(WidgetTester tester) =>
+    tester.widget<TextField>(find.byType(TextField)).controller!;

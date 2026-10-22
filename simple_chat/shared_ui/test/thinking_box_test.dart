@@ -268,7 +268,7 @@ void main() {
     expect(position.pixels, position.maxScrollExtent);
   });
 
-  testWidgets('pausing keeps the box and its thought, and stops the dots', (
+  testWidgets('pausing keeps the box and its thought, without dots', (
     tester,
   ) async {
     await pumpBox(tester);
@@ -282,10 +282,10 @@ void main() {
 
     expect(find.byType(Card), findsOneWidget);
     expect(find.textContaining('a thought'), findsOneWidget);
-    final int frozen = visibleDots(tester);
-    for (var i = 0; i < 12; i++) {
-      await tester.pump(const Duration(milliseconds: 100));
-      expect(visibleDots(tester), frozen);
-    }
+    expect(findEllipsis(), findsNothing);
+
+    controller.isPaused = false;
+    await tester.pump();
+    expect(findEllipsis(), findsOneWidget);
   });
 }
