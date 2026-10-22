@@ -92,19 +92,51 @@ void main() {
 
   test('resuming with nothing added continues the same message', () async {
     chat.send('hi');
-    assistant.write('Hel');
+    assistant.write('A space with dedicated');
     await pumpEventQueue();
     chat.pause();
 
     chat.resume();
 
-    expect(assistant.requests.last.last.text, 'Hel');
+    expect(assistant.requests.last.last.text, 'A space with dedicated');
+    // A resumed turn often starts without the space it needs.
+    assistant.write('water');
+    assistant.write(' and a drain?');
+    await assistant.finish();
+    await pumpEventQueue();
+
+    expect(texts(), ['hi', 'A space with dedicated water and a drain?']);
+    expect(chat.messages.last.interrupted, isFalse);
+  });
+
+  test('chunks of one answer are joined as they come', () async {
+    chat.send('hi');
+    assistant.write('Hel');
     assistant.write('lo');
     await assistant.finish();
     await pumpEventQueue();
 
     expect(texts(), ['hi', 'Hello']);
-    expect(chat.messages.last.interrupted, isFalse);
+  });
+
+  group('joinContinuation', () {
+    test('adds the space a resumed turn leaves out', () {
+      expect(joinContinuation('dedicated', 'water'), 'dedicated water');
+      expect(joinContinuation('question:', 'where'), 'question: where');
+      expect(joinContinuation('Ну', 'да'), 'Ну да');
+    });
+
+    test('keeps the space a resumed turn brings', () {
+      expect(joinContinuation('dedicated', ' water'), 'dedicated water');
+      expect(joinContinuation('dedicated', '\n\nwater'), 'dedicated\n\nwater');
+    });
+
+    test('adds no space before punctuation or after a space', () {
+      expect(joinContinuation('dedicated', ', water'), 'dedicated, water');
+      expect(joinContinuation('dedicated ', 'water'), 'dedicated water');
+      expect(joinContinuation('(', 'like'), '(like');
+      expect(joinContinuation('**', 'Slim**'), '**Slim**');
+    });
   });
 
   test(

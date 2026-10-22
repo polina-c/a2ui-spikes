@@ -127,6 +127,9 @@ class ChatController extends ChangeNotifier {
       ..isVisible = true;
     notifyListeners();
 
+    // Set when this stream continues a paused answer, until its first text.
+    bool isContinuation = answer.text.isNotEmpty;
+
     _answer = assistant
         .answer(history)
         .listen(
@@ -136,7 +139,10 @@ class ChatController extends ChangeNotifier {
               return;
             }
             thinking.isVisible = false;
-            answer.text += chunk.text;
+            answer.text = isContinuation
+                ? joinContinuation(answer.text, chunk.text)
+                : answer.text + chunk.text;
+            isContinuation = false;
             notifyListeners();
           },
           onError: (Object error) {
@@ -178,4 +184,23 @@ class ChatController extends ChangeNotifier {
     thinking.dispose();
     super.dispose();
   }
+}
+
+/// Ends a word, so a word that follows needs a space.
+final RegExp _wordEnd = RegExp(r'[\p{L}\p{N}.,!?;:]$', unicode: true);
+
+/// Starts a word.
+final RegExp _wordStart = RegExp(r'^[\p{L}\p{N}]', unicode: true);
+
+/// Appends a resumed answer to the [partial] it continues.
+///
+/// The continuation is a new model turn, and a turn often starts without the
+/// space that would separate it from the last word of [partial], which would
+/// run 'dedicated' and 'water' together. A pause in the middle of a word gets
+/// a stray space instead, which is the less likely and less harmful mistake.
+@visibleForTesting
+String joinContinuation(String partial, String next) {
+  final bool needsSpace =
+      _wordEnd.hasMatch(partial) && _wordStart.hasMatch(next);
+  return needsSpace ? '$partial $next' : '$partial$next';
 }
