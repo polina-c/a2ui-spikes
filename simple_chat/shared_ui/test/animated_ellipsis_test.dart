@@ -41,6 +41,6 @@ void main() {
   testWidgets('dots are as big as asked', (tester) async {
     await pumpDots(tester, dotSize: 14.0);
 
-    expect(tester.getSize(find.byType(Container).first), const Size(14, 14));
+    expect(tester.getSize(find.byType(DecoratedBox).first), const Size(14, 14));
   });
 }

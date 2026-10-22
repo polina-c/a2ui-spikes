@@ -10,6 +10,8 @@ void main() {
     addTearDown(controller.dispose);
   });
 
+  Finder findEllipsis() => find.byType(AnimatedEllipsis);
+
   /// How many dots of the ellipsis are showing.
   int visibleDots(WidgetTester tester) => tester
       .widgetList<Opacity>(
@@ -32,8 +34,6 @@ void main() {
       ),
     );
   }
-
-  Finder findEllipsis() => find.byType(AnimatedEllipsis);
 
   testWidgets('shows nothing while not visible', (tester) async {
     await pumpBox(tester);
