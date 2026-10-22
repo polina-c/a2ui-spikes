@@ -11,11 +11,9 @@ resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
-  flutter_markdown_plus: ^1.0.7
   http: ^1.6.0
   shared_ui:
     path: ../shared_ui
-  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

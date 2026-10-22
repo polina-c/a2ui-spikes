@@ -4,4 +4,5 @@ library;
 export 'src/animated_ellipsis.dart';
 export 'src/chat_input_pane.dart';
 export 'src/md_carousel_view.dart';
+export 'src/message_bubble.dart';
 export 'src/thinking_box.dart';

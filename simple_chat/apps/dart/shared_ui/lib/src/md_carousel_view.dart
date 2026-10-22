@@ -1,32 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-import 'package:logging/logging.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-final Logger _logger = Logger('MdCarouselView');
-
-/// Opens [href] with the platform's default handler.
-///
-/// A link that cannot be parsed or opened is logged and dropped: tapping a
-/// broken link in a generated card should do nothing, not tear down the
-/// surface it sits on.
-Future<void> _openLink(String? href) async {
-  if (href == null || href.isEmpty) return;
-
-  final Uri? url = Uri.tryParse(href);
-  if (url == null) {
-    _logger.warning('Ignoring a markdown link that is not a URL: $href');
-    return;
-  }
-
-  try {
-    if (!await launchUrl(url)) {
-      _logger.warning('Could not open $url.');
-    }
-  } catch (exception, stackTrace) {
-    _logger.warning('Could not open $url.', exception, stackTrace);
-  }
-}
+import 'open_link.dart';
 
 /// A horizontally scrolling list of markdown texts, each with a 'Select'
 /// button.
@@ -280,7 +255,7 @@ class _MdCarouselCard extends StatelessWidget {
                   child: MarkdownBody(
                     data: markdown,
                     styleSheet: MarkdownStyleSheet.fromTheme(theme),
-                    onTapLink: (text, href, title) => _openLink(href),
+                    onTapLink: (text, href, title) => openLink(href),
                   ),
                 ),
               ),
