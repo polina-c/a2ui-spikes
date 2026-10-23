@@ -2,7 +2,8 @@ import 'package:flutter/services.dart';
 
 /// Paths of the bundled documents that make up the system prompt.
 class _Assets {
-  static const String chatBlueprint = 'assets/doc/blueprints/0-chat.md';
+  static const String chatBlueprint =
+      'assets/doc/blueprints/0-chat-specifications.md';
   static const String domain = 'assets/doc/domain/just_shining';
   static const String knowledge = '$domain/knowledge.md';
   static const String landingPages = '$domain/landing_pages/';

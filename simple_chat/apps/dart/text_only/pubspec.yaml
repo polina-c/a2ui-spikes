@@ -26,6 +26,6 @@ flutter:
   # assets/doc links to simple_chat/doc, so the chat blueprint and the domain
   # knowledge are bundled from where they are written rather than copied.
   assets:
-    - assets/doc/blueprints/0-chat.md
+    - assets/doc/blueprints/0-chat-specifications.md
     - assets/doc/domain/just_shining/
     - assets/doc/domain/just_shining/landing_pages/
