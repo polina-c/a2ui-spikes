@@ -228,6 +228,9 @@ void main() {
     expect(assistant.requests, hasLength(2));
     expect(assistant.requests.last.last.text, 'Partial');
     expect(find.byTooltip('Pause'), findsOneWidget);
+    // The answer is being written again, so it is not marked.
+    expect(find.text('Paused'), findsNothing);
+    expect(find.text('Stopped'), findsNothing);
   });
 
   testWidgets('cancel stops the answer for good', (tester) async {

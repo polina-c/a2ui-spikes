@@ -55,7 +55,12 @@ class _ChatPageState extends State<ChatPage> {
           MessageBubble(
             text: message.text,
             isUser: message.role == Role.user,
-            interrupted: message.interrupted,
+            // A resumed answer is being written again, so it is marked only
+            // while paused.
+            interrupted:
+                message.interrupted &&
+                !(status == ChatStatus.streaming &&
+                    identical(message, current)),
             // Only the current answer can still be resumed; an earlier one
             // was stopped for good.
             isPaused:

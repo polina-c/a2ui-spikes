@@ -66,6 +66,12 @@ class _ChatPageState extends State<ChatPage> {
         else
           ..._buildAnswer(
             message,
+            // A resumed answer is being written again, so it is marked only
+            // while paused.
+            interrupted:
+                message.interrupted &&
+                !(status == ChatStatus.streaming &&
+                    identical(message, current)),
             // Only the current answer can still be resumed; an earlier one
             // was stopped for good.
             isPaused:
@@ -103,7 +109,11 @@ class _ChatPageState extends State<ChatPage> {
   ///
   /// An interrupted answer is marked on its last bubble, so when it ends in
   /// UI, an empty bubble follows to carry the mark.
-  List<Widget> _buildAnswer(ChatMessage answer, {required bool isPaused}) {
+  List<Widget> _buildAnswer(
+    ChatMessage answer, {
+    required bool interrupted,
+    required bool isPaused,
+  }) {
     final AnswerContent content = _chat.contentOf(answer);
     final List<AnswerPart> parts = content.parts;
     final A2uiError? uiError = content.error;
@@ -113,7 +123,7 @@ class _ChatPageState extends State<ChatPage> {
           MarkdownPart(:final String markdown) => MessageBubble(
             text: markdown,
             isUser: false,
-            interrupted: answer.interrupted && identical(part, parts.last),
+            interrupted: interrupted && identical(part, parts.last),
             isPaused: isPaused,
           ),
           SurfacePart(:final surface) => _AnswerSurface(
@@ -121,7 +131,7 @@ class _ChatPageState extends State<ChatPage> {
             surface: surface,
           ),
         },
-      if (answer.interrupted &&
+      if (interrupted &&
           answer.text.isNotEmpty &&
           parts.lastOrNull is! MarkdownPart)
         MessageBubble(

@@ -1,0 +1,10 @@
+{
+  "name": "record-app-video",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Drives a simple chat app through its main flow and records it.",
+  "dependencies": {
+    "playwright": "~1.63.0"
+  }
+}

@@ -30,6 +30,9 @@ In documentation, both standalone and in-code, referencable elements should be c
 
 ## Non-asset binaries
 
+To record the video of an app, use the
+[record-app-video](../record-app-video/SKILL.md) skill.
+
 Store binaries that are not in-app assets, such as videos and screenshots for
 documentation, in https://github.com/polina-c/a2ui-spikes-binaries, not in this
 repo. Git keeps every version of a file forever, so a few recordings would make

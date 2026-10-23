@@ -7,6 +7,10 @@ Markdown. It is the React version of the
 does, and its [States](../../../doc/blueprints/1-text-only-chat.md#states)
 section for the buttons in each state.
 
+[Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/react/text_only/videos/chat.webm),
+at phone size: the default prompt, two questions, then a pause to add context
+and a resume, ending on a recommendation with a picture of the product.
+
 ## Prompt
 
 Implement a React analog of Dart's [text_only](../../dart/text_only) and

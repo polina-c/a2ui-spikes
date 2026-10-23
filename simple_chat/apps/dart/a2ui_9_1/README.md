@@ -8,6 +8,11 @@ compare options. See
 [2-a2ui-enhanced-chat.md](../../../doc/blueprints/2-a2ui-enhanced-chat.md) for
 what it does.
 
+[Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/dart/a2ui_9_1/videos/chat.webm),
+at phone size: the default prompt, three questions answered with the buttons
+the model generated, a pause to add context and a resume, ending on a
+recommendation and its alternative as two cards side by side.
+
 ## Prompt
 
 Inhance simple_chat/apps/dart/text_only with A2UI as specified in
