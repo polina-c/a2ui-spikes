@@ -23,10 +23,13 @@ resume".
 
 Jane, described in [tools/persona.mjs](tools/persona.mjs), sends the default
 prompt and answers the assistant's questions. When the assistant offers
-options, she presses the one that fits her, and otherwise she types her
-answer. After answering how many people eat at home, she pauses the answer,
-adds that the kitchen is open to the living room, and resumes. The run ends
-on the recommendation, and scrolls up through it and back.
+options, as the apps with generated UI do, she presses the one that fits her.
+She types just one answer, the width of the gap, even though options are on
+screen, to show that typing still works next to them. When the assistant
+offers no options, as in the text-only apps, she types every answer. After
+answering how many people eat at home, she pauses the answer, adds that the
+kitchen is open to the living room, and resumes. The run ends on the
+recommendation, and scrolls up through it and back.
 
 To show more after the recommendation, pass `--then` with a message for Jane
 to type, once per message.
@@ -66,8 +69,9 @@ to type, once per message.
      -ss <seconds> -i <video> -frames:v 1 <frame>.png
    ```
 
-   Record again if an answer failed, or if the run stopped before the
-   recommendation.
+   Record again if an answer failed, if the run stopped before the
+   recommendation, or if the driver warns that no answer was typed in an app
+   that offered options.
 6. Stop the server and delete the build, `build/web` or `dist`: it holds the
    key.
 7. Publish: `.agent/skills/record-app-video/tools/publish.sh

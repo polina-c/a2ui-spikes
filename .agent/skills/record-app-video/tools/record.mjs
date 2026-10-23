@@ -6,8 +6,9 @@
  *
  * Jane sends the default prompt and answers the assistant's questions as
  * persona.mjs describes: she presses the option the assistant offers when it
- * offers one, and types her answer otherwise. On one answer she pauses, adds
- * context and resumes. The run ends on the recommendation, after the messages
+ * offers one, except for one answer she types to show that typing still
+ * works, and types her answers when it offers none. On one answer she pauses,
+ * adds context and resumes. The run ends on the recommendation, after the messages
  * given with --then, if any, and scrolls up through it and back.
  *
  * Works for the Flutter apps, driven through their semantics tree, and for
@@ -118,6 +119,10 @@ await press('Send');
 await waitForAnswer();
 
 const used = new Set();
+// Whether Jane pressed any option, and whether she typed the answer that shows
+// typing next to them.
+let pressedAny = false;
+let typedNextToOptions = false;
 for (let turn = 0; turn < 8; turn++) {
   const offered = (await options()).filter(o => !seen.has(o));
   offered.forEach(o => seen.add(o));
@@ -130,9 +135,16 @@ for (let turn = 0; turn < 8; turn++) {
   if (offered.length > 0) {
     const choice = choose(offered, used);
     rule = choice.rule;
-    const label = offered[Math.max(choice.index, 0)];
-    note(`presses "${label}" of ${JSON.stringify(offered)}${rule ? ` (${rule.name})` : ', matching no rule'}`);
-    await press(label);
+    if (rule?.typed) {
+      note(`types "${rule.reply}" (${rule.name}), instead of pressing one of ${JSON.stringify(offered)}`);
+      await send(rule.reply);
+      typedNextToOptions = true;
+    } else {
+      const label = offered[Math.max(choice.index, 0)];
+      note(`presses "${label}" of ${JSON.stringify(offered)}${rule ? ` (${rule.name})` : ', matching no rule'}`);
+      await press(label);
+      pressedAny = true;
+    }
   } else {
     rule = PERSONA.find(r => !used.has(r) && r.reply);
     // With nothing offered and nothing left to say, the last answer was the
@@ -154,6 +166,10 @@ for (let turn = 0; turn < 8; turn++) {
     await press('Send and resume');
   }
   await waitForAnswer();
+}
+
+if (pressedAny && !typedNextToOptions) {
+  note('warning: no answer was typed, so the video does not show typing next to the options');
 }
 
 for (const message of then) {

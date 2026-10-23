@@ -8,9 +8,12 @@
  *
  * Each rule is one of the assistant's questions. When the assistant offers
  * options, a rule picks one with `want` and `avoid`, and a rule decides only
- * when it singles out exactly one option. When the assistant offers none, Jane
- * types the `reply` of the next rule that has one. `pause` is the context she
- * adds after pausing the answer to that rule.
+ * when it singles out exactly one option. Jane presses that option, except for
+ * the rule marked `typed`: she types its `reply` even though options are on
+ * screen, to show that typing still works next to the generated UI. When the
+ * assistant offers no options, as in the text-only apps, she types the `reply`
+ * of the next rule that has one. `pause` is the context she adds after
+ * pausing the answer to that rule.
  *
  * Adapted from ci/experiments/2026-09-20-0155/tools/answers.mjs.
  */
@@ -28,6 +31,7 @@ export const PERSONA = [
     want: /\b60\b/,
     avoid: /\b45\b/,
     reply: 'I measured it: the gap is 60 cm.',
+    typed: true,
   },
   {
     name: 'household size',

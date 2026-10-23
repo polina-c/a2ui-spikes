@@ -9,9 +9,10 @@ compare options. See
 what it does.
 
 [Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/dart/a2ui_9_1/videos/chat.webm),
-at phone size: the default prompt, three questions answered with the buttons
-the model generated, a pause to add context and a resume, ending on a
-recommendation and its alternative as two cards side by side.
+at phone size: the default prompt, three questions, two answered with the
+buttons the model generated and one typed next to them, a pause to add context
+and a resume, ending on a recommendation card with a picture of the product
+and a button that opens its page.
 
 ## Prompt
 
