@@ -1,4 +1,4 @@
-# Chat blueprint
+# Text only chat
 
 This file describes how a chat assistant guides a user from an open question
 to a concrete next step. It does not depend on what is being offered. The

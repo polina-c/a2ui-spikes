@@ -4,9 +4,9 @@ A Flutter chat where a Gemini model guides the user to a product, answering in
 Markdown. See [1-text-only.md](../../../doc/blueprints/1-text-only.md) for what it does, and
 [states.md](states.md) for the buttons in each state.
 
-[Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/text_only/videos/chat.webm):
-the default prompt, two questions, then a pause to add context and a resume,
-ending on a recommendation.
+[Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/dart/text_only/videos/chat.webm),
+at phone size: the default prompt, two questions, then a pause to add context
+and a resume, ending on a recommendation with a picture of the product.
 
 ## Run it
 
