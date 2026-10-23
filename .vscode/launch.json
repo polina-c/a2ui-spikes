@@ -5,10 +5,28 @@
       "name": "sc-text-dart",
       "request": "launch",
       "type": "dart",
-      "cwd": "simple_chat/apps/dart/text_only",
+      "cwd": "simple_chat/apps/flutter/text_only",
       "program": "lib/main.dart",
       "deviceId": "chrome",
       "toolArgs": ["--dart-define=GEMINI_API_KEY=${env:GEMINI_API_KEY}"]
+    },
+    {
+      "name": "sc-a2ui-dart-0.9.1",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "simple_chat/apps/flutter/a2ui_0_9_1",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "toolArgs": ["--dart-define=GEMINI_API_KEY=${env:GEMINI_API_KEY}"]
+    },
+    {
+      // Starts the Vite dev server, which reads GEMINI_API_KEY from the
+      // environment, and opens the app in the default browser.
+      "name": "sc-text-react",
+      "request": "launch",
+      "type": "node-terminal",
+      "cwd": "${workspaceFolder}/simple_chat/apps/react/text_only",
+      "command": "npm run dev -- --open"
     }
   ]
 }
