@@ -36,7 +36,7 @@ files are bundled with the app as assets.
 
 The app sends the whole conversation with every request and keeps it in memory
 only. While it waits for the first part of an answer, it shows thinking with
-`ThinkingBox` from [shared_ui](../../apps/dart/shared_ui).
+`ThinkingBox` from [shared_ui](../../apps/flutter/shared_ui).
 
 ## States
 

@@ -80,7 +80,7 @@ to type, once per message.
    serves it. See "Non-asset binaries" in the [coding skill](../coding/SKILL.md)
    for why videos live there.
 8. Link the video in the app's README, under the first paragraph, the way
-   [text_only](../../../simple_chat/apps/dart/text_only/README.md) does:
+   [text_only](../../../simple_chat/apps/flutter/text_only/README.md) does:
 
    ```markdown
    [Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/<platform>/<app>/videos/chat.webm),

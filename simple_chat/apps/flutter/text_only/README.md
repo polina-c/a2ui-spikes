@@ -6,13 +6,13 @@ for what it does, and its
 [States](../../../doc/blueprints/1-text-only-chat.md#states) section for the
 buttons in each state.
 
-[Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/dart/text_only/videos/chat.webm),
+[Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/flutter/text_only/videos/chat.webm),
 at phone size: the default prompt, two questions, then a pause to add context
 and a resume, ending on a recommendation with a picture of the product.
 
 ## Prompt
 
-Build the Flutter app in [simple_chat/apps/dart/text_only](.), as described in
+Build the Flutter app in [simple_chat/apps/flutter/text_only](.), as described in
 [simple_chat/doc/blueprints/1-text-only-chat.md](../../../doc/blueprints/1-text-only-chat.md).
 
 Reuse components from [shared_ui](../shared_ui).
