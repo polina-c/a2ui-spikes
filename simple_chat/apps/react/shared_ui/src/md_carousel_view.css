@@ -1,0 +1,86 @@
+.md-carousel-view {
+  position: relative;
+}
+
+.md-carousel-view__list {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  /* Room for the shadows of the cards. */
+  padding: 8px;
+}
+
+.md-carousel-view__card {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--color-surface-container-low);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 30%),
+    0 2px 6px 2px rgb(0 0 0 / 15%);
+}
+
+/* Two lines at most, then an ellipsis. */
+.md-carousel-view__name {
+  flex: none;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.md-carousel-view__markdown {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.md-carousel-view__select {
+  flex: none;
+  align-self: flex-end;
+  height: 40px;
+  margin-top: 12px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 20px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.md-carousel-view__select:hover {
+  box-shadow: inset 0 0 0 20px color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.md-carousel-view__select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.md-carousel-view__arrow {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  padding: 0 4px;
+  transition: opacity 150ms;
+}
+
+.md-carousel-view__arrow--left {
+  left: 0;
+}
+
+.md-carousel-view__arrow--right {
+  right: 0;
+}
+
+.md-carousel-view__arrow[inert] {
+  opacity: 0;
+}

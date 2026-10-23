@@ -6,8 +6,18 @@ environment:
 
 workspace:
   - simple_chat/apps/dart/text_only
+  - simple_chat/apps/dart/a2ui_9_1
   - simple_chat/apps/dart/shared_ui
   - ci/experiments/2026-09-19-1347/flutter
   - ci/experiments/2026-09-19-1347/jaspr
   - ci/experiments/2026-09-20-0155/flutter
   - ci/experiments/2026-09-20-0155/jaspr
+
+# a2ui_flutter needs the node layer of a2ui_core, which no release on pub.dev
+# has yet, so a2ui_core comes from the same commit as a2ui_flutter.
+dependency_overrides:
+  a2ui_core:
+    git:
+      url: https://github.com/a2ui-project/a2ui.git
+      path: dart/a2ui_core
+      ref: 020a9d6f694761ad16b35bc38945e4ccd0ac14e8

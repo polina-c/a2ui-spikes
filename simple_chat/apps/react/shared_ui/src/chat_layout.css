@@ -1,0 +1,24 @@
+.chat-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  margin: 0 auto;
+}
+
+/*
+ * Reversed, so the list stays pinned to the newest message as it grows: a
+ * column-reverse scroller keeps its distance from the bottom, not the top.
+ */
+.chat-layout__scroller {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: auto;
+}
+
+.chat-layout__messages {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}

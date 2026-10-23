@@ -1,0 +1,19 @@
+{
+  "name": "simple_chat_react",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "shared_ui",
+    "text_only"
+  ],
+  "scripts": {
+    "test": "npm test --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "lint": "oxlint",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "oxlint": "^1.87.0",
+    "prettier": "^3.9.0"
+  }
+}

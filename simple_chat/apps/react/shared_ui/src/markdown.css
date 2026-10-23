@@ -1,0 +1,106 @@
+/* Sizes follow Flutter's `MarkdownStyleSheet.fromTheme` for Material 3. */
+
+.markdown {
+  overflow-wrap: anywhere;
+}
+
+.markdown > :first-child {
+  margin-top: 0;
+}
+
+.markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown :is(p, h1, h2, h3, h4, h5, h6, ul, ol, pre, table, blockquote, hr) {
+  margin: 0 0 8px;
+}
+
+.markdown h1 {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+}
+
+.markdown h2 {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.markdown h3 {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.markdown :is(h4, h5, h6) {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.markdown :is(ul, ol) {
+  padding-left: 24px;
+}
+
+.markdown li > :is(ul, ol) {
+  margin-bottom: 0;
+}
+
+.markdown a {
+  color: var(--color-primary);
+}
+
+.markdown code {
+  padding: 0 2px;
+  border-radius: 2px;
+  background: var(--color-surface-container-highest);
+  font-family: ui-monospace, monospace;
+  font-size: 0.9em;
+}
+
+.markdown pre {
+  overflow-x: auto;
+  padding: 8px;
+  border-radius: 2px;
+  background: var(--color-surface-container-highest);
+}
+
+.markdown pre code {
+  padding: 0;
+  background: none;
+}
+
+.markdown blockquote {
+  margin-left: 0;
+  padding: 8px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+/* Wide tables scroll on their own, rather than widening the page. */
+.markdown table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.markdown :is(th, td) {
+  padding: 4px 8px;
+  border: 1px solid var(--color-outline-variant);
+  text-align: left;
+}
+
+.markdown hr {
+  border: none;
+  border-top: 1px solid var(--color-outline-variant);
+}
+
+/* Kept narrow, so that a picture does not push the text out of view. */
+.markdown img {
+  display: block;
+  max-width: min(360px, 100%);
+  margin: 4px 0;
+  border-radius: 8px;
+}

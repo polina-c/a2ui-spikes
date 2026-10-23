@@ -1,0 +1,48 @@
+name: a2ui_9_1
+description: "Chat that guides users to a product, with generated UI."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.5
+
+resolution: workspace
+
+dependencies:
+  # a2ui_flutter is not on pub.dev, and it needs an a2ui_core newer than the
+  # latest release, so the A2UI packages come from git at one commit. The root
+  # pubspec overrides a2ui_core to the same commit.
+  a2ui_agent:
+    git:
+      url: https://github.com/a2ui-project/a2ui.git
+      path: dart/a2ui_agent
+      ref: 020a9d6f694761ad16b35bc38945e4ccd0ac14e8
+  a2ui_core: ^0.3.0
+  a2ui_flutter:
+    git:
+      url: https://github.com/a2ui-project/a2ui.git
+      path: dart/a2ui_flutter
+      ref: 020a9d6f694761ad16b35bc38945e4ccd0ac14e8
+  flutter:
+    sdk: flutter
+  flutter_markdown_plus: ^1.0.7
+  http: ^1.6.0
+  json_schema_builder: ^0.1.7
+  shared_ui:
+    path: ../shared_ui
+  url_launcher: ^6.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # assets/doc links to simple_chat/doc, so the chat blueprint and the domain
+  # knowledge are bundled from where they are written rather than copied.
+  assets:
+    - assets/doc/blueprints/0-chat-specifications.md
+    - assets/doc/domain/just_shining/
+    - assets/doc/domain/just_shining/landing_pages/

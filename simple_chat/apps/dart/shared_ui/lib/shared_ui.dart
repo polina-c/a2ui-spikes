@@ -8,4 +8,5 @@ export 'src/gemini_api_key.dart';
 export 'src/join_continuation.dart';
 export 'src/md_carousel_view.dart';
 export 'src/message_bubble.dart';
+export 'src/open_link.dart';
 export 'src/thinking_box.dart';

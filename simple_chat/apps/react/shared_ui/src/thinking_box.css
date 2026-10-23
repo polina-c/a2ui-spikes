@@ -1,0 +1,23 @@
+.thinking-box {
+  margin: 4px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--color-surface-container-highest);
+}
+
+/*
+ * The box stops growing here and older thought scrolls off the top, so a long
+ * ramble cannot push the conversation off screen.
+ */
+.thinking-box__thought {
+  max-height: 120px;
+  overflow-y: auto;
+  color: var(--color-on-surface-variant);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.thinking-box__dots {
+  display: flex;
+  justify-content: center;
+}

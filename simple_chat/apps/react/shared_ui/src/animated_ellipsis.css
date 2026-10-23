@@ -1,0 +1,7 @@
+.animated-ellipsis {
+  display: inline-flex;
+}
+
+.animated-ellipsis__dot {
+  border-radius: 50%;
+}

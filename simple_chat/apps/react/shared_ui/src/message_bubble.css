@@ -1,0 +1,29 @@
+.message-bubble {
+  width: fit-content;
+  max-width: min(600px, 100%);
+  margin: 4px 0;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.message-bubble--user {
+  margin-left: auto;
+  background: var(--color-primary-container);
+}
+
+.message-bubble--model {
+  background: var(--color-surface-container-low);
+}
+
+.message-bubble__text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.message-bubble__status {
+  margin-top: 4px;
+  color: var(--color-on-surface-variant);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+}

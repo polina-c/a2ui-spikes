@@ -24,6 +24,10 @@ class _Json {
 }
 ```
 
+## Make references clickable
+
+In documentation, both standalone and in-code, referencable elements should be clickable.
+
 ## Non-asset binaries
 
 Store binaries that are not in-app assets, such as videos and screenshots for

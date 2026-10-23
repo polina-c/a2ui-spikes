@@ -1,0 +1,2 @@
+# Vite reads GEMINI_API_KEY from .env.local files too, so keep them out of git.
+*.local

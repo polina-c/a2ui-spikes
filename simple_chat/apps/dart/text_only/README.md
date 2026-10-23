@@ -1,12 +1,25 @@
 # Text-only chat
 
 A Flutter chat where a Gemini model guides the user to a product, answering in
-Markdown. See [1-text-only.md](../../../doc/blueprints/1-text-only.md) for what it does, and
-[states.md](states.md) for the buttons in each state.
+Markdown. See [1-text-only-chat.md](../../../doc/blueprints/1-text-only-chat.md)
+for what it does, and its
+[States](../../../doc/blueprints/1-text-only-chat.md#states) section for the
+buttons in each state.
 
 [Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/dart/text_only/videos/chat.webm),
 at phone size: the default prompt, two questions, then a pause to add context
 and a resume, ending on a recommendation with a picture of the product.
+
+## Prompt
+
+Build the Flutter app in [simple_chat/apps/dart/text_only](.), as described in
+[simple_chat/doc/blueprints/1-text-only-chat.md](../../../doc/blueprints/1-text-only-chat.md).
+
+Reuse components from [shared_ui](../shared_ui).
+
+Call the Gemini REST streaming API with the http package.
+
+Write a short README: what the app does, how to run and test it, what prompt was used.
 
 ## Run it
 
@@ -20,15 +33,3 @@ environment.
 ```bash
 flutter test
 ```
-
-## Layout
-
-1. `lib/chat_controller.dart`: the conversation, and pausing and resuming an
-   answer.
-2. `lib/gemini.dart`: the streaming call to Gemini, and the notes that tell
-   the model about a pause.
-3. `lib/chat_page.dart`: the message list and the input row.
-4. `lib/prompt.dart`: the system prompt, read from the bundled documents.
-
-`assets/doc` is a link to [simple_chat/doc](../../../doc), so the chat blueprint
-and the domain knowledge are bundled from where they are written.

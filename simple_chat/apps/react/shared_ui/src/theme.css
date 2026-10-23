@@ -1,0 +1,37 @@
+/*
+ * The Material 3 colors that Flutter derives from `colorSchemeSeed:
+ * Colors.teal`, so that the components look like their Flutter counterparts.
+ * Import this once, in the app.
+ */
+:root {
+  --color-primary: #006a60;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #9ef2e4;
+  --color-secondary-container: #cce8e2;
+  --color-on-secondary-container: #334b47;
+  --color-surface: #f4fbf8;
+  --color-surface-container-low: #eff5f2;
+  --color-surface-container-highest: #dde4e1;
+  --color-on-surface: #161d1c;
+  --color-on-surface-variant: #3f4947;
+  --color-outline: #6f7977;
+  --color-outline-variant: #bec9c6;
+  --color-error: #ba1a1a;
+
+  color-scheme: light;
+  color: var(--color-on-surface);
+  background: var(--color-surface);
+  font-family: Roboto, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}

@@ -1,0 +1,6 @@
+.missing-key {
+  display: grid;
+  place-items: center;
+  height: 100dvh;
+  margin: 0;
+}
