@@ -1,0 +1,32 @@
+/*
+ * Gives the components of the basic catalog the colors and shapes of
+ * shared_ui's theme, so that the generated UI matches the rest of the chat.
+ */
+:root {
+  --a2ui-color-background: var(--color-surface);
+  --a2ui-color-on-background: var(--color-on-surface);
+  --a2ui-color-surface: var(--color-surface-container-low);
+  --a2ui-color-on-surface: var(--color-on-surface);
+  --a2ui-color-primary: var(--color-primary);
+  --a2ui-color-on-primary: var(--color-on-primary);
+  --a2ui-color-secondary: var(--color-secondary-container);
+  --a2ui-color-on-secondary: var(--color-on-secondary-container);
+  --a2ui-color-border: var(--color-outline-variant);
+  --a2ui-font-size: 14px;
+
+  /* Like Material's tonal and filled buttons. */
+  --a2ui-button-background: var(--color-secondary-container);
+  --a2ui-button-font-weight: 500;
+  --a2ui-button-border: none;
+  --a2ui-button-border-radius: 20px;
+  --a2ui-button-padding: 10px 24px;
+  --a2ui-button-margin: 4px;
+
+  /* Like the cards of MdCarouselView. */
+  --a2ui-card-border: none;
+  --a2ui-card-border-radius: 16px;
+  --a2ui-card-padding: 16px;
+  --a2ui-card-margin: 4px;
+  --a2ui-card-box-shadow:
+    0 1px 2px rgb(0 0 0 / 30%), 0 2px 6px 2px rgb(0 0 0 / 15%);
+}

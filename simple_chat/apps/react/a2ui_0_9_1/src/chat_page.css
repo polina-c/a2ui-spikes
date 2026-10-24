@@ -1,0 +1,14 @@
+.chat-page__dots {
+  padding: 4px 12px;
+}
+
+.chat-page__error {
+  margin: 0;
+  padding: 8px;
+  color: var(--color-error);
+  white-space: pre-line;
+}
+
+.chat-page__surface {
+  padding: 4px 0;
+}

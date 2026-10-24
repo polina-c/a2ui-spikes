@@ -4,7 +4,9 @@
   "type": "module",
   "workspaces": [
     "shared_ui",
-    "text_only"
+    "text_only",
+    "a2ui_0_9_1",
+    "a2ui_1_0"
   ],
   "scripts": {
     "test": "npm test --workspaces",
