@@ -9,6 +9,12 @@ features v1.0 adds where they help. See
 [2-a2ui-enhanced-chat.md](../../../doc/blueprints/2-a2ui-enhanced-chat.md) for
 what it does.
 
+[Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/react/a2ui_1_0/videos/chat.webm),
+at phone size: the default prompt, three questions, two answered with the
+buttons the model generated and one typed next to them, a pause to add context
+and a resume, ending on a recommendation with a carousel of two dishwashers,
+each with a picture, a list of features and a button to view it.
+
 ## Prompt
 
 Inhance simple_chat/apps/react/text_only with A2UI as specified in

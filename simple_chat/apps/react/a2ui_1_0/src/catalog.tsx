@@ -33,18 +33,21 @@ const instructions = `How to use this catalog in the chat:
 1. Each A2UI block builds one new surface with a single \`createSurface\`
    message that holds all of the surface's \`components\`. No other block in
    the message uses the same surface id.
-2. A button answers for the user. Give it an \`event\` action named \`reply\`
+2. A component id is an identifier: letters, digits and underscores, not
+   starting with a digit, such as \`btn_plumbed\`. The renderer rejects a block
+   with any other id, such as \`btn-plumbed\`.
+3. A button answers for the user. Give it an \`event\` action named \`reply\`
    whose \`userMessage\` is what the user says by pressing it, written as they
    would type it, such as
    \`{"event": {"name": "reply", "userMessage": "It goes under the counter"}}\`.
    The app sends that text as the user's next message.
-3. A button that opens a link calls \`openUrl\` instead:
+4. A button that opens a link calls \`openUrl\` instead:
    \`{"functionCall": {"@call": "openUrl", "args": {"url": "https://..."}}}\`.
-4. \`MdCarousel\` shows options side by side. Give each card an action, as for
+5. \`MdCarousel\` shows options side by side. Give each card an action, as for
    a button.
-5. The text of a \`Text\` component can use simple Markdown, such as
+6. The text of a \`Text\` component can use simple Markdown, such as
    \`### \` headings, bold and \`- \` lists.
-6. When the UI shows a picture, the text of the message leaves it out.`;
+7. When the UI shows a picture, the text of the message leaves it out.`;
 
 /**
  * The components the model builds the chat's UI from.

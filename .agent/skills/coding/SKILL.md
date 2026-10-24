@@ -67,3 +67,8 @@ it is there.
 After publishing, check the link before writing it: the Pages URL must return
 200 with `Content-Type: video/webm` for a video. Pages can take a minute or two
 to update after a push.
+
+## Markdown
+
+Use tables if only they fit 80 symbols line length. Format them 
+well so that they are readable as source.
