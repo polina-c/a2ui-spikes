@@ -15,7 +15,7 @@ in this directory, highlighting the following details:
 
 1. Thinking is about A2UI: https://github.com/a2ui-project/a2ui/issues/3576 
 2. API gaps for all-in-one: https://github.com/a2ui-project/a2ui/issues/3597 
-3. Express is failing in TS: https://github.com/a2ui-project/a2ui/issues/3598
+3. Express is not working in both Dart and TS: https://github.com/a2ui-project/a2ui/issues/3598
 4. Lack of guidance for choosing format: https://github.com/a2ui-project/a2ui/issues/3599
 
 ## Analysis
