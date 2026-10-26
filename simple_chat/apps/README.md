@@ -5,11 +5,18 @@
 This document summarises a2ui enhanced applications
 in this directory, highlighting the following details:
 
-1. How much code is added (by language: dart, ts, css, html)
-comparing to the text_only app?
-2. What features of protocol were used and what were skipped?
-3. What format was used (JSON or express)?
-4. What components were used for catalog?
+1. Are there issues in SDKs implementation?
+2. How much code is added to app code (not tests) comparing to the text_only app?
+3. What features of protocol were used and what were skipped?
+4. What format was used (JSON or express)?
+5. What components were used for catalog (agent was asked to select only needed ones)?
+
+## Issues
+
+1. Thinking is about A2UI: https://github.com/a2ui-project/a2ui/issues/3576 
+2. API gaps for all-in-one: https://github.com/a2ui-project/a2ui/issues/3597 
+3. Express is failing in TS: https://github.com/a2ui-project/a2ui/issues/3598
+4. Lack of guidance for choosing format: https://github.com/a2ui-project/a2ui/issues/3599
 
 ## Analysis
 
