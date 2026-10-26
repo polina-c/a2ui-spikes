@@ -42,13 +42,18 @@ Each video is at phone size and starts with the default prompt.
    three questions, two of them answered with the buttons the model generated,
    a pause to add context and a resume, and a recommendation card with a
    picture of the product and a button that opens its page.
-3. [React text_only](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/react/text_only/videos/chat.webm):
+3. [Flutter a2ui_0_9_1_express](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/flutter/a2ui_0_9_1_express/videos/chat.webm):
+   the same steps as the Flutter a2ui_0_9_1 video, ending on a recommendation
+   with a picture of the product and a carousel of two dishwashers, each with
+   a list of features. Each set of buttons shows once the model finishes
+   writing it.
+4. [React text_only](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/react/text_only/videos/chat.webm):
    the same steps as the Flutter text_only video.
-4. [React a2ui_0_9_1](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/react/a2ui_0_9_1/videos/chat.webm):
+5. [React a2ui_0_9_1](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/react/a2ui_0_9_1/videos/chat.webm):
    three questions, two of them answered with the buttons the model generated,
    a pause to add context and a resume, and a carousel of two dishwashers,
    each with a picture and a button to view it.
-5. [React a2ui_1_0](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/react/a2ui_1_0/videos/chat.webm):
+6. [React a2ui_1_0](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/react/a2ui_1_0/videos/chat.webm):
    the same steps as the React a2ui_0_9_1 video, with a list of features on
    each card of the carousel.
 
