@@ -7,6 +7,13 @@ v0.9.1 are the same. See
 [2-a2ui-enhanced-chat.md](../../../doc/blueprints/2-a2ui-enhanced-chat.md) for
 what it does.
 
+[Video](https://polina-c.github.io/a2ui-spikes-binaries/simple_chat/apps/flutter/a2ui_0_9_1_express/videos/chat.webm),
+at phone size: the default prompt, three questions, two answered with the
+buttons the model generated and one typed next to them, a pause to add context
+and a resume, ending on a recommendation with a picture of the product and a
+carousel of two dishwashers, each with a list of features and a Select button.
+Each set of buttons shows once the model finishes writing it.
+
 ## Prompt
 
 Can you generate simple_chat/apps/flutter/a2ui_0_9_1_express?
