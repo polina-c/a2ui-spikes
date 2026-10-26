@@ -20,12 +20,16 @@ in this directory, highlighting the following details:
 
 ## Analysis
 
-The three A2UI apps are [flutter/a2ui_0_9_1](flutter/a2ui_0_9_1),
+The four A2UI apps are [flutter/a2ui_0_9_1](flutter/a2ui_0_9_1),
+[flutter/a2ui_0_9_1_express](flutter/a2ui_0_9_1_express),
 [react/a2ui_0_9_1](react/a2ui_0_9_1) and [react/a2ui_1_0](react/a2ui_1_0).
 Each one is the text_only app of its platform with generated UI added, as the
 [A2UI blueprint](../doc/blueprints/2-a2ui-enhanced-chat.md) describes. The two
 React apps differ only in the protocol version: a2ui_1_0 changes 4 source files
 and 3 test files of a2ui_0_9_1, adding 67 lines of app code and removing 55.
+The two Flutter apps differ only in the format the model writes UI in:
+a2ui_0_9_1_express changes 2 source files of a2ui_0_9_1, `answer_content` and
+`generated_ui`, and the app's name.
 
 ### Videos
 
@@ -55,62 +59,62 @@ app of the same platform. Added and removed lines come from a line diff of each
 file with its text_only counterpart, so a changed line counts as one removed
 and one added.
 
-| App                | text_only | A2UI app | Added | Removed |
-| ------------------ | --------: | -------: | ----: | ------: |
-| Flutter a2ui_0_9_1 |       416 |      863 |   464 |      17 |
-| React a2ui_0_9_1   |       426 |      910 |   531 |      47 |
-| React a2ui_1_0     |       426 |      922 |   543 |      47 |
-
-The Flutter apps have no CSS, and the HTML changes are the page's title and
-description. Without comment lines, the added app code is 389 lines of Dart,
-415 lines of TypeScript in React a2ui_0_9_1, and 417 in React a2ui_1_0. These
-counts include the rules that teach the model to write UI in this chat, about
-20 lines of text in the code.
+| App                        | text_only | A2UI app | Added | Removed |
+| -------------------------- | --------: | -------: | ----: | ------: |
+| Flutter a2ui_0_9_1         |       416 |      863 |   464 |      17 |
+| Flutter a2ui_0_9_1_express |       416 |      862 |   463 |      17 |
+| React a2ui_0_9_1           |       426 |      910 |   531 |      47 |
+| React a2ui_1_0             |       426 |      922 |   543 |      47 |
 
 Most of the added app code is in three new files, which each app has:
 
 1. `answer_content` reads an answer as it streams, into its text and the
-   surfaces its A2UI blocks build: 138 lines in Dart, and 168 in TypeScript.
+   surfaces its A2UI blocks build: 138 and 142 lines in Dart, and 168 in
+   TypeScript. The Express app splits the output into text and blocks itself,
+   and hands each block to the agent SDK once it is complete.
 2. `catalog` builds the catalog from the basic components the chat keeps and
    MdCarousel: 114 lines in Dart, and 110 and 142 in TypeScript. The v1.0
    catalog also holds the rules for using it in the chat.
 3. `generated_ui` sets up the agent SDK, writes the part of the system prompt
-   about UI, and turns a button press into the user's reply: 79 lines in Dart,
-   and 90 and 70 in TypeScript.
+   about UI, and turns a button press into the user's reply: 79 and 74 lines
+   in Dart, and 90 and 70 in TypeScript.
 
 The rest goes into the chat page, which shows an answer's text and surfaces in
 the order the model wrote them (88 lines added in Dart, 106 in TypeScript), and
 into the controller, which feeds each answer to `answer_content` as it streams
-(30 and 39 lines). The React apps also add `a2ui_theme.css`, 30 lines that give
+(30 lines in Dart and 39 in TypeScript). The React apps also add `a2ui_theme.css`, 30 lines that give
 the basic components the colors of shared_ui's theme.
 
-The A2UI packages are new dependencies. The Flutter app takes a2ui_agent,
+The A2UI packages are new dependencies. The Flutter apps take a2ui_agent,
 a2ui_core and a2ui_flutter from git at one commit, and adds
 flutter_markdown_plus, json_schema_builder and url_launcher. The React apps
 take @a2ui/agent, @a2ui/react and @a2ui/web_core from npm, and add zod.
 
 ### Protocol features
 
-All three apps use these features:
+All four apps use these features:
 
 1. The model creates surfaces inside its answers, in blocks between parts of
    the text. In v0.9.1 a block is a `createSurface` message followed by
    `updateComponents`. In v1.0 it is one `createSurface` message that holds the
-   components.
+   components. In the Express app, the agent SDK compiles each block into these
+   messages.
 2. Event actions on buttons and on carousel cards. The app sends the action's
    reply as the user's next message.
 3. A function call action, `openUrl` from the basic catalog, on the buttons
    that open a landing page.
 4. A custom component, MdCarousel, with an action on each card.
 5. Markdown in `Text`, rendered the way the chat renders messages.
-6. Progressive rendering: the agent SDK passes on a surface while its block is
-   still arriving, and the strings under the keys `text` and `markdown` grow
-   as they are written.
+6. Progressive rendering, in all but the Express app: the agent SDK passes on
+   a surface while its block is still arriving, and the strings under the keys
+   `text` and `markdown` grow as they are written. In the Express app, the text
+   of an answer streams, and a surface shows once its block is complete.
 7. Renderer capabilities (`supportedCatalogIds`), which the app hands to the
    agent SDK in-process, to choose the catalog the model learns.
 8. Validation of each message against the protocol and the catalog. A block
    that fails stops the UI of that answer, and the rest of the answer shows as
-   text.
+   text. The Express app checks each block against the blocks before it in the
+   same answer.
 
 React a2ui_1_0 also uses these v1.0 features:
 
@@ -124,7 +128,7 @@ React a2ui_1_0 also uses these v1.0 features:
 4. `openUrl` requires user activation, so only a click opens a page.
 5. Function calls name the function with the `@call` key.
 
-All three skip these features:
+All four skip these features:
 
 1. The data model: `updateDataModel`, data bindings, list templates and
    `sendDataModel`. The model writes each value where it shows, and nothing on
@@ -150,17 +154,36 @@ both.
 
 ### Format
 
-All three apps use direct JSON: each block is a JSON list of A2UI messages
-inside `<a2ui-json>` tags, and the app reads it while it streams. None of them
-uses Express. The Dart agent SDK makes Express the default, and the Flutter app
+Flutter a2ui_0_9_1 and the two React apps use direct JSON: each block is a JSON
+list of A2UI messages inside `<a2ui-json>` tags, and the app reads it while it
+streams. The Dart agent SDK makes Express the default, and Flutter a2ui_0_9_1
 chooses direct JSON because direct JSON can be read while it streams. The
 TypeScript agent SDK cannot stream Express (its Express format sets
 `supportsStreaming` to false), so the React apps use direct JSON, which is also
 the default there.
 
+Flutter a2ui_0_9_1_express uses Express, the default of the Dart agent SDK.
+The model writes each block between `<a2ui>` tags, as in
+`root = Button(Text("Under the counter"), _, Event("reply", {text: "..."}))`.
+The part of the system prompt about UI is about half as long as in direct JSON:
+10,333 characters instead of 20,108. Express needed these workarounds
+([#3598](https://github.com/a2ui-project/a2ui/issues/3598)):
+
+1. The Dart agent SDK cannot read Express while it streams either, so
+   `answer_content` splits the output into text and blocks, and passes each
+   block to the agent SDK once its `</a2ui>` arrives. A surface does not fill
+   in while its block is written.
+2. Express compiles a function call inside a list item, such as
+   `action: openUrl("...")` on a carousel card, into an action that does not
+   validate. The prompt asks the model to write such an action as a map, which
+   compiles. A button's `openUrl(...)` works as it is.
+3. Express writes `"version": "v0.9"` on each message, which the v0.9.1
+   renderer accepts.
+
 ### Catalog components
 
-The three catalogs have the same components:
+The four catalogs have the same components. The catalog of Flutter
+a2ui_0_9_1_express is the same code as the one of Flutter a2ui_0_9_1.
 
 1. From the basic catalog: Text, Image, Row, Column, Card, Divider and Button,
    and the function `openUrl`.
@@ -174,13 +197,13 @@ the other basic functions, which validate, format and combine values.
 
 The catalogs differ in these ways:
 
-1. The Flutter app renders the basic components as Flutter widgets from
+1. The Flutter apps render the basic components as Flutter widgets from
    a2ui_flutter. The React apps render them as web components from
    @a2ui/web_core, which @a2ui/react hosts, and style them through CSS
    variables.
 2. React a2ui_1_0 uses the v1.0 basic catalog, where Text has no heading
    variants, so headings are Markdown.
-3. In the Flutter app, MdCarousel requires the name and the Markdown of each
+3. In the Flutter apps, MdCarousel requires the name and the Markdown of each
    card, and at least one card. The React catalogs show the model the same
    required fields, but accept a card without them and an empty list, because
    the TypeScript agent SDK passes the carousel on while its cards are still
